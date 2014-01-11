@@ -7,6 +7,7 @@ class Welcome extends CI_Controller {
   {
 		$data['page_title'] = "Example";
 		$this->load->view('version2/layout/header', $data);
+		$this->load->view('version2/layout/footer', $data);
   }
 }
 
