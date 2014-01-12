@@ -290,10 +290,9 @@ class User extends CI_Controller {
 
 		if ($this->form_validation->run() == FALSE)
 		{
-
-			$this->load->view('layout/header', $data);
-			$this->load->view('user/delete');
-			$this->load->view('layout/footer');
+			$this->load->view('version2/layout/header', $data);
+			$this->load->view('version2/admin/users/delete');
+			$this->load->view('version2/layout/footer');
 		}
 		else
 		{
