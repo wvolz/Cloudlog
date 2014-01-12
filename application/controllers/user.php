@@ -119,7 +119,7 @@ class User extends CI_Controller {
 		{
 			$data['page_title'] = "Edit User";
 
-			$this->load->view('layout/header', $data);
+			$this->load->view('version2/layout/header', $data);
 			$q = $query->row();
 
 			$data['id'] = $q->user_id;
@@ -213,9 +213,9 @@ class User extends CI_Controller {
 			} else {
 				$data['user_eqsl_password'] = $q->user_eqsl_password;
 			}
-			
-			$this->load->view('user/edit', $data);
-			$this->load->view('layout/footer');
+	
+			$this->load->view('version2/admin/users/edit', $data);
+			$this->load->view('version2/layout/footer');
 		}
 		else
 		{
@@ -244,7 +244,7 @@ class User extends CI_Controller {
 			}
 			$data['page_title'] = "Edit User";
 
-			$this->load->view('layout/header', $data);
+			$this->load->view('version2/layout/header', $data);
 			$data['user_name'] = $this->input->post('user_name');
 			$data['user_email'] = $this->input->post('user_email');
 			$data['user_password'] = $this->input->post('user_password');
@@ -254,8 +254,9 @@ class User extends CI_Controller {
 			$data['user_callsign'] = $this->input->post('user_callsign');
 			$data['user_locator'] = $this->input->post('user_locator');
 			$data['user_timezone'] = $this->input->post('user_timezone');
-			$this->load->view('user/edit');
-			$this->load->view('layout/footer');
+			
+			$this->load->view('version2/admin/users/edit');
+			$this->load->view('version2/layout/footer');
 		}
 	}
 
