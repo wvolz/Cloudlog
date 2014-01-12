@@ -15,7 +15,7 @@
 		<!-- Accounts -->
 		<div class="col-md-9">
 			<?php if($this->session->flashdata('notice')) { ?>
-				<div class="alert alert-success">
+				<div class="alert alert-info">
 						<?php echo $this->session->flashdata('notice'); ?>
 				</div>
 			<?php } ?>

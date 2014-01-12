@@ -40,7 +40,7 @@ class User extends CI_Controller {
 		{
 			$data['page_title'] = "Add User";
 
-			$this->load->view('layout/header', $data);
+			$this->load->view('version2/layout/header', $data);
 			if($this->input->post('user_name'))
 			{
 				$data['user_name'] = $this->input->post('user_name');
@@ -52,11 +52,11 @@ class User extends CI_Controller {
 				$data['user_callsign'] = $this->input->post('user_callsign');
 				$data['user_locator'] = $this->input->post('user_locator');
 				$data['user_timezone'] = $this->input->post('user_timezone');
-				$this->load->view('user/add');
+				$this->load->view('version2/admin/users/add');
 			} else {
-				$this->load->view('user/add', $data);
+				$this->load->view('version2/admin/users/add', $data);
 			}
-			$this->load->view('layout/footer');
+			$this->load->view('version2/layout/footer');
 		}
 		else
 		{
@@ -79,7 +79,7 @@ class User extends CI_Controller {
 			}
 			$data['page_title'] = "Users";
 
-			$this->load->view('layout/header', $data);
+			$this->load->view('version2/layout/header', $data);
 			$data['user_name'] = $this->input->post('user_name');
 			$data['user_email'] = $this->input->post('user_email');
 			$data['user_password'] = $this->input->post('user_password');
@@ -88,8 +88,8 @@ class User extends CI_Controller {
 			$data['user_lastname'] = $this->input->post('user_lastname');
 			$data['user_callsign'] = $this->input->post('user_callsign');
 			$data['user_locator'] = $this->input->post('user_locator');
-			$this->load->view('user/add');
-			$this->load->view('layout/footer');
+			$this->load->view('version2/admin/users/add');
+			$this->load->view('version2/layout/footer');
 		}
 	}
 
