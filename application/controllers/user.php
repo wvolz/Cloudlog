@@ -12,9 +12,9 @@ class User extends CI_Controller {
 
 		$data['page_title'] = "Users";
 
-		$this->load->view('layout/header', $data);
-		$this->load->view('user/main');
-		$this->load->view('layout/footer');
+		$this->load->view('version2/layout/header', $data);
+		$this->load->view('version2/admin/users/overview');
+		$this->load->view('version2/layout/footer');
 	}
 
 	function add() {
