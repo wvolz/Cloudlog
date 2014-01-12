@@ -24,9 +24,11 @@
 			$this->load->helper('form');
 
 			?>
+			<?php if(validation_errors()) { ?>
 			<div class="alert alert-warning">
 			<?php echo validation_errors(); ?>
 			</div>
+			<?php } ?>
 
 			<form method="post" action="<?php echo site_url('user/add'); ?>" name="users" role="form">
 				<div class="form-group">
