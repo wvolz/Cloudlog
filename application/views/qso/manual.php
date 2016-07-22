@@ -48,7 +48,7 @@
 
 			<tr>
 				<td class="title">Date</td>
-				<td><input class="input_date" type="text" name="start_date" value="<?php echo date('d-m-Y'); ?>" size="10" /> <input class="input_time" type="text" name="start_time" value="<?php echo date('H:i'); ?>" size="7" /></td>
+				<td><input class="input_date" type="text" name="start_date" value="<?php echo date('m-d-Y'); ?>" size="10" /> <input class="input_time" type="text" name="start_time" value="<?php echo date('H:i'); ?>" size="7" /></td>
 			</tr>
 
 			<tr>
@@ -256,7 +256,7 @@
 			 foreach ($query->result() as $row) { ?>
 
 					<?php  echo '<tr class="tr'.($i & 1).'">'; ?>
-					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date('d/m/y', $timestamp); ?></td>
+					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date('m/d/y', $timestamp); ?></td>
 					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date('H:i', $timestamp); ?></td>
 					<td><a class="qsobox" href="<?php echo site_url('logbook/view')."/".$row->COL_PRIMARY_KEY; ?>"><?php echo strtoupper($row->COL_CALL); ?></a></td>
 					<td><?php echo $row->COL_MODE; ?></td>
@@ -520,7 +520,3 @@
 	function convert_case(str) {
 	  var lower = str.toLowerCase();
 	  return lower.replace(/(^| )(\w)/g, function(x) {
-	    return x.toUpperCase();
-	  });
-	}
-</script>

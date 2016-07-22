@@ -47,8 +47,8 @@ class Logbook_model extends CI_Model {
       'COL_GRIDSQUARE' => strtoupper(trim($this->input->post('locator'))),
       'COL_COUNTRY' => $this->input->post('country'),
       'COL_MY_RIG' => $this->input->post('equipment'),
-      'COL_QSLSDATE' => date('Y-m-d'),
-      'COL_QSLRDATE' => date('Y-m-d'),
+      'COL_QSLSDATE' => date('m-d-Y'),
+      'COL_QSLRDATE' => date('m-d-Y'),
       'COL_QSL_SENT' => $this->input->post('qsl_sent'),
       'COL_QSL_RCVD' => $this->input->post('qsl_recv'),
       'COL_QSL_SENT_VIA' => $this->input->post('qsl_sent_method'),
@@ -190,8 +190,8 @@ class Logbook_model extends CI_Model {
        'COL_COUNTRY' => $this->input->post('country'),
        'COL_SAT_NAME' => $this->input->post('sat_name'),
        'COL_SAT_MODE' => $this->input->post('sat_mode'),
-       'COL_QSLSDATE' => date('Y-m-d'),
-       'COL_QSLRDATE' => date('Y-m-d'),
+       'COL_QSLSDATE' => date('m-d-Y'),
+       'COL_QSLRDATE' => date('m-d-Y'),
        'COL_QSL_SENT' => $this->input->post('qsl_sent'),
        'COL_QSL_RCVD' => $this->input->post('qsl_recv'),
        'COL_QSL_SENT_VIA' => $this->input->post('qsl_sent_method'),
@@ -320,22 +320,22 @@ class Logbook_model extends CI_Model {
         return $query;
     }
 
-	function get_todays_qsos() {
-		$morning = date('Y-m-d 00:00:00');
-		$night = date('Y-m-d 23:59:59');
-		$query = $this->db->query('SELECT * FROM '.$this->config->item('table_name').' WHERE COL_TIME_ON between \''.$morning.'\' AND \''.$night.'\'');
-		return $query;
-	}
+    function get_todays_qsos() {
+        $morning = date('m-d-Y 00:00:00');
+        $night = date('m-d-Y 23:59:59');
+        $query = $this->db->query('SELECT * FROM '.$this->config->item('table_name').' WHERE COL_TIME_ON between \''.$morning.'\' AND \''.$night.'\'');
+        return $query;
+    }
 
-	function totals_year() {
-		$query = $this->db->query('
-		SELECT DATE_FORMAT(COL_TIME_ON, \'%Y\') as \'year\',
-		COUNT(COL_PRIMARY_KEY) as \'total\'
-		FROM '.$this->config->item('table_name').'
-		GROUP BY DATE_FORMAT(COL_TIME_ON, \'%Y\')
-		');
-		return $query;
-	}
+    function totals_year() {
+        $query = $this->db->query('
+        SELECT DATE_FORMAT(COL_TIME_ON, \'%Y\') as \'year\',
+        COUNT(COL_PRIMARY_KEY) as \'total\'
+        FROM '.$this->config->item('table_name').'
+        GROUP BY DATE_FORMAT(COL_TIME_ON, \'%Y\')
+        ');
+        return $query;
+    }
 
     /* Return total number of qsos */
      function total_qsos() {
@@ -353,8 +353,8 @@ class Logbook_model extends CI_Model {
     /* Return number of QSOs had today */
     function todays_qsos() {
 
-        $morning = date('Y-m-d 00:00:00');
-        $night = date('Y-m-d 23:59:59');
+        $morning = date('m-d-Y 00:00:00');
+        $night = date('m-d-Y 23:59:59');
         $query = $this->db->query('SELECT COUNT( * ) as count FROM '.$this->config->item('table_name').' WHERE COL_TIME_ON between \''.$morning.'\' AND \''.$night.'\'');
 
         if ($query->num_rows() > 0)
@@ -392,8 +392,8 @@ class Logbook_model extends CI_Model {
     // Return QSOs made during the current month
     function month_qsos() {
 
-        $morning = date('Y-m-01 00:00:00');
-        $night = date('Y-m-30 23:59:59');
+        $morning = date('m-01-Y 00:00:00');
+        $night = date('m-30-Y 23:59:59');
         $query = $this->db->query('SELECT COUNT( * ) as count FROM '.$this->config->item('table_name').' WHERE COL_TIME_ON between \''.$morning.'\' AND \''.$night.'\'');
 
         if ($query->num_rows() > 0)
@@ -408,8 +408,8 @@ class Logbook_model extends CI_Model {
     /* Return QSOs made during the current Year */
     function year_qsos() {
 
-        $morning = date('Y-01-01 00:00:00');
-        $night = date('Y-12-31 23:59:59');
+        $morning = date('01-01-Y 00:00:00');
+        $night = date('12-31-Y 23:59:59');
         $query = $this->db->query('SELECT COUNT( * ) as count FROM '.$this->config->item('table_name').' WHERE COL_TIME_ON between \''.$morning.'\' AND \''.$night.'\'');
 
         if ($query->num_rows() > 0)
@@ -563,137 +563,138 @@ class Logbook_model extends CI_Model {
         $this->db->delete($this->config->item('table_name'));
     }
 
-	/* Used to check if the qso is already in the database */
+    /* Used to check if the qso is already in the database */
     function import_check($datetime, $callsign, $band) {
 
-		$this->db->select('COL_TIME_ON, COL_CALL, COL_BAND');
-		$this->db->where('COL_TIME_ON >= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%Y-%m-%d %H:%i\' ), INTERVAL -5 MINUTE )');
-		$this->db->where('COL_TIME_ON <= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%Y-%m-%d %H:%i\' ), INTERVAL 5 MINUTE )');
-		$this->db->where('COL_CALL', $callsign);
-		$this->db->where('COL_BAND', $band);
+        $this->db->select('COL_TIME_ON, COL_CALL, COL_BAND');
+        $this->db->where('COL_TIME_ON >= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%m-%d-%Y %H:%i\' ), INTERVAL -5 MINUTE )');
+        $this->db->where('COL_TIME_ON <= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%m-%d-%Y %H:%i\' ), INTERVAL 5 MINUTE )');
+        $this->db->where('COL_CALL', $callsign);
+        $this->db->where('COL_BAND', $band);
 
-		$query = $this->db->get($this->config->item('table_name'));
+        $query = $this->db->get($this->config->item('table_name'));
 
-		if ($query->num_rows() > 0)
-		{
-			return "Found";
-		} else {
-			return "No Match";
-		}
-	}
+        if ($query->num_rows() > 0)
+        {
+            return "Found";
+        } else {
+            return "No Match";
+        }
+    }
 
-	function lotw_update($datetime, $callsign, $band, $qsl_date, $qsl_status) {
-		$data = array(
-			   'COL_LOTW_QSLRDATE' => $qsl_date,
-			   'COL_LOTW_QSL_RCVD' => $qsl_status,
-			   'COL_LOTW_QSL_SENT' => 'Y'
-		);
+    function lotw_update($datetime, $callsign, $band, $qsl_date, $qsl_status) {
+        $data = array(
+               'COL_LOTW_QSLRDATE' => $qsl_date,
+               'COL_LOTW_QSL_RCVD' => $qsl_status,
+               'COL_LOTW_QSL_SENT' => 'Y'
+        );
 
-		$this->db->where('date_format(COL_TIME_ON, \'%Y-%m-%d %H:%i\') = "'.$datetime.'"');
-		$this->db->where('COL_CALL', $callsign);
-		$this->db->where('COL_BAND', $band);
+        $this->db->where('date_format(COL_TIME_ON, \'%m-%d-%Y %H:%i\') = "'.$datetime.'"');
+        $this->db->where('COL_CALL', $callsign);
+        $this->db->where('COL_BAND', $band);
 
-		$this->db->update($this->config->item('table_name'), $data);
+        $this->db->update($this->config->item('table_name'), $data);
 
-		return "Updated";
-	}
+        return "Updated";
+    }
 
-	function lotw_last_qsl_date() {
-    	$this->db->select('COL_LOTW_QSLRDATE');
-    	$this->db->where('COL_LOTW_QSLRDATE IS NOT NULL');
-   		$this->db->order_by("COL_LOTW_QSLRDATE", "desc");
-    	$this->db->limit(1);
+    function lotw_last_qsl_date() {
+        $this->db->select('COL_LOTW_QSLRDATE');
+        $this->db->where('COL_LOTW_QSLRDATE IS NOT NULL');
+        $this->db->order_by("COL_LOTW_QSLRDATE", "desc");
+        $this->db->limit(1);
 
-    	$query = $this->db->get($this->config->item('table_name'));
-    	$row = $query->row();
+        $query = $this->db->get($this->config->item('table_name'));
+        $row = $query->row();
 
-   		return $row->COL_LOTW_QSLRDATE;
-  	}
+        // TODO what happens when this isn't defined?
+        return $row->COL_LOTW_QSLRDATE;
+    }
 
 //////////////////////////////
-	// Update a QSO with eQSL QSL info
-	// We could also probably use this use this: http://eqsl.cc/qslcard/VerifyQSO.txt
-	// http://www.eqsl.cc/qslcard/ImportADIF.txt
-	function eqsl_update($datetime, $callsign, $band, $qsl_status) {
-		$data = array(
-			   'COL_EQSL_QSLRDATE' => date('Y-m-d'), // eQSL doesn't give us a date, so let's use current
-			   'COL_EQSL_QSL_RCVD' => $qsl_status
-		);
+    // Update a QSO with eQSL QSL info
+    // We could also probably use this use this: http://eqsl.cc/qslcard/VerifyQSO.txt
+    // http://www.eqsl.cc/qslcard/ImportADIF.txt
+    function eqsl_update($datetime, $callsign, $band, $qsl_status) {
+        $data = array(
+               'COL_EQSL_QSLRDATE' => date('m-d-Y'), // eQSL doesn't give us a date, so let's use current
+               'COL_EQSL_QSL_RCVD' => $qsl_status
+        );
 
-		$this->db->where('COL_TIME_ON >= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%Y-%m-%d %H:%i\' ), INTERVAL -5 MINUTE )');
-		$this->db->where('COL_TIME_ON <= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%Y-%m-%d %H:%i\' ), INTERVAL 5 MINUTE )');
-		$this->db->where('COL_CALL', $callsign);
-		$this->db->where('COL_BAND', $band);
+        $this->db->where('COL_TIME_ON >= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%m-%d-%Y %H:%i\' ), INTERVAL -5 MINUTE )');
+        $this->db->where('COL_TIME_ON <= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%m-%d-%Y %H:%i\' ), INTERVAL 5 MINUTE )');
+        $this->db->where('COL_CALL', $callsign);
+        $this->db->where('COL_BAND', $band);
 
-		$this->db->update($this->config->item('table_name'), $data);
+        $this->db->update($this->config->item('table_name'), $data);
 
-		return "Updated";
-	}
+        return "Updated";
+    }
 
-	// Mark the QSO as sent to eQSL
-	function eqsl_mark_sent($primarykey) {
-		$data = array(
-			   'COL_EQSL_QSLSDATE' => date('Y-m-d'), // eQSL doesn't give us a date, so let's use current
-			   'COL_EQSL_QSL_SENT' => 'Y',
-		);
+    // Mark the QSO as sent to eQSL
+    function eqsl_mark_sent($primarykey) {
+        $data = array(
+               'COL_EQSL_QSLSDATE' => date('m-d-Y'), // eQSL doesn't give us a date, so let's use current
+               'COL_EQSL_QSL_SENT' => 'Y',
+        );
 
-		$this->db->where('COL_PRIMARY_KEY', $primarykey);
+        $this->db->where('COL_PRIMARY_KEY', $primarykey);
 
-		$this->db->update($this->config->item('table_name'), $data);
+        $this->db->update($this->config->item('table_name'), $data);
 
-		return "eQSL Sent";
-	}
+        return "eQSL Sent";
+    }
 
-	// Get the last date we received an eQSL
-	function eqsl_last_qsl_rcvd_date() {
-    	$this->db->select("DATE_FORMAT(COL_EQSL_QSLRDATE,'%Y%m%d') AS COL_EQSL_QSLRDATE", FALSE);
-    	$this->db->where('COL_EQSL_QSLRDATE IS NOT NULL');
-   		$this->db->order_by("COL_EQSL_QSLRDATE", "desc");
-    	$this->db->limit(1);
+    // Get the last date we received an eQSL
+    function eqsl_last_qsl_rcvd_date() {
+        $this->db->select("DATE_FORMAT(COL_EQSL_QSLRDATE,'%Y%m%d') AS COL_EQSL_QSLRDATE", FALSE);
+        $this->db->where('COL_EQSL_QSLRDATE IS NOT NULL');
+        $this->db->order_by("COL_EQSL_QSLRDATE", "desc");
+        $this->db->limit(1);
 
-    	$query = $this->db->get($this->config->item('table_name'));
-    	$row = $query->row();
+        $query = $this->db->get($this->config->item('table_name'));
+        $row = $query->row();
 
-    	if (isset($row->COL_EQSL_QSLDATE)){
-       		return $row->COL_EQSL_QSLRDATE;
-       	}else{
-       	    // No previous date (first time import has run?), so choose UNIX EPOCH!
-       	    // Note: date is yyyy/mm/dd format
+        if (isset($row->COL_EQSL_QSLDATE)){
+            return $row->COL_EQSL_QSLRDATE;
+        }else{
+            // No previous date (first time import has run?), so choose UNIX EPOCH!
+            // Note: date is yyyy/mm/dd format
             return '1970/01/01';
-       	}
-  	}
+        }
+    }
 
-  	// Determine if we've already received an eQSL for this QSO
-  	function eqsl_dupe_check($datetime, $callsign, $band, $qsl_status) {
-    	$this->db->select('COL_EQSL_QSLRDATE');
-    	$this->db->where('COL_TIME_ON >= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%Y-%m-%d %H:%i\' ), INTERVAL -5 MINUTE )');
-		$this->db->where('COL_TIME_ON <= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%Y-%m-%d %H:%i\' ), INTERVAL 5 MINUTE )');
-    	$this->db->where('COL_CALL', $callsign);
-    	$this->db->where('COL_BAND', $band);
-    	$this->db->where('COL_EQSL_QSL_RCVD', $qsl_status);
-    	$this->db->limit(1);
+    // Determine if we've already received an eQSL for this QSO
+    function eqsl_dupe_check($datetime, $callsign, $band, $qsl_status) {
+        $this->db->select('COL_EQSL_QSLRDATE');
+        $this->db->where('COL_TIME_ON >= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%m-%d-%Y %H:%i\' ), INTERVAL -5 MINUTE )');
+        $this->db->where('COL_TIME_ON <= DATE_ADD(DATE_FORMAT("'.$datetime.'", \'%m-%d-%Y %H:%i\' ), INTERVAL 5 MINUTE )');
+        $this->db->where('COL_CALL', $callsign);
+        $this->db->where('COL_BAND', $band);
+        $this->db->where('COL_EQSL_QSL_RCVD', $qsl_status);
+        $this->db->limit(1);
 
-    	$query = $this->db->get($this->config->item('table_name'));
-    	$row = $query->row();
+        $query = $this->db->get($this->config->item('table_name'));
+        $row = $query->row();
 
-   		if ($row != null)
-   		{
-   			return true;
-   		}
-   		else
-   		{
-   			return false;
-   		}
-  	}
+        if ($row != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-  	// Show all QSOs we need to send to eQSL
-  	function eqsl_not_yet_sent() {
-  		//$this->db->select("COL_PRIMARY_KEY, DATE_FORMAT(COL_TIME_ON,\'%Y%m%d\') AS COL_QSO_DATE, DATE_FORMAT(COL_TIME_ON,\'%H%i\') AS TIME_ON, COL_CALL, COL_MODE, COL_BAND");
-  		$this->db->select("COL_PRIMARY_KEY, COL_TIME_ON, COL_CALL, COL_MODE, COL_BAND, COL_COMMENT, COL_RST_SENT");
-  		$this->db->where('COL_EQSL_QSL_SENT', 'N');
+    // Show all QSOs we need to send to eQSL
+    function eqsl_not_yet_sent() {
+        //$this->db->select("COL_PRIMARY_KEY, DATE_FORMAT(COL_TIME_ON,\'%Y%m%d\') AS COL_QSO_DATE, DATE_FORMAT(COL_TIME_ON,\'%H%i\') AS TIME_ON, COL_CALL, COL_MODE, COL_BAND");
+        $this->db->select("COL_PRIMARY_KEY, COL_TIME_ON, COL_CALL, COL_MODE, COL_BAND, COL_COMMENT, COL_RST_SENT");
+        $this->db->where('COL_EQSL_QSL_SENT', 'N');
 
-  		return $this->db->get($this->config->item('table_name'));
-  	}
+        return $this->db->get($this->config->item('table_name'));
+    }
 
     function import($record) {
         $CI =& get_instance();
@@ -701,12 +702,12 @@ class Logbook_model extends CI_Model {
         // Join date+time
         //$datetime = date('Y-m-d') ." ". $this->input->post('start_time');
         //$myDate = date('Y-m-d', $record['qso_date']);
-        $time_on = date('Y-m-d', strtotime($record['qso_date'])) ." ".date('H:i', strtotime($record['time_on']));
+        $time_on = date('m-d-Y', strtotime($record['qso_date'])) ." ".date('H:i', strtotime($record['time_on']));
 
         if (isset($record['time_off'])) {
-            $time_off = date('Y-m-d', strtotime($record['qso_date'])) ." ".date('H:i', strtotime($record['time_off']));
+            $time_off = date('m-d-Y', strtotime($record['qso_date'])) ." ".date('H:i', strtotime($record['time_off']));
         } else {
-           $time_off = date('Y-m-d', strtotime($record['qso_date'])) ." ".date('H:i', strtotime($record['time_on']));
+           $time_off = date('m-d-Y', strtotime($record['qso_date'])) ." ".date('H:i', strtotime($record['time_on']));
         }
 
         // Store Freq

@@ -34,8 +34,8 @@ class Update extends CI_Controller {
 			$startinfo = strtotime($record->start);
             $endinfo = strtotime($record->end);
             
-            $start_date = ($startinfo) ? date('Y-m-d H:i:s',$startinfo) : "";
-            $end_date = ($endinfo) ? date('Y-m-d H:i:s',$endinfo) : "";
+            $start_date = ($startinfo) ? date('m-d-Y H:i:s',$startinfo) : "";
+            $end_date = ($endinfo) ? date('m-d-Y H:i:s',$endinfo) : "";
         
             if(!$entity->cqz) {
                 $data = array(
@@ -80,8 +80,8 @@ class Update extends CI_Controller {
 			$startinfo = strtotime($record->start);
             $endinfo = strtotime($record->end);
             
-            $start_date = ($startinfo) ? date('Y-m-d H:i:s',$startinfo) : "";
-            $end_date = ($endinfo) ? date('Y-m-d H:i:s',$endinfo) : "";
+            $start_date = ($startinfo) ? date('m-d-Y H:i:s',$startinfo) : "";
+            $end_date = ($endinfo) ? date('m-d-Y H:i:s',$endinfo) : "";
 
             $data = array(
             	'record' => (int) $record->attributes()->record,
@@ -120,8 +120,8 @@ class Update extends CI_Controller {
 			$startinfo = strtotime($record->start);
             $endinfo = strtotime($record->end);
             
-            $start_date = ($startinfo) ? date('Y-m-d H:i:s',$startinfo) : "";
-            $end_date = ($endinfo) ? date('Y-m-d H:i:s',$endinfo) : "";
+            $start_date = ($startinfo) ? date('m-d-Y H:i:s',$startinfo) : "";
+            $end_date = ($endinfo) ? date('m-d-Y H:i:s',$endinfo) : "";
             
             $data = array(
             	'record' => (int) $record->attributes()->record,

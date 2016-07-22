@@ -58,7 +58,7 @@
 
 			<tr>
 				<td class="title">Date</td>
-				<td><input class="input_date" type="text" name="start_date" value="<?php echo date('d-m-Y'); ?>" size="10" /> <input class="input_time" type="text" name="start_time" value="" size="7" /></td>
+				<td><input class="input_date" type="text" name="start_date" value="<?php echo date('Y-m-d'); ?>" size="10" /> <input class="input_time" type="text" name="start_time" value="" size="7" /></td>
 			</tr>
 
 			<tr>
@@ -265,7 +265,7 @@
 				<?php $i = 0; 
 			 foreach ($query->result() as $row) { ?>
 					<?php  echo '<tr class="tr'.($i & 1).'">'; ?>
-					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date('d/m/y', $timestamp); ?></td>
+					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date('m/d/y', $timestamp); ?></td>
 					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date('H:i', $timestamp); ?></td>
 					<td><a class="qsobox" href="<?php echo site_url('logbook/view')."/".$row->COL_PRIMARY_KEY; ?>"><?php echo strtoupper($row->COL_CALL); ?></a></td>
 					<td><?php echo $row->COL_MODE; ?></td>

@@ -57,7 +57,7 @@ class Kml extends CI_Controller {
 
 
 			$output .= "<name>".$row->COL_CALL."</name>";
-			$output .= "<description><![CDATA[<p>Date/Time: ".date('Y-m-d H:i:s', ($timestamp))."<br/>Band: ".$row->COL_BAND."<br /></p>]]></description>";		
+			$output .= "<description><![CDATA[<p>Date/Time: ".date('m-d-Y H:i:s', ($timestamp))."<br/>Band: ".$row->COL_BAND."<br /></p>]]></description>";
 			$output .= "<Point>";
 	  		$output .= "<coordinates>".$lng.",".$lat.",0</coordinates>";
 			$output .= "</Point>";

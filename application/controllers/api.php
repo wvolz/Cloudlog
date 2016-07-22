@@ -281,11 +281,11 @@ class API extends CI_Controller {
 		# Check for guessable fields
 		if(!isset($query['COL_TIME_ON']))
 		{
-			$query['COL_TIME_ON'] = date("Y-m-d H:i:s", time());
+			$query['COL_TIME_ON'] = date("m-d-Y H:i:s", time());
 		}
 		if(!isset($query['COL_TIME_OFF']))
 		{
-			$query['COL_TIME_OFF'] = date("Y-m-d H:i:s", time());
+			$query['COL_TIME_OFF'] = date("m-d-Y H:i:s", time());
 		}
 
 		$data['data']['queryInfo']['dbQuery'] = "";

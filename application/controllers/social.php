@@ -8,8 +8,8 @@ class Social extends CI_Controller {
 
 		$this->load->model('logbook_model');
 
-		$map_date = date('Y-m-d', strtotime($day));
-		$formated_date = date('d-m-Y', strtotime($day));
+		$map_date = date('m-d-Y', strtotime($day));
+		$formated_date = date('m-d-Y', strtotime($day));
 			
 		$data['qsos'] = $this->logbook_model->get_date_qsos($map_date);
 
