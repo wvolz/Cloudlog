@@ -101,7 +101,7 @@ if($_POST) {
 		  <fieldset>
 		  	<legend>Configuration Settings</legend>
 		  	<label for="directory">Directory</label><input type="text" id="directory" value="<?php echo str_replace("/install/", "", $_SERVER['REQUEST_URI']); ?>" class="input_text" name="directory" />
-		  	<label for="websiteurl">Website URL</label><input type="text" id="websiteurl" value="http://<?php echo $_SERVER['HTTP_HOST'].str_replace("/install/", "", $_SERVER['REQUEST_URI']); ?>" class="input_text" name="websiteurl" />
+		  	<label for="websiteurl">Website URL</label><input type="text" id="websiteurl" value="<?php echo $_SERVER['REQUEST_SCHEME']; ?>://<?php echo $_SERVER['HTTP_HOST'].str_replace("/install/", "", $_SERVER['REQUEST_URI']); ?>" class="input_text" name="websiteurl" />
 		  	<label for="locator">Default Gridsquare</label><input type="text" id="locator" value="IO91JS" class="input_text" name="locator" />
 		  </fieldset>
 
@@ -127,7 +127,7 @@ if($_POST) {
 		  	<p>When you login create a new admin account and delete the m0abc user account.</p>
 
 	 <?php else: ?>
-     <p class="error">Please make the /application/config/database.php file writable. <strong>Example</strong>:<br /><br /><code>chmod 777 /application/config/database.php</code></p>
+     <p class="error">Please make the /application/config/ folder writable. <strong>Example</strong>:<br /><br /><code>chmod -R 777 /application/config/</code><br /><br /><i>Don't forget to restore the permissions afterwards.</i></p>
 	 <?php endif; ?>
 
 	</body>

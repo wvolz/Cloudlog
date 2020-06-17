@@ -1,12 +1,30 @@
-<div id="container">
 
-<h2><?php echo $page_title; ?></h2>
-<?php $this->load->view('layout/messages'); ?>
+<div class="container eqsl">
+<div class="card">
+  <div class="card-header">
+  	<h5 class="card-title"><?php echo $page_title; ?></h5>
+    <ul class="nav nav-tabs card-header-tabs">
+      <li class="nav-item">
+        <a class="nav-link" href="<?php echo site_url('eqsl/import');?>">Download QSOs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="<?php echo site_url('eqsl/Export');?>">Upload QSOs</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card-body">
+  <?php $this->load->view('layout/messages'); ?>
 
 <?php
 	if (isset($eqsl_table))
 	{
-    	echo "<p>The following QSOs have not been sent to eQSL.cc</p>";
+?>
+    	<p>The following QSOs have not been sent to eQSL.cc</p>
+
+    	<p>Please make sure you have defined the eQSL QTH Nickname in the Station Profile this matches the QTH Nickname you used within eQSL.</p>
+ <?php
+
     	echo $eqsl_table;
     	echo "<p>Clicking \"Upload QSOs\" will send QSO information to eQSL.cc.</p>";
 		echo form_open('eqsl/export');
@@ -26,4 +44,6 @@
 		}
 	}
 ?>
+</div>
+
 </div>

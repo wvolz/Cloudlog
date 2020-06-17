@@ -1,91 +1,126 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<title>View QSO Info</title>
-	<link rel="stylesheet" href="<?php echo base_url();?>css/reset.css" type="text/css" />
-	<style type="text/css" media="screen">
-		body { font-family: Arial, "Trebuchet MS", sans-serif; font-size: 12px;}
-		h1 { font-weight: bold; font-size: 23px; margin-top: 5px; margin-bottom: 10px; }
-		
-		h2 { font-weight: bold; font-size: 18px; margin-top: 5px; margin-bottom: 10px; }
-		
-		h3 { font-weight: bold; font-size: 14px; margin-top: 10px; margin-bottom: 10px; }
-		
-		.clear { clear: both }
-		#info { float: left; width: 50%; }
-		#stat { float: right; width: 50%; }
-		td { padding: 5px; }
-		p {
-line-height: 1.7;
-margin: 10px 0;
-}
-	</style>
-<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script> 
-</head>
+<?php if ($query->num_rows() > 0) {  foreach ($query->result() as $row) { ?>
+<div class="container-fluid">	
 
-<body onload="initialize()">
-<?php if ($query->num_rows() > 0) {  foreach ($query->result() as $row) {
-?>
-	<h1>QSO with <?php echo $row->COL_CALL; ?> on the <?php $timestamp = strtotime($row->COL_TIME_ON); echo date('m/d/y', $timestamp); $timestamp = strtotime($row->COL_TIME_ON); echo " at ".date('H:i', $timestamp); ?></h1>
-	
-	<div id="wrap">
-		<div id="info">
+	<div class="row">
+		<div class="col">
+			<h3>QSO Details</h3>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col">
+					
 			<table width="100%">
 				<tr>
-					<td>Date/Time</td>
-					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date('m/d/y', $timestamp); $timestamp = strtotime($row->COL_TIME_ON); echo " at ".date('H:i', $timestamp); ?></td>
+					<td>Date/Time:</td>
+					<?php if(($this->config->item('use_auth') && ($this->session->userdata('user_type') >= 2)) || $this->config->item('use_auth') === FALSE || ($this->config->item('show_time'))) { ?>
+					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date($this->config->item('qso_date_format'), $timestamp); $timestamp = strtotime($row->COL_TIME_ON); echo " at ".date('H:i', $timestamp); ?></td>
+					<?php } else { ?>
+					<td><?php $timestamp = strtotime($row->COL_TIME_ON); echo date($this->config->item('qso_date_format'), $timestamp); ?></td>
+					<?php } ?>
 				</tr>
 				
 				<tr>
-					<td>Callsign</td>
-					<td><?php echo $row->COL_CALL; ?></td>
+					<td>Callsign:</td>
+					<td><b><?php echo str_replace("0","&Oslash;",strtoupper($row->COL_CALL)); ?></b></td>
 				</tr>
 				
 				<tr>
-					<td>Band</td>
+					<td>Band:</td>
 					<td><?php echo $row->COL_BAND; ?></td>
 				</tr>
 				
 				<?php if($this->config->item('display_freq') == true) { ?>
 				<tr>
 					<td>Freq:</td>
-					<td><?php echo $row->COL_FREQ; ?></td>
+					<td><?php echo frequency_display_string($row->COL_FREQ); ?></td>
 				</tr>
-				<?php } ?>
+				<?php if($row->COL_FREQ_RX != 0) { ?>
+				<tr>
+					<td>Freq (RX):</td>
+					<td><?php echo frequency_display_string($row->COL_FREQ_RX); ?></td>
+				</tr>
+				<?php }} ?>
 				
 				<tr>
-					<td>Mode</td>
+					<td>Mode:</td>
 					<td><?php echo $row->COL_MODE; ?></td>
 				</tr>
 				
 				<tr>
-					<td>RST Sent</td>
-					<td><?php echo $row->COL_RST_SENT; ?> <?php if ($row->COL_STX_STRING) { ?>(<?php echo $row->COL_STX_STRING;?>)<?php } ?></td>
+					<td>RST Sent:</td>
+					<td><?php echo $row->COL_RST_SENT; ?> <?php if ($row->COL_STX) { ?>(<?php echo $row->COL_STX;?>)<?php } ?> <?php if ($row->COL_STX_STRING) { ?>(<?php echo $row->COL_STX_STRING;?>)<?php } ?></td>
 				</tr>
 				
 				<tr>
-					<td>RST Recv</td>
-					<td><?php echo $row->COL_RST_RCVD; ?> <?php if ($row->COL_SRX_STRING) { ?>(<?php echo $row->COL_SRX_STRING;?>)<?php } ?></td>
+					<td>RST Recv:</td>
+					<td><?php echo $row->COL_RST_RCVD; ?> <?php if ($row->COL_SRX) { ?>(<?php echo $row->COL_SRX;?>)<?php } ?> <?php if ($row->COL_SRX_STRING) { ?>(<?php echo $row->COL_SRX_STRING;?>)<?php } ?></td>
 				</tr>
 				
 				<?php if($row->COL_GRIDSQUARE != null) { ?>
 				<tr>
-					<td>QRA</td>
+					<td>Gridsquare:</td>
 					<td><?php echo $row->COL_GRIDSQUARE; ?></td>
 				</tr>
 				<?php } ?>
+
+				<?php if($row->COL_GRIDSQUARE != null) { ?>
+				<!-- Total Distance Between the Station Profile Gridsquare and Logged Square -->
+				<tr>
+					<td>Total Distance</td>
+					<td>	
+						<?php 
+							// Load the QRA Library
+							$CI =& get_instance();
+							$CI->load->library('qra');
+
+							// Cacluate Distance
+							echo $CI->qra->distance($row->station_gridsquare, $row->COL_GRIDSQUARE, 'M');
+							switch ($this->config->item('measurement_base')) {
+							    case 'M':
+							        echo "mi";
+							        break;
+							    case 'K':
+							        echo "km";
+							        break;
+							    case 'N':
+							        echo "nmi";
+							        break;
+							}
+						?>
+					</td>
+				</tr>
+				<?php } ?>
+
+				<?php if($row->COL_VUCC_GRIDS != null) { ?>
+				<tr>
+					<td>Gridsquare (Multi):</td>
+					<td><?php echo $row->COL_VUCC_GRIDS; ?></td>
+				</tr>
+				<?php } ?>
+
+				<?php if($row->COL_STATE != null) { ?>
+				<tr>
+					<td>USA State:</td>
+					<td><?php echo $row->COL_STATE; ?></td>
+				</tr>
+				<?php } ?>
+				
 				
 				<?php if($row->COL_NAME != null) { ?>
 				<tr>
-					<td>Name</td>
+					<td>Name:</td>
 					<td><?php echo $row->COL_NAME; ?></td>
 				</tr>
 				<?php } ?>
 				
+				<?php if(($this->config->item('use_auth') && ($this->session->userdata('user_type') >= 2)) || $this->config->item('use_auth') === FALSE) { ?>
 				<?php if($row->COL_COMMENT != null) { ?>
 				<tr>
-					<td>Comment</td>
+					<td>Comment:</td>
 					<td><?php echo $row->COL_COMMENT; ?></td>
 				</tr>
+				<?php } ?>
 				<?php } ?>
 				
 				<?php if($row->COL_SAT_NAME != null) { ?>
@@ -107,9 +142,31 @@ margin: 10px 0;
 					<td><?php echo $row->COL_COUNTRY; ?></td>
 				</tr>
 				<?php } ?>
+
+				<?php if($row->COL_IOTA != null) { ?>
+				<tr>
+					<td>IOTA Ref:</td>
+					<td><?php echo $row->COL_IOTA; ?></td>
+				</tr>
+				<?php } ?>
+
+				<?php if($row->COL_SOTA_REF != null) { ?>
+				<tr>
+					<td>SOTA Ref:</td>
+					<td><?php echo $row->COL_SOTA_REF; ?></td>
+				</tr>
+				<?php } ?>
+				
+				<?php if($row->COL_DARC_DOK != null) { ?>
+				<tr>
+					<td>DOK:</td>
+					<td><a href="https://www.darc.de/<?php echo $row->COL_DARC_DOK; ?>" target="_new"><?php echo $row->COL_DARC_DOK; ?></a></td>
+				</tr>
+				<?php } ?>
+
 			</table>
 			<?php if($row->COL_QSL_SENT == "Y" || $row->COL_QSL_RCVD == "Y") { ?>
-				<h3>QSL Info</h3>
+				<h3>QSL Info:</h3>
 				
 				<?php if($row->COL_QSL_SENT == "Y" && $row->COL_QSL_SENT_VIA == "B") { ?>
 				<p>QSL Card has been sent via the bureau</p>
@@ -127,14 +184,63 @@ margin: 10px 0;
 			<?php } ?>
 				
 				<?php if($row->COL_LOTW_QSL_RCVD == "Y") { ?>
-				<h3>LoTW</h3>
+				<h3>LoTW:</h3>
 					<p>This QSO is confirmed on Lotw</p>
 				<?php } ?>
-		</div>
-		
-		<div id="stat">
 
-<div id="map_canvas" style="width: 340px; height: 250px"></div> 
+			<h2 style="font-size: 22px;">Station Information</h2>
+
+			<table width="100%">
+				<tr>
+					<td>Station Callsign</td>
+					<td><?php echo $row->station_callsign; ?></td>
+				</tr>
+				<tr>
+					<td>Station Gridsquare</td>
+					<td><?php echo $row->station_gridsquare; ?></td>
+				</tr>
+
+				<?php if($row->station_city) { ?>
+				<tr>
+					<td>Station City:</td>
+					<td><?php echo $row->station_city; ?></td>
+				</tr>
+				<?php } ?>
+
+				<?php if($row->station_country) { ?>
+				<tr>
+					<td>Station Country:</td>
+					<td><?php echo $row->station_country; ?></td>
+				</tr>
+				<?php } ?>
+
+				<?php if($row->COL_OPERATOR) { ?>
+				<tr>
+					<td>Station Operator</td>
+					<td><?php echo $row->COL_OPERATOR; ?></td>
+				</tr>
+				<?php } ?>
+
+				<?php if($row->COL_TX_PWR) { ?>
+				<tr>
+					<td>Station Transmit Power</td>
+					<td><?php echo $row->COL_TX_PWR; ?>w</td>
+				</tr>
+				<?php } ?>
+			</table>
+		</div>
+		<div class="col">
+			
+			<div id="map" style="width: 340px; height: 250px"></div> 
+			
+			<?php if(($this->config->item('use_auth') && ($this->session->userdata('user_type') >= 2)) || $this->config->item('use_auth') === FALSE) { ?>
+				<br>
+				<p><a class="btn btn-success" href="<?php echo site_url('qso/edit'); ?>/<?php echo $row->COL_PRIMARY_KEY; ?>" href="javascript:;"><i class="fas fa-edit"></i> Edit QSO</a></p>
+			<?php } ?>
+
+		</div>
+	</div>
+</div>
 
 <?php
 	if($row->COL_GRIDSQUARE != null) {
@@ -142,41 +248,29 @@ margin: 10px 0;
 		$lat = $stn_loc[0];
 		$lng = $stn_loc[1];
 	} else {
-		$query = $this->db->query('
-			SELECT *
-			FROM dxcc
-			WHERE prefix = SUBSTRING( \''.$row->COL_CALL.'\', 1, LENGTH( prefix ) )
-			ORDER BY LENGTH( prefix ) DESC
-			LIMIT 1 
-		');
 
-		foreach ($query->result() as $dxcc) {
-			$lat = $dxcc->lat;
-			$lng = $dxcc->long;
-		}
+		$CI =& get_instance();
+		$CI->load->model('Logbook_model');
+
+		$result = $CI->Logbook_model->dxcc_lookup($row->COL_CALL, $row->COL_TIME_ON);
+			$lat = $result['lat'];
+			$lng = $result['long'];
 	}
 ?>
 
-<script type="text/javascript"> 
-  function initialize() {
-	var myLatlng = new google.maps.LatLng(<?php echo $lat; ?>,<?php echo $lng; ?>);
-	var myOptions = {
-	  zoom: 4,
-	  center: myLatlng,
-	  mapTypeId: google.maps.MapTypeId.ROADMAP
-	}
-	var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
-	var marker = new google.maps.Marker({
-		position: myLatlng, 
-		map: map,
-		title:"<?php echo $row->COL_CALL; ?>"
-	});   
-  }
-</script> 
 
-		</div>
-	</div>
+<script>
+var lat = <?php echo $lat; ?>;
+var long = <?php echo $lng; ?>;
+var callsign = "<?php echo $row->COL_CALL; ?>";
+</script>
+
 <?php } } ?>
-</body>
-</html>
+<?php 
+  // converts a frequency in Hz (e.g. 3650) to 3.650 MHz 
+  function frequency_display_string($frequency)
+  {
+    return number_format (($frequency / 1000 / 1000), 3) . " MHz";
+  }
+?>

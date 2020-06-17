@@ -64,7 +64,7 @@ $autoload['libraries'] = array('database', 'session', 'curl');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url');
+$autoload['helper'] = array('url', 'security');
 
 
 /*
@@ -80,7 +80,7 @@ $autoload['helper'] = array('url');
 |
 */
 
-$autoload['config'] = array();
+$autoload['config'] = array('cloudlog', 'bands');
 
 
 /*

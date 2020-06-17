@@ -5,77 +5,44 @@ Cloudlog is a self-hosted PHP application that allows you to log your amateur ra
 Website: [http://www.cloudlog.co.uk](http://www.cloudlog.co.uk)
 
 ## Requirements
-
-* PHP 5 & MySQL
+* Linux based Operating System
+* Apache (Nginx should work)
+* PHP (Version 7 or higher) & MySQL
 
 ## Versions
 
-* Master - Current working copy
+* **Master** - Current working branch
+* cloudlog-v2 - This is the current development copy, while to work on bringing multiclient to Cloudlog without breaking users stable copies. 
 
 ## Setup
 
-You can set up the basics of Cloudlog by opening /install in your browser. Please note theres an issue with the demo account creation (password invalid) so after this process you must disable auth via the config.php file and manually create yourself a user in till this issue is fixed.
+Installation information can be found on the [wiki](https://github.com/magicbug/Cloudlog/wiki).
 
-More information can be found in the [wiki](https://github.com/magicbug/Cloudlog/wiki).
+Cloudlog now has a [Change Log](https://github.com/magicbug/Cloudlog/wiki/Change-Log) to go along with the commit history please consult this when updating.
 
-## CAT Control
+## Support
 
-Its possible to interact with your radio if you have a K3, FT-950 or a ICOM radio using a nice application that Rob (M0VFC) has put together called [CloudlogCAT](https://github.com/rmc47/CloudlogCAT). The application is still in active development and lots of new features are due.
+Cloudlog has two support systems for code issues use Github issues, however if you have general issues with setting up your server please use our general discussion forum [https://forum.cloudlog.co.uk](https://forum.cloudlog.co.uk).
 
-## SatPC32 Interface
 
-If your into satellite operations I have written a application [SatPC32 to Cloud Interface](https://github.com/magicbug/SatPC32-To-Cloudlog) which allows automatic population of satellite fields, Cloudlog just sees this as another radio interface.
+## Want Cloudlog Hosting?
 
-Code for this is BETA feel free to make modifications and do PRs.
-
-## QSL Card Labels
-
-I've started building out some scripts to generate labels for sticking on QSL Cards, at the moment it supports 24 label sheets, but theres no reason for it not to support more, these can be found at [Cloudlog-Labels](https://github.com/magicbug/cloudlog-labels)
+If you would prefer not to setup Cloudlog yourself [magicbug](https://magicbug.co.uk) offer hosted solutions, this is priced at £4 a month at the moment and they take care of keeping it updated.
 
 ## Contributing
 
-If you would like to contributing in anyway to Cloudlog then its most appreciated, this has been developed in free time, help coding new features or writing documentation is always useful.
+If you would like to contribute in any way to Cloudlog, it is most appreciated. This has been developed in free time, help coding new features or writing documentation is always useful.
 
-Please note that Cloudlog was built using [Codeigniter](https://ellislab.com/codeigniter/user-guide/) version 2 and uses a rather old version of the Bootstrap UI v1.4.0 documentation is available for this when building components.
-
-If you are writing code all javascript and css should be pleased within the js & css folders not within the views where possible. 
-
-## Copyright / Licence
-
-The MIT License (MIT)
-
-Copyright (c) 2016 Peter Goodhall, 2E0SQL
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Please note that Cloudlog was built using [Codeigniter](https://www.codeigniter.com/docs) version 3 and uses Bootstrap 4 for the user CSS framework documentation is available for this when building components, code will also only be accepted for PR with comments.
 
 ## Credits
 
-* Andy (VE7CXZ)    [http://ve7cxz.ca](http://ve7cxz.ca/)
-* Gavin (M1BXF)   [http://www.geekshed.co.uk](http://www.geekshed.co.uk/)
-* Graham (W5ISP)  [http://www.w5isp.com](http://w5isp.com)
-* Robert (M0VFC)  [http://github.com/rmc47](https://github.com/rmc47)
-* Corby (K0SKW)	  [http://www.k0skw.net/](http://www.k0skw.net/)
+Thanks to Andy (VE7CXZ), Gavin (M1BXF), Graham (W5ISP), Robert (M0VFC), Corby (K0SKW), Andy (GI0VGV), Tobias (DL4TMA), Tony (G0WFV), Kim (DG9VH), Michael (G7VJR), Andreas (LA8AJA) for contributing code or help to Cloudlog.
 
-![Clublog Logo](http://www.clublog.org/images/clublog.png "Clublog Logo")
+## Patreons & Donors
 
-We use the [Clublog](http://www.clublog.org/) cty.xml and APIs within the DXCC elements of Cloudlog. If you're not already a member of Clublog, we recommend you go sign up!
+Cloudlog is supported by Patreon and donations via PayPal, thanks to the following people:
 
-![HamQTH Logo](https://www.hamqth.com/images/hamqth_125x125.png "HamQTH Logo")
+Paul (M0TZO), Tim (G4VXE), Paul (N8HM), Michelle (W5NYV), Mitchell (AD0HJ), Dan (M0TCB), Martin (DK3ML), Juan Carlos (EA5WA), Iain (M0PCB), Charlie (GM1TGY), Ondrej (OK1CDJ).
 
-Cloudlog supports using the callsign lookup service from [HamQTH](https://www.hamqth.com)
+If you'd like to donate to Cloudlog to help allow @magicbug spend less time doing commercial work and more time coding Cloudlog then you can donate via [PayPal](https://paypal.me/PGoodhall) or become a [Patreon](https://www.patreon.com/2m0sql)

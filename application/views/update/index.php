@@ -1,43 +1,29 @@
-<div id="container">
+<div class="container">
 	<h2><?php echo $page_title; ?></h2>
 
+	<?php if(!extension_loaded('xml')) { ?>
 
-    <input type="submit" id="btn_update_dxcc" value="Update Dxcc" />
+	<div class="alert alert-danger" role="alert">
+	  You must install php-xml for this to work.
+	</div>
 
-    <div id="dxcc_update_status">
-    Status:</br>
-    </div>
-<br/>
-    <a href="update/check_missing_dxcc">Check missing DXCC/Countries values</a>
-    <a href="update/check_missing_dxcc/all">[Re-Check ALL]</a>
+	<?php } else { ?>
+
+		<input type="submit" id="btn_update_dxcc" value="Update Dxcc" />
+
+		<div id="dxcc_update_status">Status:</br></div>
+			
+		<br/>
+		    
+		<a href="<?php echo site_url('update/check_missing_dxcc');?>">Check missing DXCC/Countries values</a>
+		<a href="<?php echo site_url('update/check_missing_dxcc/all');?>">[Re-Check ALL]</a>
+
+		<style>
+			#dxcc_update_status{
+			   display: None;
+			}
+		</style>
+	<?php } ?>
 </div>
-
-<style>
-#dxcc_update_status{
-   display: None;
-}
-
-</style>
-<script>
-$(document).ready(function(){
-    $('#btn_update_dxcc').bind('click', function(){
-        $('#dxcc_update_status').show();
-        $.ajax({url:"update/dxcc"});
-        setTimeout(update_stats,5000);
-    });
-    function update_stats(){
-        $('#dxcc_update_status').load('<?php echo base_url()?>updates/status.html', function(val){
-            $('#dxcc_update_staus').html(val);
-
-            if ((val  === null) || (val.substring(0,4) !="DONE")){
-                setTimeout(update_stats, 5000);
-            }
-        });
-
-    }
-
-});
-</script>
-
 
 

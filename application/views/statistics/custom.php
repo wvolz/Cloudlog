@@ -5,15 +5,24 @@
 	});
 </script>
 
-<div id="container">
+<div class="container statistics_custom">
 
-	<h2><?php echo $page_title; ?></h2>
+<h2>
+  <?php echo $page_title; ?>
+  <small class="text-muted">Explore the logbook.</small>
+</h2>
 
-	<ul class="tabs">
-	  <li><a href="statistics">General</a></li>
-	  <li><a href="statistics">Satellite Contacts</a></li>
-	  <li class="active"><a href="statistics/custom">Custom</a></li>
-	</ul>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="/index.php/statistics" role="tab" aria-controls="home" aria-selected="true">General</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="satellite-tab" data-toggle="tab" href="/index.php/statistics#space" role="tab" aria-controls="satellite" aria-selected="false">Satellites</a>
+  </li>
+  <li class="nav-item">
+    <a href="/index.php/statistics/custom" class="nav-link" role="tab">Custom</a>
+  </li>
+</ul>
 	
 		<p>This is a work in-progress</p>
 		
@@ -30,12 +39,12 @@
 				<table>
 					<tr>
 						<td>Start</td>
-						<td><input type="text" id="start_date" name="start_date" value="" /></td>
+						<td><input type="text" id="start_date" name="start_date" value="" autocomplete="off"/></td>
 					</tr>
 					
 					<tr>
 						<td>End</td>
-						<td><input type="text" id="end_date" name="end_date" value="" /></td>
+						<td><input type="text" id="end_date" name="end_date" value="" autocomplete="off"/></td>
 					</tr>
 				</table>
 			</div>
@@ -54,6 +63,11 @@
 					<input type="checkbox" name="mode_data" value="data" /> Data
 					<input type="checkbox" name="mode_fm" value="FM" /> FM
 					<input type="checkbox" name="mode_am" value="AM" /> AM
+				<?php
+				foreach($modes->result() as $row){
+                    printf('<input type="checkbox" name="mode_%s" value="%s" />%s',  $row->COL_MODE, $row->COL_MODE, $row->COL_MODE);
+				}
+				?>
 			</div>
 			
 			<div class="type">
