@@ -34,8 +34,8 @@ class Update extends CI_Controller {
 			$startinfo = strtotime($entity->start);
             $endinfo = strtotime($entity->end);
             
-            $start_date = ($startinfo) ? date('m-d-Y H:i:s',$startinfo) : null;
-            $end_date = ($endinfo) ? date('m-d-Y H:i:s',$endinfo) : null;
+            $start_date = ($startinfo) ? date('Y-m-d H:i:s',$startinfo) : null;
+            $end_date = ($endinfo) ? date('Y-m-d H:i:s',$endinfo) : null;
         
             if(!$entity->cqz) {
                 $data = array(
