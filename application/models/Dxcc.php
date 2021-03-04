@@ -168,7 +168,19 @@ class DXCC extends CI_Model {
 		$this->db->empty_table($table);
 	}
 
+	/*
+	 * Fethes a list of all dxcc's, both current and deleted
+	 */
 	function list() {
+		$this->db->order_by('name', 'ASC');
+		return $this->db->get('dxcc_entities');
+	}
+
+	/*
+	 * Fetches a list of all current dxcc's (non-deleted)
+	 */
+	function list_current() {
+		$this->db->where('end', null);
 		$this->db->order_by('name', 'ASC');
 		return $this->db->get('dxcc_entities');
 	}
@@ -191,7 +203,7 @@ class DXCC extends CI_Model {
 			if ($postdata['worked'] != NULL) {
 				$workedDXCC = $this->getDxccBandWorked($station_id, $band, $postdata);
 				foreach ($workedDXCC as $wdxcc) {
-					$dxccMatrix[$wdxcc->dxcc][$band] = '<div class="alert-danger"><a href=\'dxcc_details?Country="'.str_replace("&", "%26", $wdxcc->name).'"&Band="'. $band . '"\'>W</a></div>';;
+					$dxccMatrix[$wdxcc->dxcc][$band] = '<div class="alert-danger"><a href=\'javascript:displayDxccContacts("'.str_replace("&", "%26", $wdxcc->name).'","'. $band . '")\'>W</a></div>';
 				}
 			}
 
@@ -199,7 +211,7 @@ class DXCC extends CI_Model {
 			if ($postdata['confirmed'] != NULL) {
 				$confirmedDXCC = $this->getDxccBandConfirmed($station_id, $band, $postdata);
 				foreach ($confirmedDXCC as $cdxcc) {
-					$dxccMatrix[$cdxcc->dxcc][$band] = '<div class="alert-success"><a href=\'dxcc_details?Country="'.str_replace("&", "%26", $cdxcc->name).'"&Band="'. $band . '"\'>C</a></div>';;
+					$dxccMatrix[$cdxcc->dxcc][$band] = '<div class="alert-success"><a href=\'javascript:displayDxccContacts("'.str_replace("&", "%26", $cdxcc->name).'","'. $band . '")\'>C</a></div>';
 				}
 			}
 		}
@@ -247,6 +259,10 @@ class DXCC extends CI_Model {
 			$sql .= " and col_band ='" . $band . "'";
 		}
 
+		if ($postdata['mode'] != 'All') {
+			$sql .= " and (col_mode = '" . $postdata['mode'] . "' or col_submode = '" . $postdata['mode'] . "')";
+		}
+
 		$sql .= $this->addQslToQuery($postdata);
 
 		$sql .= " group by col_dxcc
@@ -276,6 +292,10 @@ class DXCC extends CI_Model {
 		else {
 			$sql .= " and col_prop_mode !='SAT'";
 			$sql .= " and col_band ='" . $band . "'";
+		}
+
+		if ($postdata['mode'] != 'All') {
+			$sql .= " and (col_mode = '" . $postdata['mode'] . "' or col_submode = '" . $postdata['mode'] . "')";
 		}
 
 		$sql .= " group by col_dxcc
@@ -313,6 +333,10 @@ class DXCC extends CI_Model {
 				}
 			}
 
+			if ($postdata['mode'] != 'All') {
+				$sql .= " and (col_mode = '" . $postdata['mode'] . "' or col_submode = '" . $postdata['mode'] . "')";
+			}
+
 			$sql .= ' group by col_dxcc) x on dxcc_entities.adif = x.col_dxcc';
 		}
 
@@ -348,6 +372,10 @@ class DXCC extends CI_Model {
 			}
 		}
 
+		if ($postdata['mode'] != 'All') {
+			$sql .= " and (col_mode = '" . $postdata['mode'] . "' or col_submode = '" . $postdata['mode'] . "')";
+		}
+
 		$sql .= " and not exists (select 1 from ".$this->config->item('table_name')." where station_id = $station_id and col_dxcc = thcv.col_dxcc";
 
 		if ($postdata['band'] != 'All') {
@@ -358,6 +386,10 @@ class DXCC extends CI_Model {
 				$sql .= " and col_prop_mode !='SAT'";
 				$sql .= " and col_band ='" . $postdata['band'] . "'";
 			}
+		}
+
+		if ($postdata['mode'] != 'All') {
+			$sql .= " and (col_mode = '" . $postdata['mode'] . "' or col_submode = '" . $postdata['mode'] . "')";
 		}
 
 		$sql .= $this->addQslToQuery($postdata);
@@ -395,6 +427,10 @@ class DXCC extends CI_Model {
 				$sql .= " and col_prop_mode !='SAT'";
 				$sql .= " and col_band ='" . $postdata['band'] . "'";
 			}
+		}
+
+		if ($postdata['mode'] != 'All') {
+			$sql .= " and (col_mode = '" . $postdata['mode'] . "' or col_submode = '" . $postdata['mode'] . "')";
 		}
 
 		$sql .= $this->addQslToQuery($postdata);
@@ -462,6 +498,86 @@ class DXCC extends CI_Model {
 			$sql .= " and cont <> 'AN'";
 		}
 		return $sql;
+	}
+  
+	/*
+     * Function gets worked and confirmed summary on each band on the active stationprofile
+     */
+	function get_dxcc_summary($bands)
+	{
+		$CI =& get_instance();
+		$CI->load->model('Stations');
+		$station_id = $CI->Stations->find_active();
+
+		foreach ($bands as $band) {
+			$worked = $this->getSummaryByBand($band, $station_id);
+			$confirmed = $this->getSummaryByBandConfirmed($band, $station_id);
+			$dxccSummary['worked'][$band] = $worked[0]->count;
+			$dxccSummary['confirmed'][$band] = $confirmed[0]->count;
+		}
+
+		$workedTotal = $this->getSummaryByBand('All', $station_id);
+		$confirmedTotal = $this->getSummaryByBandConfirmed('All', $station_id);
+
+		$dxccSummary['worked']['Total'] = $workedTotal[0]->count;
+		$dxccSummary['confirmed']['Total'] = $confirmedTotal[0]->count;
+
+		return $dxccSummary;
+	}
+
+	function getSummaryByBand($band, $station_id)
+	{
+		$sql = "SELECT count(distinct thcv.col_dxcc) as count FROM " . $this->config->item('table_name') . " thcv";
+
+		$sql .= " where station_id = " . $station_id;
+
+
+		if ($band == 'SAT') {
+			$sql .= " and thcv.col_prop_mode ='" . $band . "'";
+		} else if ($band == 'All') {
+			$sql .= " and thcv.col_prop_mode !='SAT'";
+		} else {
+			$sql .= " and thcv.col_prop_mode !='SAT'";
+			$sql .= " and thcv.col_band ='" . $band . "'";
+		}
+		$query = $this->db->query($sql);
+
+		return $query->result();
+	}
+
+	function getSummaryByBandConfirmed($band, $station_id)
+	{
+		$sql = "SELECT count(distinct thcv.col_dxcc) as count FROM " . $this->config->item('table_name') . " thcv";
+
+		$sql .= " where station_id = " . $station_id;
+
+		if ($band == 'SAT') {
+			$sql .= " and thcv.col_prop_mode ='" . $band . "'";
+		} else if ($band == 'All') {
+			$sql .= " and thcv.col_prop_mode !='SAT'";
+		} else {
+			$sql .= " and thcv.col_prop_mode !='SAT'";
+			$sql .= " and thcv.col_band ='" . $band . "'";
+		}
+
+		$sql .= " and (col_qsl_rcvd = 'Y' or col_lotw_qsl_rcvd = 'Y')";
+
+		$query = $this->db->query($sql);
+
+		return $query->result();
+	}
+  
+  function lookup_country($country)
+	{
+		$query = $this->db->query('
+					SELECT *
+					FROM dxcc_entities
+					WHERE name = "'.$country.'"
+					ORDER BY LENGTH( prefix ) DESC
+					LIMIT 1
+				');
+
+		return $query->row();
 	}
 }
 ?>

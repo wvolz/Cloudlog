@@ -25,18 +25,19 @@ class Qrz extends CI_Controller {
 
         if ($station_ids) {
             foreach ($station_ids as $station_id) {
-                $qrz_api_key = $this->logbook_model->exists_qrz_api_key($station_id);
+                $result = $this->logbook_model->exists_qrz_api_key($station_id);
+                $qrz_api_key = $result->qrzapikey;
                 if($this->mass_upload_qsos($station_id, $qrz_api_key)) {
-                    echo "QSOs has been uploaded to QRZ.com.";
-                    log_message('info', 'QSOs has been uploaded to QRZ.com.');
+                    echo "QSOs have been uploaded to QRZ.com.";
+                    log_message('info', 'QSOs have been uploaded to QRZ.com.');
                 } else{
                     echo "No QSOs found for upload.";
                     log_message('info', 'No QSOs found for upload.');
                 }
             }
         } else {
-            echo "No station_id's with a QRZ API Key found";
-            log_message('info', "No station_id's with a QRZ API Key found");
+            echo "No station profiles with a QRZ API Key found.";
+            log_message('error', "No station profiles with a QRZ API Key found.");
         }
 
     }
@@ -56,25 +57,39 @@ class Qrz extends CI_Controller {
     function mass_upload_qsos($station_id, $qrz_api_key) {
         $i = 0;
         $data['qsos'] = $this->logbook_model->get_qrz_qsos($station_id);
+        $errormessages=array();
+
+        $CI =& get_instance();
+        $CI->load->library('AdifHelper');
 
         if ($data['qsos']) {
-            foreach ($data['qsos'] as $qso) {
-                $adif = $this->logbook_model->create_adif_from_data($qso);
+            foreach ($data['qsos']->result() as $qso) {
+                $adif = $CI->adifhelper->getAdifLine($qso);
 
-                if ($qso['COL_QRZCOM_QSO_UPLOAD_STATUS'] == 'M') {
+                if ($qso->COL_QRZCOM_QSO_UPLOAD_STATUS == 'M') {
                     $result = $this->logbook_model->push_qso_to_qrz($qrz_api_key, $adif, true);
                 } else {
                     $result = $this->logbook_model->push_qso_to_qrz($qrz_api_key, $adif);
                 }
 
-                if ($result) {
-                    $this->markqso($qso['COL_PRIMARY_KEY']);
+                if ($result['status'] == 'OK') {
+                    $this->markqso($qso->COL_PRIMARY_KEY);
                     $i++;
+                } else {
+                    log_message('error', 'QRZ upload failed for qso: Call: ' . $qso->COL_CALL . ' Band: ' . $qso->COL_BAND . ' Mode: ' . $qso->COL_MODE . ' Time: ' . $qso->COL_TIME_ON);
+                    log_message('error', 'QRZ upload failed with the following message: ' .$result['message']);
+                    $errormessages[] = $result['message'] . ' Call: ' . $qso->COL_CALL . ' Band: ' . $qso->COL_BAND . ' Mode: ' . $qso->COL_MODE . ' Time: ' . $qso->COL_TIME_ON;
                 }
             }
-        return $i;
+            $result['status'] = 'OK';
+            $result['count'] = $i;
+            $result['errormessages'] = $errormessages;
+        return $result;
         } else {
-            return $i;
+            $result['status'] = 'Error';
+            $result['count'] = $i;
+            $result['errormessages'] = $errormessages;
+            return $result;
         }
     }
 
@@ -91,7 +106,7 @@ class Qrz extends CI_Controller {
     public function export() {
         $this->load->model('stations');
 
-        $data['page_title'] = "QRZ.com Export";
+        $data['page_title'] = "QRZ Logbook";
 
         $data['station_profile'] = $this->stations->stations_with_qrz_api_key();
         $active_station_id = $this->stations->find_active();
@@ -113,20 +128,23 @@ class Qrz extends CI_Controller {
         $postData = $this->input->post();
 
         $this->load->model('logbook_model');
-        $qrz_api_key = $this->logbook_model->exists_qrz_api_key($postData['station_id']);
-
+        $result = $this->logbook_model->exists_qrz_api_key($postData['station_id']);
+        $qrz_api_key = $result->qrzapikey;
         header('Content-type: application/json');
-        if ($i = $this->mass_upload_qsos($postData['station_id'], $qrz_api_key)) {
+        $result = $this->mass_upload_qsos($postData['station_id'], $qrz_api_key);
+        if ($result['status'] == 'OK') {
             $stationinfo = $this->stations->stations_with_qrz_api_key();
             $info = $stationinfo->result();
 
             $data['status'] = 'OK';
             $data['info'] = $info;
-            $data['infomessage'] = $i . " QSOs are now uploaded to QRZ.com";
+            $data['infomessage'] = $result['count'] . " QSOs are now uploaded to QRZ.com";
+            $data['errormessages'] = $result['errormessages'];
             echo json_encode($data);
         } else {
             $data['status'] = 'Error';
-            $data['info'] = 'Error, no QSOs to upload found';
+            $data['info'] = 'Error: No QSOs found to upload.';
+            $data['errormessages'] = $result['errormessages'];
             echo json_encode($data);
         }
     }

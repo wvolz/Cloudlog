@@ -52,7 +52,7 @@ $autoload['packages'] = array(APPPATH.'third_party');
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('database', 'session', 'curl');
+$autoload['libraries'] = array('database', 'session', 'curl', 'OptionsLib');
 
 
 /*
@@ -80,7 +80,7 @@ $autoload['helper'] = array('url', 'security');
 |
 */
 
-$autoload['config'] = array('cloudlog', 'bands');
+$autoload['config'] = array('cloudlog', 'bands', 'lotw');
 
 
 /*
@@ -96,7 +96,7 @@ $autoload['config'] = array('cloudlog', 'bands');
 |
 */
 
-$autoload['language'] = array();
+$autoload['language'] = array('general_words');
 
 
 /*

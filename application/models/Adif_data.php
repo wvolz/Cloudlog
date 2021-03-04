@@ -11,9 +11,9 @@ class adif_data extends CI_Model {
     function export_all() {
         $this->load->model('stations');
         $active_station_id = $this->stations->find_active();
-
-        $this->db->where('station_id', $active_station_id);
-        $this->db->order_by("COL_TIME_ON", "ASC"); 
+        $this->db->where($this->config->item('table_name').'.station_id', $active_station_id);
+        $this->db->order_by("COL_TIME_ON", "ASC");
+        $this->db->join('station_profile', 'station_profile.station_id = '.$this->config->item('table_name').'.station_id');
         $query = $this->db->get($this->config->item('table_name'));
 
         return $query;
@@ -23,11 +23,12 @@ class adif_data extends CI_Model {
         $this->load->model('stations');
         $active_station_id = $this->stations->find_active();
 
-        $this->db->where('station_id', $active_station_id);
+        $this->db->where($this->config->item('table_name').'.station_id', $active_station_id);
+        $this->db->join('station_profile', 'station_profile.station_id = '.$this->config->item('table_name').'.station_id');
         $this->db->where_in('COL_QSL_SENT', array('R', 'Q'));
-        $this->db->order_by("COL_TIME_ON", "ASC"); 
+        $this->db->order_by("COL_TIME_ON", "ASC");
         $query = $this->db->get($this->config->item('table_name'));
-        
+
         return $query;
     }
 
@@ -67,10 +68,9 @@ class adif_data extends CI_Model {
         return $this->db->get();
     }
     
-    function export_custom($from, $to) {
+    function export_custom($from, $to, $exportLotw = false) {
         $this->load->model('stations');
         $active_station_id = $this->stations->find_active();
-        
 
         $this->db->select(''.$this->config->item('table_name').'.*, station_profile.*');
         $this->db->from($this->config->item('table_name'));
@@ -87,6 +87,10 @@ class adif_data extends CI_Model {
             $to = $to->format('Y-m-d');
             $this->db->where("date(".$this->config->item('table_name').".COL_TIME_ON) <= '".$to."'");
         }
+        if ($exportLotw) {
+            $this->db->where($this->config->item('table_name').".COL_LOTW_QSL_SENT != 'Y'");
+        }
+
         $this->db->order_by($this->config->item('table_name').".COL_TIME_ON", "ASC");
 
         $this->db->join('station_profile', 'station_profile.station_id = '.$this->config->item('table_name').'.station_id');

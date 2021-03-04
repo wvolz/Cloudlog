@@ -256,5 +256,108 @@ class Update extends CI_Controller {
         }
     }
 
+    public function download_lotw_users() {
+
+
+
+        $contents = file_get_contents('https://lotw.arrl.org/lotw-user-activity.csv', true);
+
+        if($contents === FALSE) { 
+            echo "something went wrong";
+        } else {
+            $file = './updates/lotw_users.csv';
+
+            if(!is_file($file)){        // Some simple example content.
+                file_put_contents($file, $contents);     // Save our content to the file.
+            }
+
+            echo "LoTW User Data Saved.";
+        }
+
+    }
+
+    public function lotw_check() {
+        $f = fopen('./updates/lotw_users.csv', "r");
+        $result = false;
+        while ($row = fgetcsv($f)) {
+            if ($row[0] == '2M0SQL/MM') {
+                $result = $row[0];
+                echo "found";
+                break;
+            }
+        }
+        fclose($f);
+    }
+
+    /*
+     * Used for autoupdating the DOK file which is used in the QSO entry dialog for autocompletion.
+     */
+    public function update_dok() {
+        $contents = file_get_contents('https://www.df2et.de/cqrlog/dok_and_sdok.txt', true);
+
+        if($contents === FALSE) {
+            echo "Something went wrong with fetching the DOK file.";
+        } else {
+            $file = './assets/json/dok.txt';
+
+            file_put_contents($file, $contents);     // Save our content to the file.
+
+            if (file_exists($file))
+            {
+                $nCount = count(file($file));
+                if ($nCount > 0)
+                {
+                    echo "DONE: " . number_format($nCount) . " DOKs and SDOKs saved";
+                } else {
+                    echo"FAILED: Empty file";
+                }
+            } else {
+                echo"FAILED: Could not create dok.txt file locally";
+            }
+        }
+    }
+
+    /*
+     * Used for autoupdating the SOTA file which is used in the QSO entry dialog for autocompletion.
+     */
+    public function update_sota() {
+        $csvfile = 'https://www.sotadata.org.uk/summitslist.csv';
+
+        $sotafile = './assets/json/sota.txt';
+
+        if($csvfile === FALSE) {
+            echo "Something went wrong with fetching the SOTA file";
+        } else {
+            $csvhandle = fopen($csvfile,"r");
+
+            $data = fgetcsv($csvhandle,1000,","); // Skip line we are not interested in
+            $data = fgetcsv($csvhandle,1000,","); // Skip line we are not interested in
+            $data = fgetcsv($csvhandle,1000,",");
+            $sotafilehandle = fopen($sotafile, 'w');
+
+            do {
+                if ($data[0]) {
+                    fwrite($sotafilehandle, $data[0].PHP_EOL);
+                }
+            } while ($data = fgetcsv($csvhandle,1000,","));
+
+            fclose($csvhandle);
+            fclose($sotafilehandle);
+            if (file_exists($sotafile))
+            {
+                $nCount = count(file($sotafile));
+                if ($nCount > 0)
+                {
+                    echo "DONE: " . number_format($nCount) . " SOTA's saved";
+                } else {
+                    echo"FAILED: Empty file";
+                }
+            } else {
+                echo"FAILED: Could not create sota.txt file locally";
+            }
+        }
+    }
+
+
 }
 ?>

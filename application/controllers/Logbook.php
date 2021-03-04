@@ -67,11 +67,35 @@ class Logbook extends CI_Controller {
 		$this->load->model('user_model');
 		if(!$this->user_model->authorize($this->config->item('auth_mode'))) { return; }
 
-		$this->load->model('lotw_user');
-		 
-		$lotw_member = $this->lotw_user->check($callsign);
+		// Convert - in Callsign to / Used for URL processing
+		$callsign = str_replace("-","/",$callsign);
+
+		// Check if callsign is an LOTW User
+			$lotw_member = "";
+			$lotw_file_name = "./updates/lotw_users.csv";
+
+			if (file_exists($lotw_file_name)) {
+				$f = fopen($lotw_file_name, "r");
+		        $result = false;
+		        while ($row = fgetcsv($f)) {
+		            if ($row[0] == strtoupper($callsign)) {
+		                $result = $row[0];
+		                $lotw_member = "active";
+		                break;
+		            }
+		        }
+
+		        if($lotw_member != "active") {
+		        	$lotw_member = "not found";
+		        }
+		        fclose($f);
+			} else {
+			    $lotw_member = "not found";
+			}
 
 
+
+		// Check Database for all other data
 		$this->load->model('logbook_model');
 
 		$return = [
@@ -94,12 +118,20 @@ class Logbook extends CI_Controller {
 	// Do we have local data for the Callsign?
 	if($this->logbook_model->call_name($callsign) != null)
 	{
+        if ($this->session->userdata('user_measurement_base') == NULL) {
+             $measurement_base = $this->config->item('measurement_base');
+        }
+        else {
+            $measurement_base = $this->session->userdata('user_measurement_base');
+        }
+
 		$return['callsign_name'] = $this->logbook_model->call_name($callsign);
 		$return['callsign_qra'] = $this->logbook_model->call_qra($callsign);
 		$return['callsign_qth'] = $this->logbook_model->call_qth($callsign);
 		$return['callsign_iota'] = $this->logbook_model->call_iota($callsign);
 		$return['qsl_manager'] = $this->logbook_model->call_qslvia($callsign);
-		$return['bearing'] = $this->bearing($return['callsign_qra'], $this->config->item('measurement_base'));
+        $return['callsign_state'] = $this->logbook_model->call_state($callsign);
+		$return['bearing'] = $this->bearing($return['callsign_qra'], $measurement_base);
 		$return['workedBefore'] = $this->worked_grid_before($return['callsign_qra'], $type, $band, $mode);
 
 		if ($return['callsign_qra'] != "") {
@@ -161,7 +193,15 @@ class Logbook extends CI_Controller {
 		}
 		$return['workedBefore'] = $this->worked_grid_before($return['callsign_qra'], $type, $band, $mode);
 	}
-	$return['bearing'] = $this->bearing($return['callsign_qra'], $this->config->item('measurement_base'));
+
+    if ($this->session->userdata('user_measurement_base') == NULL) {
+        $measurement_base = $this->config->item('measurement_base');
+    }
+    else {
+        $measurement_base = $this->session->userdata('user_measurement_base');
+    }
+
+	$return['bearing'] = $this->bearing($return['callsign_qra'], $measurement_base);
 
 	echo json_encode($return, JSON_PRETTY_PRINT);
 
@@ -278,6 +318,9 @@ class Logbook extends CI_Controller {
 
 	function jsonlookupcallsign($callsign, $type, $band, $mode) {
 		
+		// Convert - in Callsign to / Used for URL processing
+		$callsign = str_replace("-","/",$callsign);
+
 		$return = [
 			"workedBefore" => false,
 		];
@@ -367,7 +410,17 @@ class Logbook extends CI_Controller {
 
 		$this->load->model('logbook_model');
 		$data['query'] = $this->logbook_model->get_qso($id);
-		
+
+        if ($this->session->userdata('user_measurement_base') == NULL) {
+            $data['measurement_base'] = $this->config->item('measurement_base');
+        }
+        else {
+            $data['measurement_base'] = $this->session->userdata('user_measurement_base');
+        }
+
+        $this->load->model('Qsl_model');
+        $data['qslimages'] = $this->Qsl_model->getQslForQsoId($id);
+		$data['max_upload'] = ini_get('upload_max_filesize');
 		$this->load->view('interface_assets/mini_header', $data);
 		$this->load->view('view_log/qso');
 		$this->load->view('interface_assets/footer');
@@ -380,7 +433,7 @@ class Logbook extends CI_Controller {
 		$html = "";
 
 
-	    $this->db->select(''.$this->config->item('table_name').'.COL_CALL, '.$this->config->item('table_name').'.COL_BAND, '.$this->config->item('table_name').'.COL_TIME_ON, '.$this->config->item('table_name').'.COL_RST_RCVD, '.$this->config->item('table_name').'.COL_RST_SENT, '.$this->config->item('table_name').'.COL_MODE, '.$this->config->item('table_name').'.COL_PRIMARY_KEY, '.$this->config->item('table_name').'.COL_SAT_NAME, '.$this->config->item('table_name').'.COL_GRIDSQUARE, '.$this->config->item('table_name').'.COL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_SENT, '.$this->config->item('table_name').'.COL_QSL_SENT, '.$this->config->item('table_name').'.COL_STX, '.$this->config->item('table_name').'.COL_STX_STRING, '.$this->config->item('table_name').'.COL_SRX, '.$this->config->item('table_name').'.COL_SRX_STRING, '.$this->config->item('table_name').'.COL_LOTW_QSL_SENT, '.$this->config->item('table_name').'.COL_LOTW_QSL_RCVD, '.$this->config->item('table_name').'.COL_VUCC_GRIDS, station_profile.*');
+	    $this->db->select(''.$this->config->item('table_name').'.COL_CALL, '.$this->config->item('table_name').'.COL_BAND, '.$this->config->item('table_name').'.COL_TIME_ON, '.$this->config->item('table_name').'.COL_RST_RCVD, '.$this->config->item('table_name').'.COL_RST_SENT, '.$this->config->item('table_name').'.COL_MODE, '.$this->config->item('table_name').'.COL_SUBMODE, '.$this->config->item('table_name').'.COL_PRIMARY_KEY, '.$this->config->item('table_name').'.COL_SAT_NAME, '.$this->config->item('table_name').'.COL_GRIDSQUARE, '.$this->config->item('table_name').'.COL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_SENT, '.$this->config->item('table_name').'.COL_QSL_SENT, '.$this->config->item('table_name').'.COL_STX, '.$this->config->item('table_name').'.COL_STX_STRING, '.$this->config->item('table_name').'.COL_SRX, '.$this->config->item('table_name').'.COL_SRX_STRING, '.$this->config->item('table_name').'.COL_LOTW_QSL_SENT, '.$this->config->item('table_name').'.COL_LOTW_QSL_RCVD, '.$this->config->item('table_name').'.COL_VUCC_GRIDS, station_profile.*');
 	    $this->db->from($this->config->item('table_name'));
 
 	    $this->db->join('station_profile', 'station_profile.station_id = '.$this->config->item('table_name').'.station_id');
@@ -418,7 +471,10 @@ class Logbook extends CI_Controller {
 					} else {
 								$html .= "<td>".$row->COL_BAND."</td>";
 					}
-					$html .= "<td>".$row->COL_MODE."</td>";
+					if ($row->COL_SUBMODE==null)
+						$html .= "<td>".$row->COL_MODE."</td>";
+					else
+						$html .= "<td>".$row->COL_SUBMODE."</td>";
 					$html .= "<td class=\"qsl\">";
 					$html .= "<span class=\"qsl-";
 					switch ($row->COL_QSL_SENT) {
@@ -495,7 +551,7 @@ class Logbook extends CI_Controller {
 
 		if(!$this->user_model->authorize($this->config->item('auth_mode'))) { return; }
 
-   		$this->db->select(''.$this->config->item('table_name').'.COL_CALL, '.$this->config->item('table_name').'.COL_BAND, '.$this->config->item('table_name').'.COL_TIME_ON, '.$this->config->item('table_name').'.COL_RST_RCVD, '.$this->config->item('table_name').'.COL_RST_SENT, '.$this->config->item('table_name').'.COL_MODE, '.$this->config->item('table_name').'.COL_NAME, '.$this->config->item('table_name').'.COL_COUNTRY, '.$this->config->item('table_name').'.COL_PRIMARY_KEY, '.$this->config->item('table_name').'.COL_SAT_NAME, '.$this->config->item('table_name').'.COL_GRIDSQUARE, '.$this->config->item('table_name').'.COL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_SENT, '.$this->config->item('table_name').'.COL_QSL_SENT, '.$this->config->item('table_name').'.COL_STX, '.$this->config->item('table_name').'.COL_STX_STRING, '.$this->config->item('table_name').'.COL_SRX, '.$this->config->item('table_name').'.COL_SRX_STRING, '.$this->config->item('table_name').'.COL_LOTW_QSL_SENT, '.$this->config->item('table_name').'.COL_LOTW_QSL_RCVD, '.$this->config->item('table_name').'.COL_VUCC_GRIDS, station_profile.*');
+   		$this->db->select(''.$this->config->item('table_name').'.COL_CALL, '.$this->config->item('table_name').'.COL_BAND, '.$this->config->item('table_name').'.COL_TIME_ON, '.$this->config->item('table_name').'.COL_RST_RCVD, '.$this->config->item('table_name').'.COL_RST_SENT, '.$this->config->item('table_name').'.COL_MODE, '.$this->config->item('table_name').'.COL_SUBMODE, '.$this->config->item('table_name').'.COL_NAME, '.$this->config->item('table_name').'.COL_COUNTRY, '.$this->config->item('table_name').'.COL_PRIMARY_KEY, '.$this->config->item('table_name').'.COL_SAT_NAME, '.$this->config->item('table_name').'.COL_GRIDSQUARE, '.$this->config->item('table_name').'.COL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_SENT, '.$this->config->item('table_name').'.COL_QSL_SENT, '.$this->config->item('table_name').'.COL_STX, '.$this->config->item('table_name').'.COL_STX_STRING, '.$this->config->item('table_name').'.COL_SRX, '.$this->config->item('table_name').'.COL_SRX_STRING, '.$this->config->item('table_name').'.COL_LOTW_QSL_SENT, '.$this->config->item('table_name').'.COL_LOTW_QSL_RCVD, '.$this->config->item('table_name').'.COL_VUCC_GRIDS, station_profile.*');
     
     	$this->db->from($this->config->item('table_name'));
 
@@ -510,7 +566,7 @@ class Logbook extends CI_Controller {
 		if ($query->num_rows() > 0)
 		{
 			$data['results'] = $query;
-			$this->load->view('view_log/partial/log.php', $data);
+			$this->load->view('view_log/partial/log_ajax.php', $data);
 		} else {
 			$this->load->model('search');
 
@@ -519,7 +575,7 @@ class Logbook extends CI_Controller {
 			if ($iota_search->num_rows() > 0)
 			{
 				$data['results'] = $iota_search;
-				$this->load->view('view_log/partial/log.php', $data);
+				$this->load->view('view_log/partial/log_ajax.php', $data);
 			} else {
 				if ($this->config->item('callbook') == "qrz" && $this->config->item('qrz_username') != null && $this->config->item('qrz_password') != null) {
 					// Lookup using QRZ
@@ -587,7 +643,14 @@ class Logbook extends CI_Controller {
 					$mylocator = $this->config->item('locator');
 				}
 
-				$bearing = $this->qra->bearing($mylocator, $locator, $this->config->item('measurement_base'));
+                if ($this->session->userdata('user_measurement_base') == NULL) {
+                    $measurement_base = $this->config->item('measurement_base');
+                }
+                else {
+                    $measurement_base = $this->session->userdata('user_measurement_base');
+                }
+
+				$bearing = $this->qra->bearing($mylocator, $locator, $measurement_base);
 
 				echo $bearing;
 			}
@@ -626,6 +689,19 @@ class Logbook extends CI_Controller {
 		$latlng = $this->qra->qra2latlong($qra);
 		print json_encode($latlng);
 	}
+
+    function get_qsos($num, $offset) {
+        $this->db->select(''.$this->config->item('table_name').'.COL_CALL, '.$this->config->item('table_name').'.COL_BAND, '.$this->config->item('table_name').'.COL_TIME_ON, '.$this->config->item('table_name').'.COL_RST_RCVD, '.$this->config->item('table_name').'.COL_RST_SENT, '.$this->config->item('table_name').'.COL_MODE, '.$this->config->item('table_name').'.COL_SUBMODE, '.$this->config->item('table_name').'.COL_NAME, '.$this->config->item('table_name').'.COL_COUNTRY, '.$this->config->item('table_name').'.COL_PRIMARY_KEY, '.$this->config->item('table_name').'.COL_SAT_NAME, '.$this->config->item('table_name').'.COL_GRIDSQUARE, '.$this->config->item('table_name').'.COL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_RCVD, '.$this->config->item('table_name').'.COL_EQSL_QSL_SENT, '.$this->config->item('table_name').'.COL_QSL_SENT, '.$this->config->item('table_name').'.COL_STX, '.$this->config->item('table_name').'.COL_STX_STRING, '.$this->config->item('table_name').'.COL_SRX, '.$this->config->item('table_name').'.COL_SRX_STRING, '.$this->config->item('table_name').'.COL_LOTW_QSL_SENT, '.$this->config->item('table_name').'.COL_LOTW_QSL_RCVD, '.$this->config->item('table_name').'.COL_VUCC_GRIDS, station_profile.*');
+        $this->db->from($this->config->item('table_name'));
+
+        $this->db->join('station_profile', 'station_profile.station_id = '.$this->config->item('table_name').'.station_id');
+        $this->db->order_by(''.$this->config->item('table_name').'.COL_TIME_ON', "desc");
+
+        $this->db->limit($num);
+        $this->db->offset($offset);
+
+        return $this->db->get();
+    }
 
 
 }
