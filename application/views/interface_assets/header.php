@@ -11,6 +11,7 @@
 		<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/general.css">
 		<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/<?php echo $this->optionslib->get_theme();?>/overrides.css">
         <link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/<?php echo $this->optionslib->get_theme();?>/selectize.bootstrap4.css"/>
+		<link rel="stylesheet" href="<?php echo base_url(); ?>assets/css/<?php echo $this->optionslib->get_theme();?>/bootstrap-dialog.css"/>
 	<?php } ?>
 
     <link rel="stylesheet" href="<?php echo base_url(); ?>assets/fontawesome/css/all.css">
@@ -28,12 +29,9 @@
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/plugins/quill/quill.snow.css" />
 	<?php } ?>
 
-	<?php if ($this->uri->segment(1) == "qrz" || $this->uri->segment(1) == "accumulated" || $this->uri->segment(1) == "timeplotter") { ?>
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/loading.min.css" />
 	<link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/ldbtn.min.css" />
-	<?php } ?>
 
-    <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/js/bootstrapdialog/css/bootstrap-dialog.min.css" />
       <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/buttons.dataTables.min.css"/>
 
   <link rel="stylesheet" type="text/css" href="<?php echo base_url(); ?>assets/css/datatables.min.css"/>
@@ -75,8 +73,9 @@
         	</li>
 
         	<!-- Notes -->
+		<?php if ($this->session->userdata('user_show_notes') == 1) { ?>
         	<a class="nav-link" href="<?php echo site_url('notes');?>">Notes</a>
-
+		<?php } ?>
         	<li class="nav-item dropdown">
 				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Analytics</a>
 				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -108,14 +107,14 @@
                     <a class="dropdown-item" href="<?php echo site_url('awards/dxcc');?>">DXCC</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?php echo site_url('awards/iota');?>">IOTA</a>
-                    <div class="dropdown-divider"></div>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="<?php echo site_url('awards/sig');?>">SIG</a>
+					<div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?php echo site_url('awards/sota');?>">SOTA</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?php echo site_url('awards/counties');?>">US Counties</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?php echo site_url('awards/vucc');?>">VUCC</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="<?php echo site_url('awards/wab');?>">WAB</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?php echo site_url('awards/was');?>">WAS</a>
                 </div>
@@ -133,39 +132,11 @@
 
 					<div class="dropdown-divider"></div>
 
-					<a class="dropdown-item" href="<?php echo site_url('api/help');?>" title="Manage API keys"><i class="fas fa-key"></i> API</a>
-
-					<div class="dropdown-divider"></div>
-
-					<a class="dropdown-item" href="<?php echo site_url('station');?>" title="Manage station profiles"><i class="fas fa-home"></i> Station Profiles</a>
-
-					<div class="dropdown-divider"></div>
-
 					<a class="dropdown-item" href="<?php echo site_url('mode');?>" title="Manage QSO modes"><i class="fas fa-broadcast-tower"></i> Modes</a>
 
 					<div class="dropdown-divider"></div>
 
-					<a class="dropdown-item" href="<?php echo site_url('radio');?>" title="Interface with one or more radios"><i class="fas fa-broadcast-tower"></i> Radio Interface</a>
-
-					<div class="dropdown-divider"></div>
-
-					<a class="dropdown-item" href="<?php echo site_url('adif');?>" title="Amateur Data Interchange Format (ADIF) import / export"><i class="fas fa-sync"></i> ADIF Import / Export</a>
-
-					<div class="dropdown-divider"></div>
-
-					<a class="dropdown-item" href="<?php echo site_url('lotw');?>" title="Synchronise with Logbook of the World (LotW)"><i class="fas fa-sync"></i> Logbook of the World</a>
-
-					<div class="dropdown-divider"></div>
-
-					<a class="dropdown-item" href="<?php echo site_url('eqsl/import');?>" title="eQSL import / export"><i class="fas fa-sync"></i> eQSL Import / Export</a>
-
-					<div class="dropdown-divider"></div>
-
-                    <a class="dropdown-item" href="<?php echo site_url('qrz/export');?>" title="Upload to QRZ.com logbook"><i class="fas fa-sync"></i> QRZ Logbook</a>
-
-                    <div class="dropdown-divider"></div>
-
-					<a class="dropdown-item" href="<?php echo site_url('qslprint');?>" title="Print Requested QSLs"><i class="fas fa-print"></i> Print Requested QSLs</a>
+					<a class="dropdown-item" href="<?php echo site_url('contesting/add');?>" title="Manage Contest names"><i class="fas fa-broadcast-tower"></i> Contests</a>
 
 					<div class="dropdown-divider"></div>
 
@@ -175,13 +146,11 @@
 
 					<a class="dropdown-item" href="<?php echo site_url('update');?>" title="Update Country Files"><i class="fas fa-sync"></i> Update Country Files</a>
 
-                    <div class="dropdown-divider"></div>
-
-                    <a class="dropdown-item" href="<?php echo site_url('kml');?>" title="KML Export for Google Earth"><i class="fas fa-sync"></i> KML Export</a>
-
+					<?php if(ENVIRONMENT == "development") { ?>
 					<div class="dropdown-divider"></div>
 
-					<a class="dropdown-item" href="<?php echo site_url('contesting/add');?>" title="Manage Contest names"><i class="fas fa-broadcast-tower"></i> Contests</a>
+					<a class="dropdown-item" href="<?php echo site_url('debug');?>" title="Debug Information"><i class="fas fa-tools"></i> Debug Information</a>
+					<?php } ?>
 				</div>
         	</li>
         <?php } ?>
@@ -216,13 +185,35 @@
 			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 				<a class="dropdown-item" href="<?php echo site_url('user/edit')."/".$this->session->userdata('user_id'); ?>" title="Account"><i class="fas fa-user"></i> Account</a>
 
+				<a class="dropdown-item" href="<?php echo site_url('station');?>" title="Manage station locations"><i class="fas fa-home"></i> Station Locations</a>
+
+				<div class="dropdown-divider"></div>
+
+				<a class="dropdown-item" href="<?php echo site_url('adif');?>" title="Amateur Data Interchange Format (ADIF) import / export"><i class="fas fa-sync"></i> ADIF Import / Export</a>
+
+				<a class="dropdown-item" href="<?php echo site_url('qslprint');?>" title="Print Requested QSLs"><i class="fas fa-print"></i> Print Requested QSLs</a>
+
+				<a class="dropdown-item" href="<?php echo site_url('kml');?>" title="KML Export for Google Earth"><i class="fas fa-sync"></i> KML Export</a>
+
+				<div class="dropdown-divider"></div>
+
+				<a class="dropdown-item" href="<?php echo site_url('lotw');?>" title="Synchronise with Logbook of the World (LotW)"><i class="fas fa-sync"></i> Logbook of the World</a>
+
+				<a class="dropdown-item" href="<?php echo site_url('eqsl/import');?>" title="eQSL import / export"><i class="fas fa-sync"></i> eQSL Import / Export</a>
+
+                <a class="dropdown-item" href="<?php echo site_url('qrz/export');?>" title="Upload to QRZ.com logbook"><i class="fas fa-sync"></i> QRZ Logbook</a>
+
+				<div class="dropdown-divider"></div>
+
+				<a class="dropdown-item" href="<?php echo site_url('api/help');?>" title="Manage API keys"><i class="fas fa-key"></i> API Keys</a>
+
+				<a class="dropdown-item" href="<?php echo site_url('radio');?>" title="Interface with one or more radios"><i class="fas fa-broadcast-tower"></i> Hardware Interfaces</a>
+
 				<div class="dropdown-divider"></div>
 
 				<a class="dropdown-item" target="_blank" href="https://github.com/magicbug/Cloudlog/wiki" title="Help"><i class="fas fa-question"></i> Help</a>
 
-				<div class="dropdown-divider"></div>
-
-				<a class="dropdown-item" target="_blank" href="https://forum.cloudlog.co.uk" title="Forum"><i class="fas fa-question"></i> Forum</a>
+				<a class="dropdown-item" target="_blank" href="https://github.com/magicbug/Cloudlog/discussions" title="Forum"><i class="far fa-comment-dots"></i> Forum</a>
 
 				<div class="dropdown-divider"></div>
 

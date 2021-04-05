@@ -2,7 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$lang['error_no_active_station_profile'] = 'Attention: you need to set an active station profile.';
+$lang['error_no_active_station_profile'] = 'Attention: you need to set an active station location.';
 
 $lang['notice_turn_the_radio_on'] = 'You have made no QSOs today; time to turn on the radio!';
 
@@ -12,6 +12,7 @@ $lang['general_word_choose_file'] = 'Choose file';
 
 $lang['general_word_date'] = 'Date';
 $lang['general_word_time'] = 'Time';
+$lang['general_word_datetime'] = 'Date/Time';
 $lang['general_word_none'] = 'None';
 $lang['general_word_name'] = 'Name';
 $lang['general_word_location'] = 'Location';
@@ -37,6 +38,8 @@ $lang['general_word_method'] = 'Method';
 $lang['general_word_sent'] = 'Sent';
 $lang['general_word_received'] = 'Received';
 $lang['general_word_requested'] = 'Requested';
+$lang['general_word_qslcard'] = 'QSL Card';
+$lang['general_word_qslcard_management'] = 'QSL Management';
 $lang['general_word_qslcards'] = 'QSL Cards';
 $lang['general_word_qslcard_direct'] = 'Direct';
 $lang['general_word_qslcard_bureau'] = 'Bureau';
@@ -48,8 +51,10 @@ $lang['general_mark_qsl_rx_direct'] = 'Mark QSL Received (Direct)';
 
 $lang['general_delete_qso'] = 'Delete QSO';
 
+$lang['general_total_distance'] = 'Total Distance';
+
 // Cloudlog Terms
-$lang['cloudlog_station_profile'] = 'Station Profile';
+$lang['cloudlog_station_profile'] = 'Station Location';
 
 // ham radio terms
 $lang['gen_hamradio_qso'] = 'QSO';
@@ -85,6 +90,7 @@ $lang['gen_hamradio_usa_state'] = 'USA State';
 $lang['gen_hamradio_county_reference'] = 'USA County';
 $lang['gen_hamradio_iota_reference'] = 'IOTA Reference';
 $lang['gen_hamradio_sota_reference'] = 'SOTA Reference';
+$lang['gen_hamradio_wwff_reference'] = 'WWFF Reference';
 $lang['gen_hamradio_dok'] = 'DOK';
 
 $lang['gen_hamradio_sig'] = 'Sig';
@@ -97,3 +103,5 @@ $lang['dashboard_qso_breakdown'] = 'QSOs Breakdown';
 $lang['dashboard_countries_breakdown'] = 'Countries Breakdown';
 
 $lang['gen_from_date'] = 'From date';
+
+$lang['gen_this_qso_was_confirmed_on'] = 'This QSO was confirmed on';
