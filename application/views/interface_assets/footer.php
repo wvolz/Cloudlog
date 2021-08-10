@@ -18,6 +18,19 @@
   var icon_dot_url = "<?php echo base_url();?>assets/images/dot.png";
 </script>
 
+
+<script>
+
+function load_was_map() {
+    BootstrapDialog.show({
+            title: 'Worked All States Map ('+$('#band2').val()+' '+$('#mode').val()+')',
+            cssClass: 'was-map-dialog',
+            message: $('<div></div>').load(site_url + '/awards/was_map/' + $('#band2').val() + '/' + $('#mode').val())
+    });
+}
+
+</script>
+
 <?php if ($this->uri->segment(1) == "adif") { ?>
     <!-- Javascript used for ADIF Import and Export Areas -->
     <script type="text/javascript" src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
@@ -254,7 +267,7 @@ function getLookupResult() {
         var q_lng = -32.695312;
         <?php } ?>
 
-        var qso_loc = '<?php echo site_url('map/map_data_custom/');?><?php echo urlencode($date_from); ?>/<?php echo urlencode($date_to); ?>';
+        var qso_loc = '<?php echo site_url('map/map_data_custom/');?><?php echo rawurlencode($date_from); ?>/<?php echo rawurlencode($date_to); ?>/<?php echo rawurlencode($this->input->post('band')); ?>';
         var q_zoom = 2;
 
       $(document).ready(function(){
@@ -814,9 +827,9 @@ $(document).ready(function(){
         $.each( data, function( i, item ) {
           console.log(item.COL_CALL + item.COL_SAT_NAME);
           if(item.COL_SAT_NAME != undefined) {
-            items.push( "<tr><td>" + item.COL_TIME_ON + "</td><td>" + item.COL_CALL + "</td><td>" + item.COL_MODE + "</td><td>" + item.COL_SAT_NAME + "</td><td>" + item.COL_GRIDSQUARE + "</td></tr>" );
+            items.push( "<tr><td>" + item.COL_TIME_ON + "</td><td>" + item.COL_CALL + "</td><td>" + item.COL_MODE + "</td><td>" + item.COL_SAT_NAME + "</td><td>" + item.COL_GRIDSQUARE + item.COL_VUCC_GRIDS + "</td></tr>" );
           } else {
-            items.push( "<tr><td>" + item.COL_TIME_ON + "</td><td>" + item.COL_CALL + "</td><td>" + item.COL_MODE + "</td><td>" + item.COL_BAND + "</td><td>" + item.COL_GRIDSQUARE + "</td></tr>" );
+            items.push( "<tr><td>" + item.COL_TIME_ON + "</td><td>" + item.COL_CALL + "</td><td>" + item.COL_MODE + "</td><td>" + item.COL_BAND + "</td><td>" + item.COL_GRIDSQUARE + item.COL_VUCC_GRIDS + "</td></tr>" );
           }
         });
 
@@ -978,33 +991,6 @@ $(document).ready(function(){
     if (background != ('rgb(255, 255, 255)')) {
         $(".buttons-csv").css("color", "white");
     }
-
-        function displayDxccContacts(country, band) {
-            var baseURL = "<?php echo base_url();?>";
-            $.ajax({
-                url: baseURL + 'index.php/awards/dxcc_details_ajax',
-                type: 'post',
-                data: {
-                    'Country': country,
-                    'Band': band
-                },
-                success: function (html) {
-                    BootstrapDialog.show({
-                        title: 'QSO Data',
-                        size: BootstrapDialog.SIZE_WIDE,
-                        cssClass: 'qso-dxcc-dialog',
-                        nl2br: false,
-                        message: html,
-                        buttons: [{
-                            label: 'Close',
-                            action: function (dialogItself) {
-                                dialogItself.close();
-                            }
-                        }]
-                    });
-                }
-            });
-        }
  </script>
     <?php } ?>
 
@@ -1030,32 +1016,6 @@ $(document).ready(function(){
     if (background != ('rgb(255, 255, 255)')) {
         $(".buttons-csv").css("color", "white");
     }
-
-            function displayVuccContacts(gridsquare, band) {
-                var baseURL= "<?php echo base_url();?>";
-                $.ajax({
-                    url: baseURL + 'index.php/awards/vucc_details_ajax',
-                    type: 'post',
-                    data: {'Gridsquare': gridsquare,
-                        'Band': band
-                    },
-                    success: function(html) {
-                        BootstrapDialog.show({
-                            title: 'QSO Data',
-                            size: BootstrapDialog.SIZE_WIDE,
-                            cssClass: 'qso-vucc-dialog',
-                            nl2br: false,
-                            message: html,
-                            buttons: [{
-                                label: 'Close',
-                                action: function (dialogItself) {
-                                    dialogItself.close();
-                                }
-                            }]
-                        });
-                    }
-                });
-            }
     </script>
 <?php } ?>
 
@@ -1124,32 +1084,6 @@ $(document).ready(function(){
         if (background != ('rgb(255, 255, 255)')) {
             $(".buttons-csv").css("color", "white");
         }
-
-        function displayIotaContacts(iota, band) {
-            var baseURL= "<?php echo base_url();?>";
-            $.ajax({
-                url: baseURL + 'index.php/awards/iota_details_ajax',
-                type: 'post',
-                data: {'Iota': iota,
-                    'Band': band
-                },
-                success: function(html) {
-                    BootstrapDialog.show({
-                        title: 'QSO Data',
-                        size: BootstrapDialog.SIZE_WIDE,
-                        cssClass: 'qso-iota-dialog',
-                        nl2br: false,
-                        message: html,
-                        buttons: [{
-                            label: 'Close',
-                            action: function (dialogItself) {
-                                dialogItself.close();
-                            }
-                        }]
-                    });
-                }
-            });
-        }
     </script>
 
 <?php } ?>
@@ -1187,32 +1121,6 @@ $(document).ready(function(){
         if (background != ('rgb(255, 255, 255)')) {
             $(".buttons-csv").css("color", "white");
         }
-
-            function displayCqContacts(cqzone, band) {
-                var baseURL= "<?php echo base_url();?>";
-                $.ajax({
-                    url: baseURL + 'index.php/awards/cq_details_ajax',
-                    type: 'post',
-                    data: {'CQZone': cqzone,
-                        'Band': band
-                    },
-                    success: function(html) {
-                        BootstrapDialog.show({
-                            title: 'QSO Data',
-                            size: BootstrapDialog.SIZE_WIDE,
-                            cssClass: 'qso-cq-dialog',
-                            nl2br: false,
-                            message: html,
-                            buttons: [{
-                                label: 'Close',
-                                action: function (dialogItself) {
-                                    dialogItself.close();
-                                }
-                            }]
-                        });
-                    }
-                });
-            }
     </script>
 <?php } ?>
 
@@ -1249,32 +1157,6 @@ $(document).ready(function(){
         if (background != ('rgb(255, 255, 255)')) {
             $(".buttons-csv").css("color", "white");
         }
-
-        function displayWasContacts(was, band) {
-            var baseURL= "<?php echo base_url();?>";
-            $.ajax({
-                url: baseURL + 'index.php/awards/was_details_ajax',
-                type: 'post',
-                data: {'State': was,
-                    'Band': band
-                },
-                success: function(html) {
-                    BootstrapDialog.show({
-                        title: 'QSO Data',
-                        size: BootstrapDialog.SIZE_WIDE,
-                        cssClass: 'qso-was-dialog',
-                        nl2br: false,
-                        message: html,
-                        buttons: [{
-                            label: 'Close',
-                            action: function (dialogItself) {
-                            dialogItself.close();
-                            }
-                        }]
-                    });
-                }
-            });
-        }
     </script>
 <?php } ?>
 
@@ -1291,6 +1173,48 @@ $(document).ready(function(){
                     if (data.message == 'OK') {
                         $("#qso_" + id).find("td:eq(8)").find("span:eq(1)").attr('class', 'qsl-green'); // Paints arrow green
                         $(".qsl_" + id).remove(); // removes choice from menu
+                    }
+                    else {
+                        $(".bootstrap-dialog-message").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>You are not allowed to update QSL status!</div>');
+                    }
+                }
+            });
+        }
+
+        // Function: qsl_requested
+        // Marks QSL card requested against the QSO.
+        function qsl_requested(id, method) {
+            var baseURL= "<?php echo base_url();?>";
+            $.ajax({
+                url: baseURL + 'index.php/qso/qsl_requested_ajax',
+                type: 'post',
+                data: {'id': id,
+                    'method': method
+                },
+                success: function(data) {
+                    if (data.message == 'OK') {
+                        $("#qso_" + id).find("td:eq(8)").find("span:eq(0)").attr('class', 'qsl-yellow'); // Paints arrow green
+                    }
+                    else {
+                        $(".bootstrap-dialog-message").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>You are not allowed to update QSL status!</div>');
+                    }
+                }
+            });
+        }
+
+        // Function: qsl_ignore
+        // Marks QSL card ignore against the QSO.
+        function qsl_ignore(id, method) {
+            var baseURL= "<?php echo base_url();?>";
+            $.ajax({
+                url: baseURL + 'index.php/qso/qsl_ignore_ajax',
+                type: 'post',
+                data: {'id': id,
+                    'method': method
+                },
+                success: function(data) {
+                    if (data.message == 'OK') {
+                        $("#qso_" + id).find("td:eq(8)").find("span:eq(0)").attr('class', 'qsl-red'); // Paints arrow green
                     }
                     else {
                         $(".bootstrap-dialog-message").append('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>You are not allowed to update QSL status!</div>');
@@ -1646,6 +1570,38 @@ function deleteQsl(id) {
 </script>
 
 <script>
+  /*
+   * Used to fetch QSOs from the logbook in the awards
+   */
+    function displayContacts(searchphrase, band, mode, type) {
+        var baseURL = "<?php echo base_url();?>";
+        $.ajax({
+            url: baseURL + 'index.php/awards/qso_details_ajax',
+            type: 'post',
+            data: {
+                'Searchphrase': searchphrase,
+                'Band': band,
+                'Mode': mode,
+                'Type': type
+            },
+            success: function (html) {
+                BootstrapDialog.show({
+                    title: 'QSO Data',
+                    size: BootstrapDialog.SIZE_WIDE,
+                    cssClass: 'qso-dialog',
+                    nl2br: false,
+                    message: html,
+                    buttons: [{
+                        label: 'Close',
+                        action: function (dialogItself) {
+                            dialogItself.close();
+                        }
+                    }]
+                });
+            }
+        });
+    }
+
     function uploadQsl() {
         var baseURL= "<?php echo base_url();?>";
         var formdata = new FormData(document.getElementById("fileinfo"));
@@ -1737,6 +1693,66 @@ function deleteQsl(id) {
             }
         });
     }
+</script>
+<script>
+
+	function addQsosToQsl(filename) {
+		var title = 'Add additional QSOs to a QSL Card';
+
+		var baseURL= "<?php echo base_url();?>";
+		$.ajax({
+			url: baseURL + 'index.php/qsl/loadSearchForm',
+			type: 'post',
+			data: {'filename': filename},
+			success: function(html) {
+				BootstrapDialog.show({
+					title: title,
+					size: BootstrapDialog.SIZE_WIDE,
+					cssClass: 'qso-search_results',
+					nl2br: false,
+					message: html,
+					buttons: [{
+						label: 'Close',
+						action: function (dialogItself) {
+							dialogItself.close();
+						}
+					}]
+				});
+			}
+		});
+	}
+
+	function addQsoToQsl(qsoid, filename, id) {
+		var title = 'Add additional QSOs to a QSL Card';
+
+		var baseURL= "<?php echo base_url();?>";
+		$.ajax({
+			url: baseURL + 'index.php/qsl/addQsoToQsl',
+			type: 'post',
+			data: {'filename': filename, 'qsoid': qsoid},
+			success: function(html) {
+				if (html.status == 'Success') {
+					location.reload();
+				} else {
+					$(".alert").remove();
+					$('#searchresult').prepend('<div class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Something went wrong. Please try again!</div>');
+				}
+			}
+		});
+	}
+
+	function searchAdditionalQsos(filename) {
+		var baseURL= "<?php echo base_url();?>";
+		$.ajax({
+			url: baseURL + 'index.php/qsl/searchQsos',
+			type: 'post',
+			data: {'callsign': $('#callsign').val(), 'filename': filename},
+			success: function(html) {
+				$('#searchresult').empty();
+				$('#searchresult').append(html);
+			}
+		});
+	}
 </script>
 <?php if ($this->uri->segment(1) == "contesting") { ?>
     <script src="<?php echo base_url() ;?>assets/js/sections/contesting.js"></script>
@@ -1958,8 +1974,7 @@ function deleteQsl(id) {
         $.ajax({
             url: baseURL + 'index.php/awards/counties_details_ajax',
             type: 'post',
-            data: {'State': state, 'County': county
-            },
+            data: {'State': state, 'County': county },
             success: function(html) {
                 BootstrapDialog.show({
                     title: 'QSO Data',
@@ -2008,6 +2023,89 @@ function deleteQsl(id) {
 
 <?php if ($this->uri->segment(1) == "contesting" && $this->uri->segment(2) == "add") { ?>
 	<script src="<?php echo base_url() ;?>assets/js/sections/contestingnames.js"></script>
+<?php } ?>
+
+<?php if ($this->uri->segment(1) == "qslprint") { ?>
+	<script>
+		function deleteFromQslQueue(id) {
+			BootstrapDialog.confirm({
+				title: 'DANGER',
+				message: 'Warning! Are you sure you want to removes this QSL from the queue?',
+				type: BootstrapDialog.TYPE_DANGER,
+				closable: true,
+				draggable: true,
+				btnOKClass: 'btn-danger',
+				callback: function(result) {
+					$.ajax({
+						url: base_url + 'index.php/qslprint/delete_from_qsl_queue',
+						type: 'post',
+						data: {'id': id	},
+						success: function(html) {
+							$("#qslprint_"+id).remove();
+						}
+					});
+				}
+			});
+		}
+
+		function openQsoList(callsign) {
+			$.ajax({
+				url: base_url + 'index.php/qslprint/open_qso_list',
+				type: 'post',
+				data: {'callsign': callsign},
+				success: function(html) {
+					BootstrapDialog.show({
+						title: 'QSO List',
+						size: BootstrapDialog.SIZE_WIDE,
+						cssClass: 'qso-dialog',
+						nl2br: false,
+						message: html,
+						buttons: [{
+							label: 'Close',
+							action: function (dialogItself) {
+								dialogItself.close();
+							}
+						}]
+					});
+				}
+			});
+		}
+
+		function addQsoToPrintQueue(id) {
+			$.ajax({
+				url: base_url + 'index.php/qslprint/add_qso_to_print_queue',
+				type: 'post',
+				data: {'id': id},
+				success: function(html) {
+					var line = '<tr id="qslprint_'+id+'">';
+					line += '<td style=\'text-align: center\'>'+$("#qsolist_"+id).find("td:eq(0)").text()+'</td>';
+					line += '<td style=\'text-align: center\'>'+$("#qsolist_"+id).find("td:eq(1)").text()+'</td>';
+					line += '<td style=\'text-align: center\'>'+$("#qsolist_"+id).find("td:eq(2)").text()+'</td>';
+					line += '<td style=\'text-align: center\'>'+$("#qsolist_"+id).find("td:eq(3)").text()+'</td>';
+					line += '<td style=\'text-align: center\'>'+$("#qsolist_"+id).find("td:eq(4)").text()+'</td>';
+					line += '<td style=\'text-align: center\'><span class="badge badge-light">'+$("#qsolist_"+id).find("td:eq(5)").text()+'</span></td>';
+					line += '<td style=\'text-align: center\'><button onclick="deleteFromQslQueue('+id+')" class="btn btn-sm btn-danger">Delete from queue</button></td></td>';
+					line += '<td style=\'text-align: center\'><button onclick="openQsoList(\''+$("#qsolist_"+id).find("td:eq(0)").text()+'\')" class="btn btn-sm btn-success">Open QSO list</button></td>';
+					line += '</tr>';
+					$('.table tr:last').after(line);
+					$("#qsolist_"+id).remove();''
+				}
+			});
+		}
+
+		$(".station_id").change(function(){
+			var station_id = $(".station_id").val();
+			$.ajax({
+				url: base_url + 'index.php/qslprint/get_qsos_for_print_ajax',
+				type: 'post',
+				data: {'station_id': station_id},
+				success: function(html) {
+					$('.resulttable').empty();
+					$('.resulttable').append(html);
+				}
+			});
+		});
+	</script>
 <?php } ?>
   </body>
 </html>
