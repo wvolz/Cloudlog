@@ -79,7 +79,7 @@ $( document ).ready(function() {
 		labelField: 'name',
 		searchField: 'name',
 		options: [],
-		create: false,
+		create: true,
 		load: function(query, callback) {
 			if (!query) return callback();  // Only trigger if at least 1 character is entered
 			$.ajax({
@@ -240,6 +240,8 @@ function reset_fields() {
 	$('#locator_info').text("");
 	$('#country').val("");
 	$('#lotw_info').text("");
+	$('#qrz_info').text("");
+	$('#hamqth_info').text("");
 	$('#dxcc_id').val("");
 	$('#cqz').val("");
 	$('#name').val("");
@@ -345,6 +347,10 @@ $("#callsign").focusout(function() {
 				if(result.lotw_member == "active") {
 					$('#lotw_info').text("LoTW");
 				}
+				$('#qrz_info').html('<a target="_blank" href="https://www.qrz.com/db/'+find_callsign+'"><img width="32" height="32" src="'+base_url+'images/icons/qrz.com.png"></a>'); 
+				$('#qrz_info').attr('title', 'Lookup '+find_callsign+' info on qrz.com');
+				$('#hamqth_info').html('<a target="_blank" href="https://www.hamqth.com/'+find_callsign+'"><img width="32" height="32" src="'+base_url+'images/icons/hamqth.com.png"></a>'); 
+				$('#hamqth_info').attr('title', 'Lookup '+find_callsign+' info on hamqth.com');
 
 				$('#dxcc_id').val(result.dxcc.adif);
 				$('#cqz').val(result.dxcc.cqz);
@@ -458,6 +464,27 @@ if ($('#frequency').val() == "")
 		$('#frequency_rx').val("");
 	});
 }
+
+/* time input shortcut */
+$('#start_time').change(function() {
+	var raw_time = $(this).val();
+	if(raw_time.match(/^\d\[0-6]d$/)) {
+		raw_time = "0"+raw_time;
+	}
+	if(raw_time.match(/^[012]\d[0-5]\d$/)) {
+		raw_time = raw_time.substring(0,2)+":"+raw_time.substring(2,4);
+		$('#start_time').val(raw_time);
+	}
+});
+
+/* date input shortcut */
+$('#start_date').change(function() {
+	 raw_date = $(this).val();
+	if(raw_date.match(/^[12]\d{3}[01]\d[0123]\d$/)) {
+		raw_date = raw_date.substring(0,4)+"-"+raw_date.substring(4,6)+"-"+raw_date.substring(6,8);
+		$('#start_date').val(raw_date);
+	}
+});
 
 /* on mode change */
 $('.mode').change(function() {

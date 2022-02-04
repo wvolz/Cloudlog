@@ -38,16 +38,23 @@ $lang['general_word_method'] = 'Method';
 $lang['general_word_sent'] = 'Sent';
 $lang['general_word_received'] = 'Received';
 $lang['general_word_requested'] = 'Requested';
+$lang['general_word_queued'] = 'Queued';
+$lang['general_word_invalid_ignore'] = 'Invalid (Ignore)';
+
 $lang['general_word_qslcard'] = 'QSL Card';
 $lang['general_word_qslcard_management'] = 'QSL Management';
 $lang['general_word_qslcards'] = 'QSL Cards';
 $lang['general_word_qslcard_direct'] = 'Direct';
 $lang['general_word_qslcard_bureau'] = 'Bureau';
+$lang['general_word_qslcard_electronic'] = 'Electronic';
+$lang['general_word_qslcard_manager'] = 'Manager';
 $lang['general_word_qslcard_via'] = 'Via';
 
 $lang['general_edit_qso'] = 'Edit QSO';
 $lang['general_mark_qsl_rx_bureau'] = 'Mark QSL Received (Bureau)';
 $lang['general_mark_qsl_rx_direct'] = 'Mark QSL Received (Direct)';
+$lang['general_mark_qsl_tx_bureau'] = 'Mark QSL Sent (Bureau)';
+$lang['general_mark_qsl_tx_direct'] = 'Mark QSL Sent (Direct)';
 
 $lang['general_delete_qso'] = 'Delete QSO';
 
@@ -94,7 +101,9 @@ $lang['gen_hamradio_wwff_reference'] = 'WWFF Reference';
 $lang['gen_hamradio_dok'] = 'DOK';
 $lang['gen_hamradio_state'] = 'State';
 $lang['gen_hamradio_iota'] = 'IOTA';
+$lang['gen_hamradio_sota'] = 'SOTA';
 $lang['gen_hamradio_gridsquare'] = 'Gridsquare';
+$lang['gen_hamradio_operator'] = 'Operator';
 
 $lang['gen_hamradio_sig'] = 'Sig';
 $lang['gen_hamradio_sig_info'] = 'Sig Info';

@@ -68,7 +68,7 @@
 		</div>
 
 		<div class="form-group">
-		    <label>Locator</label>
+		    <label>Gridsquare</label>
 		    <input class="form-control" type="text" name="user_locator" value="<?php if(isset($user_locator)) { echo $user_locator; } ?>" />
 			<?php if(isset($locator_error)) { echo "<div class=\"small error\">".$locator_error."</div>"; } ?>
 		</div>
@@ -146,8 +146,10 @@
 				<option value="RSTR"><?php echo $this->lang->line('gen_hamradio_rstr'); ?></option>
 				<option value="Country"><?php echo $this->lang->line('general_word_country'); ?></option>
 				<option value="IOTA"><?php echo $this->lang->line('gen_hamradio_iota'); ?></option>
+				<option value="SOTA"><?php echo $this->lang->line('gen_hamradio_sota'); ?></option>
 				<option value="State"><?php echo $this->lang->line('gen_hamradio_state'); ?></option>
 				<option value="Grid"><?php echo $this->lang->line('gen_hamradio_gridsquare'); ?></option>
+				<option value="Operator"><?php echo $this->lang->line('gen_hamradio_operator'); ?></option>
 			</select>
 			</div>
 
@@ -160,8 +162,10 @@
 				<option value="RSTR"><?php echo $this->lang->line('gen_hamradio_rstr'); ?></option>
 				<option value="Country"><?php echo $this->lang->line('general_word_country'); ?></option>
 				<option value="IOTA"><?php echo $this->lang->line('gen_hamradio_iota'); ?></option>
+				<option value="SOTA"><?php echo $this->lang->line('gen_hamradio_sota'); ?></option>
 				<option value="State"><?php echo $this->lang->line('gen_hamradio_state'); ?></option>
 				<option value="Grid"><?php echo $this->lang->line('gen_hamradio_gridsquare'); ?></option>
+				<option value="Operator"><?php echo $this->lang->line('gen_hamradio_operator'); ?></option>
 			</select>
 			</div>
 
@@ -174,8 +178,10 @@
 				<option value="RSTR" selected ='selected'><?php echo $this->lang->line('gen_hamradio_rstr'); ?></option>
 				<option value="Country"><?php echo $this->lang->line('general_word_country'); ?></option>
 				<option value="IOTA"><?php echo $this->lang->line('gen_hamradio_iota'); ?></option>
+				<option value="SOTA"><?php echo $this->lang->line('gen_hamradio_sota'); ?></option>
 				<option value="State"><?php echo $this->lang->line('gen_hamradio_state'); ?></option>
 				<option value="Grid"><?php echo $this->lang->line('gen_hamradio_gridsquare'); ?></option>
+				<option value="Operator"><?php echo $this->lang->line('gen_hamradio_operator'); ?></option>
 			</select>
 			</div>
 
@@ -188,8 +194,10 @@
 				<option value="RSTR"><?php echo $this->lang->line('gen_hamradio_rstr'); ?></option>
 				<option value="Country"><?php echo $this->lang->line('general_word_country'); ?></option>
 				<option value="IOTA"><?php echo $this->lang->line('gen_hamradio_iota'); ?></option>
+				<option value="SOTA"><?php echo $this->lang->line('gen_hamradio_sota'); ?></option>
 				<option value="State"><?php echo $this->lang->line('gen_hamradio_state'); ?></option>
 				<option value="Grid"><?php echo $this->lang->line('gen_hamradio_gridsquare'); ?></option>
+				<option value="Operator"><?php echo $this->lang->line('gen_hamradio_operator'); ?></option>
 			</select>
 			</div>
 
@@ -202,8 +210,10 @@
 					<option value="RSTR"><?php echo $this->lang->line('gen_hamradio_rstr'); ?></option>
 					<option value="Country" selected ='selected'><?php echo $this->lang->line('general_word_country'); ?></option>
 					<option value="IOTA"><?php echo $this->lang->line('gen_hamradio_iota'); ?></option>
+					<option value="SOTA"><?php echo $this->lang->line('gen_hamradio_sota'); ?></option>
 					<option value="State"><?php echo $this->lang->line('gen_hamradio_state'); ?></option>
 					<option value="Grid"><?php echo $this->lang->line('gen_hamradio_gridsquare'); ?></option>
+					<option value="Operator"><?php echo $this->lang->line('gen_hamradio_operator'); ?></option>
 				</select>
 			</div>
 		</div>

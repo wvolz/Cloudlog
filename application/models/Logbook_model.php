@@ -23,23 +23,16 @@ class Logbook_model extends CI_Model {
     }
 
     // Contest exchange, need to separate between serial and other type of exchange
-    if($this->input->post('exchangeradio')) {
-        if($this->input->post('exchangeradio') == "serial") {
-            $srx = $this->input->post('exch_recv');
-            $stx = $this->input->post('exch_sent');
-            $srx_string = null;
-            $stx_string = null;
-        } else {
-            $srx = null;
-            $stx = null;
-            $srx_string = $this->input->post('exch_recv');
-            $stx_string = $this->input->post('exch_sent');
-        }
+    if($this->input->post('exchangetype')) {
+      $srx_string = $this->input->post('exch_recv') == '' ? null : $this->input->post('exch_recv');
+      $stx_string = $this->input->post('exch_sent') == '' ? null : $this->input->post('exch_sent');
+      $srx = $this->input->post('exch_serial_r') == '' ? null : $this->input->post('exch_serial_r');
+      $stx = $this->input->post('exch_serial_s') == '' ? null : $this->input->post('exch_serial_s');
     } else {
-        $srx_string = null;
-        $stx_string = null;
-        $srx = null;
-        $stx = null;
+      $srx_string = null;
+      $stx_string = null;
+      $srx = null;
+      $stx = null;
     }
 
     if($this->input->post('contestname')) {
@@ -105,6 +98,36 @@ class Logbook_model extends CI_Model {
       $clean_county_input = null;
     }
 
+    if($this->input->post('copyexchangetodok')) {
+      $dark_dok = $this->input->post('exch_recv');
+    } else {
+      $dark_dok = $this->input->post('darc_dok');
+    }
+
+    if ($this->input->post('qsl_sent')) {
+        $qsl_sent = $this->input->post('qsl_sent');
+    } else {
+        $qsl_sent = 'N';
+    }
+
+    if ($this->input->post('qsl_recv')) {
+        $qsl_recv = $this->input->post('qsl_recv');
+    } else {
+        $qsl_recv = 'N';
+    }
+
+    if ($qsl_sent == 'N') {
+        $qslsdate = null;
+    } else {
+        $qslsdate = date('Y-m-d H:i:s');
+    }
+
+    if ($qsl_recv == 'N') {
+        $qslrdate = null;
+    } else {
+        $qslrdate = date('Y-m-d H:i:s');
+    }
+
     // Create array with QSO Data
     $data = array(
             'COL_TIME_ON' => $datetime,
@@ -122,10 +145,10 @@ class Logbook_model extends CI_Model {
             'COL_SAT_NAME' => strtoupper($this->input->post('sat_name')),
             'COL_SAT_MODE' => strtoupper($this->input->post('sat_mode')),
             'COL_COUNTRY' => $country,
-            'COL_QSLSDATE' => date('Y-m-d'),
-            'COL_QSLRDATE' => date('Y-m-d'),
-            'COL_QSL_SENT' => $this->input->post('qsl_sent'),
-            'COL_QSL_RCVD' => $this->input->post('qsl_recv'),
+            'COL_QSLSDATE' => $qslsdate,
+            'COL_QSLRDATE' => $qslrdate,
+            'COL_QSL_SENT' => $qsl_sent,
+            'COL_QSL_RCVD' => $qsl_recv,
             'COL_QSL_SENT_VIA' => $this->input->post('qsl_sent_method'),
             'COL_QSL_RCVD_VIA' => $this->input->post('qsl_recv_method'),
             'COL_QSL_VIA' => $this->input->post('qsl_via'),
@@ -161,8 +184,8 @@ class Logbook_model extends CI_Model {
             'COL_SOTA_REF' => trim($this->input->post('sota_ref')),
             'COL_SIG' => trim($this->input->post('sig')),
             'COL_SIG_INFO' => trim($this->input->post('sig_info')),
-            'COL_DARC_DOK' => trim($this->input->post('darc_dok')),
-	          'COL_NOTES' => $this->input->post('notes'),
+            'COL_DARC_DOK' => trim($dark_dok),
+			'COL_NOTES' => $this->input->post('notes'),
     );
 
     $station_id = $this->input->post('station_profile');
@@ -462,6 +485,8 @@ class Logbook_model extends CI_Model {
 
   /* Edit QSO */
   function edit() {
+    $qso = $this->get_qso($this->input->post('id'))->row();
+
     $entity = $this->get_entity($this->input->post('dxcc_id'));
     $country = $entity['name'];
 
@@ -478,6 +503,53 @@ class Logbook_model extends CI_Model {
     } else {
       $txpower = null;
     }
+
+    if($this->input->post('stx')) {
+      $stx_string = $this->input->post('stx');
+    } else {
+      $stx_string = null;
+    }
+
+    if($this->input->post('srx')) {
+      $srx_string = $this->input->post('srx');
+    } else {
+      $srx_string = null;
+    }
+
+	if (stristr($this->input->post('usa_county'), ',')) {
+		$uscounty = $this->input->post('usa_county');
+	} else {
+		$uscounty = $this->input->post('usa_state') .",".$this->input->post('usa_county');
+	}
+
+    if ($this->input->post('qsl_sent')) {
+        $qsl_sent = $this->input->post('qsl_sent');
+    } else {
+        $qsl_sent = 'N';
+    }
+
+    if ($this->input->post('qsl_recv')) {
+        $qsl_recv = $this->input->post('qsl_recv');
+    } else {
+        $qsl_recv = 'N';
+    }
+
+    if ($qsl_sent == 'N') {
+        $qslsdate = null;
+    } elseif (!$qso->COL_QSLSDATE || $qso->COL_QSL_SENT != $qsl_sent) {
+        $qslsdate = date('Y-m-d H:i:s');
+    } else {
+        $qslsdate = $qso->COL_QSLSDATE;
+    }
+
+    if ($qsl_recv == 'N') {
+        $qslrdate = null;
+    } elseif (!$qso->COL_QSLRDATE || $qso->COL_QSL_RECV != $qsl_recv) {
+        $qslrdate = date('Y-m-d H:i:s');
+    } else {
+        $qslrdate = $qso->COL_QSLRDATE;
+    }
+
     $data = array(
        'COL_TIME_ON' => $this->input->post('time_on'),
        'COL_TIME_OFF' => $this->input->post('time_off'),
@@ -499,10 +571,10 @@ class Logbook_model extends CI_Model {
        'COL_SAT_NAME' => $this->input->post('sat_name'),
        'COL_SAT_MODE' => $this->input->post('sat_mode'),
        'COL_NOTES' => $this->input->post('notes'),
-       'COL_QSLSDATE' => date('Y-m-d'),
-       'COL_QSLRDATE' => date('Y-m-d'),
-       'COL_QSL_SENT' => $this->input->post('qsl_sent'),
-       'COL_QSL_RCVD' => $this->input->post('qsl_recv'),
+       'COL_QSLSDATE' => $qslsdate,
+       'COL_QSLRDATE' => $qslrdate,
+       'COL_QSL_SENT' => $qsl_sent,
+       'COL_QSL_RCVD' => $qsl_recv,
        'COL_QSL_SENT_VIA' => $this->input->post('qsl_sent_method'),
        'COL_QSL_RCVD_VIA' => $this->input->post('qsl_recv_method'),
        'COL_EQSL_QSL_SENT' => $this->input->post('eqsl_sent'),
@@ -520,11 +592,14 @@ class Logbook_model extends CI_Model {
        'COL_FREQ_RX' => $this->parse_frequency($this->input->post('freq_display_rx')),
        'COL_STX_STRING' => $this->input->post('stx_string'),
        'COL_SRX_STRING' => $this->input->post('srx_string'),
+	   'COL_STX' => $stx_string,
+	   'COL_SRX' => $srx_string,
+	   'COL_CONTEST_ID' => $this->input->post('contest_name'),
        'COL_QSL_VIA' => $this->input->post('qsl_via_callsign'),
        'station_id' => $this->input->post('station_profile'),
        'COL_OPERATOR' => $this->input->post('operator_callsign'),
        'COL_STATE' =>$this->input->post('usa_state'),
-       'COL_CNTY' =>$this->input->post('usa_state') .",".$this->input->post('usa_county'),
+       'COL_CNTY' => $uscounty
     );
 
     if ($this->exists_qrz_api_key($data['station_id'])) {
@@ -540,7 +615,7 @@ class Logbook_model extends CI_Model {
   function qsl_rcvd() {
 
     $data = array(
-       'COL_QSLRDATE' => date('Y-m-d'),
+       'COL_QSLRDATE' => date('Y-m-d H:i:s'),
        'COL_QSL_RCVD' => "Y"
     );
 
@@ -719,20 +794,35 @@ class Logbook_model extends CI_Model {
 
     return $this->db->get($this->config->item('table_name'));
   }
-
-
-  // Set Paper to recived
+  
+  
+  // Set Paper to received
   function paperqsl_update($qso_id, $method) {
+      
+      $data = array(
+          'COL_QSLRDATE' => date('Y-m-d H:i:s'),
+          'COL_QSL_RCVD' => 'Y',
+          'COL_QSL_RCVD_VIA' => $method
+      );
+      
+      $this->db->where('COL_PRIMARY_KEY', $qso_id);
+      
+      $this->db->update($this->config->item('table_name'), $data);
+  }
 
-    $data = array(
-         'COL_QSLRDATE' => date('Y-m-d'),
-         'COL_QSL_RCVD' => 'Y',
-         'COL_QSL_RCVD_VIA' => $method
-    );
 
-    $this->db->where('COL_PRIMARY_KEY', $qso_id);
-
-    $this->db->update($this->config->item('table_name'), $data);
+  // Set Paper to sent
+  function paperqsl_update_sent($qso_id, $method) {
+      
+      $data = array(
+          'COL_QSLSDATE' => date('Y-m-d H:i:s'),
+          'COL_QSL_SENT' => 'Y',
+          'COL_QSL_SENT_VIA' => $method
+      );
+      
+      $this->db->where('COL_PRIMARY_KEY', $qso_id);
+      
+      $this->db->update($this->config->item('table_name'), $data);
   }
 
 
@@ -740,7 +830,7 @@ class Logbook_model extends CI_Model {
   function paperqsl_requested($qso_id, $method) {
 
     $data = array(
-         'COL_QSLSDATE' => date('Y-m-d'),
+         'COL_QSLSDATE' => date('Y-m-d H:i:s'),
          'COL_QSL_SENT' => 'R'
     );
 
@@ -753,7 +843,7 @@ class Logbook_model extends CI_Model {
   function paperqsl_ignore($qso_id, $method) {
 
     $data = array(
-         'COL_QSLSDATE' => date('Y-m-d'),
+         'COL_QSLSDATE' => date('Y-m-d H:i:s'),
          'COL_QSL_SENT' => 'I'
     );
 
@@ -783,23 +873,21 @@ class Logbook_model extends CI_Model {
 				COL_SAT_MODE,
 				COL_QSL_RCVD,
 				COL_COMMENT,
-				(CASE WHEN COL_QSL_VIA != \'\' THEN COL_QSL_VIA ELSE COL_CALL END) AS COL_ROUTING,
-				ADIF,
-				ENTITY
-				FROM '.$this->config->item('table_name').', dxcc_prefixes, station_profile
-				WHERE
-				COL_QSL_SENT in (\'R\', \'Q\')
-				and (CASE WHEN COL_QSL_VIA != \'\' THEN COL_QSL_VIA ELSE COL_CALL END) like CONCAT(dxcc_prefixes.call,\'%\')
-				and (end is null or end > now())
-				and ' . $this->config->item('table_name') . '.station_id = station_profile.station_id';
+				(select adif from dxcc_prefixes where  (CASE WHEN COL_QSL_VIA != \'\' THEN COL_QSL_VIA ELSE COL_CALL END) like concat(dxcc_prefixes.`call`,\'%\') order by end limit 1) as ADIF,
+				(select entity from dxcc_prefixes where  (CASE WHEN COL_QSL_VIA != \'\' THEN COL_QSL_VIA ELSE COL_CALL END) like concat(dxcc_prefixes.`call`,\'%\') order by end limit 1) as ENTITY,
+       			(CASE WHEN COL_QSL_VIA != \'\' THEN COL_QSL_VIA ELSE COL_CALL END) AS COL_ROUTING
+			FROM '.$this->config->item('table_name').' thcv
+				join station_profile on thcv.station_id = station_profile.station_id
+			WHERE
+				COL_QSL_SENT in (\'R\', \'Q\')';
 
     if ($station_id2 == NULL) {
-    	$sql .= ' and ' . $this->config->item('table_name') . '.station_id = ' . $station_id;
-	} else {
-		$sql .= ' and ' . $this->config->item('table_name') . '.station_id = ' . $station_id2;
+    	$sql .= ' and thcv.station_id = ' . $station_id;
+	} else if ($station_id2 != 'All') {
+		$sql .= ' and thcv.station_id = ' . $station_id2;
 	}
 
-	$sql .= ' ORDER BY adif, col_routing';
+	$sql .= ' ORDER BY ADIF, COL_ROUTING';
 
     $query = $this->db->query($sql);
     return $query;
@@ -893,7 +981,7 @@ class Logbook_model extends CI_Model {
     /* Get all QSOs with a valid grid for use in the KML export */
     function kml_get_all_qsos($band, $mode, $dxcc, $cqz, $propagation, $fromdate, $todate) {
         $this->db->select('COL_CALL, COL_BAND, COL_TIME_ON, COL_RST_RCVD, COL_RST_SENT, COL_MODE, COL_SUBMODE, COL_NAME, COL_COUNTRY, COL_PRIMARY_KEY, COL_SAT_NAME, COL_GRIDSQUARE');
-        $this->db->where('COL_GRIDSQUARE != \'null\'');
+        $this->db->where("coalesce(COL_GRIDSQUARE, '') <> ''");
 
         if ($band != 'All') {
             if ($band == 'SAT') {
@@ -1446,8 +1534,12 @@ class Logbook_model extends CI_Model {
       $query = $this->db->get($this->config->item('table_name'));
       $row = $query->row();
 
-      return $row->COL_LOTW_QSLRDATE;
-    }
+      if (isset($row)) {
+        return $row->COL_LOTW_QSLRDATE;
+      }
+
+      return '1900-01-01 00:00:00.000';
+  }
 
 //////////////////////////////
   // Update a QSO with eQSL QSL info
@@ -1455,7 +1547,7 @@ class Logbook_model extends CI_Model {
   // http://www.eqsl.cc/qslcard/ImportADIF.txt
   function eqsl_update($datetime, $callsign, $band, $qsl_status) {
     $data = array(
-         'COL_EQSL_QSLRDATE' => date('Y-m-d'), // eQSL doesn't give us a date, so let's use current
+         'COL_EQSL_QSLRDATE' => date('Y-m-d H:i:s'), // eQSL doesn't give us a date, so let's use current
          'COL_EQSL_QSL_RCVD' => $qsl_status
     );
 
@@ -1472,7 +1564,7 @@ class Logbook_model extends CI_Model {
   // Mark the QSO as sent to eQSL
   function eqsl_mark_sent($primarykey) {
     $data = array(
-         'COL_EQSL_QSLSDATE' => date('Y-m-d'), // eQSL doesn't give us a date, so let's use current
+         'COL_EQSL_QSLSDATE' => date('Y-m-d H:i:s'), // eQSL doesn't give us a date, so let's use current
          'COL_EQSL_QSL_SENT' => 'Y',
     );
 
@@ -1493,7 +1585,7 @@ class Logbook_model extends CI_Model {
       $query = $this->db->get($this->config->item('table_name'));
       $row = $query->row();
 
-      if (isset($row->COL_EQSL_QSLDATE)){
+      if (isset($row->COL_EQSL_QSLRDATE)){
           return $row->COL_EQSL_QSLRDATE;
         }else{
             // No previous date (first time import has run?), so choose UNIX EPOCH!
@@ -1581,7 +1673,7 @@ class Logbook_model extends CI_Model {
                   $entity = $this->get_entity($record['dxcc']);
                   $dxcc = array($record['dxcc'], $entity['name']);
               } else {
-                  $dxcc = NULL;
+                  $dxcc = $this->check_dxcc_table($record['call'], $time_off);
               }
           } else {
             $dxcc = $this->check_dxcc_table($record['call'], $time_off);
@@ -1594,7 +1686,9 @@ class Logbook_model extends CI_Model {
         if(isset($record['country'])) {
             $country = $record['country'];
         } else {
-            $country = ucwords(strtolower($dxcc[1]));
+            if (isset($dxcc[1])) {
+                $country = ucwords(strtolower($dxcc[1]));
+            }
         }
 
         // RST recevied
@@ -2324,6 +2418,54 @@ class Logbook_model extends CI_Model {
       }
     }
 
+    public function loadCallBook($callsign, $use_fullname=false)
+    {
+        $callbook = null;
+        try {
+            if ($this->config->item('callbook') == "qrz" && $this->config->item('qrz_username') != null && $this->config->item('qrz_password') != null) {
+                // Lookup using QRZ
+                $this->load->library('qrz');
+
+                if (!$this->session->userdata('qrz_session_key')) {
+                    $qrz_session_key = $this->qrz->session($this->config->item('qrz_username'), $this->config->item('qrz_password'));
+                    $this->session->set_userdata('qrz_session_key', $qrz_session_key);
+                }
+
+
+
+                $callbook = $this->qrz->search($callsign, $this->session->userdata('qrz_session_key'), $use_fullname);
+
+                // if we got nothing, it's probably because our session key is invalid, try again
+                if (!isset($callbook['callsign']))
+                {
+                    $qrz_session_key = $this->qrz->session($this->config->item('qrz_username'), $this->config->item('qrz_password'));
+                    $this->session->set_userdata('qrz_session_key', $qrz_session_key);
+                    $callbook = $this->qrz->search($callsign, $this->session->userdata('qrz_session_key'), $use_fullname);
+                }
+            }
+
+            if ($this->config->item('callbook') == "hamqth" && $this->config->item('hamqth_username') != null && $this->config->item('hamqth_password') != null) {
+                // Load the HamQTH library
+                $this->load->library('hamqth');
+
+                if (!$this->session->userdata('hamqth_session_key')) {
+                    $hamqth_session_key = $this->hamqth->session($this->config->item('hamqth_username'), $this->config->item('hamqth_password'));
+                    $this->session->set_userdata('hamqth_session_key', $hamqth_session_key);
+                }
+
+                $callbook = $this->hamqth->search($callsign, $this->session->userdata('hamqth_session_key'));
+
+                // If HamQTH session has expired, start a new session and retry the search.
+                if ($callbook['error'] == "Session does not exist or expired") {
+                    $hamqth_session_key = $this->hamqth->session($this->config->item('hamqth_username'), $this->config->item('hamqth_password'));
+                    $this->session->set_userdata('hamqth_session_key', $hamqth_session_key);
+                    $callbook = $this->hamqth->search($callsign, $this->session->userdata('hamqth_session_key'));
+                }
+            }
+        } finally {
+            return $callbook;
+        }
+    }
 
     public function update_all_station_ids() {
 
@@ -2451,4 +2593,6 @@ function validateADIFDate($date, $format = 'Ymd')
   $d = DateTime::createFromFormat($format, $date);
   return $d && $d->format($format) == $date;
 }
+
+
 ?>

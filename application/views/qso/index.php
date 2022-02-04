@@ -59,10 +59,16 @@
 
 
               <!-- Callsign Input -->
-              <div class="form-group">
-                <label for="callsign"><?php echo $this->lang->line('gen_hamradio_callsign'); ?></label>
-                <input type="text" class="form-control" id="callsign" name="callsign" required>
-                <small id="callsign_info" class="badge badge-secondary"></small> <small id="lotw_info" class="badge badge-light"></small>
+              <div class="form-row">
+                <div class="form-group col-md-7">
+                  <label for="callsign"><?php echo $this->lang->line('gen_hamradio_callsign'); ?></label>
+                  <input type="text" class="form-control" id="callsign" name="callsign" required>
+                  <small id="callsign_info" class="badge badge-secondary"></small> <small id="lotw_info" class="badge badge-light"></small>
+                </div>
+                <div class="form-group col-md-3 align-self-center">
+                  <small id="qrz_info" class="badge badge-secondary"></small>
+                  <small id="hamqth_info" class="badge badge-secondary"></small>
+                </div>
               </div>
 
               <div class="form-row">
@@ -431,6 +437,8 @@
                   <option value="N" selected="selected"><?php echo $this->lang->line('general_word_no'); ?></option>
                   <option value="Y"><?php echo $this->lang->line('general_word_yes'); ?></option>
                   <option value="R"><?php echo $this->lang->line('general_word_requested'); ?></option>
+                  <option value="Q"><?php echo $this->lang->line('general_word_queued'); ?></option>
+                  <option value="I"><?php echo $this->lang->line('general_word_invalid_ignore'); ?></option>
                 </select>
               </div>
             </div>
@@ -442,6 +450,8 @@
                  <option value="" selected="selected"><?php echo $this->lang->line('general_word_method'); ?></option>
                  <option value="D"><?php echo $this->lang->line('general_word_qslcard_direct'); ?></option>
                  <option value="B"><?php echo $this->lang->line('general_word_qslcard_bureau'); ?></option>
+                 <option value="E"><?php echo $this->lang->line('general_word_qslcard_electronic'); ?></option>
+                 <option value="M"><?php echo $this->lang->line('general_word_qslcard_manager'); ?></option>
                 </select>
               </div>
             </div>
