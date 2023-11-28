@@ -42,6 +42,11 @@ thead > tr > td {
     padding-top: 15px;
 }
 
+.publicsearch {
+	padding-top: 15px;
+	max-width: 540px;
+}
+
 .search {
 	padding-top: 15px;
 }
@@ -79,12 +84,72 @@ thead > tr > td {
     text-transform: uppercase;
 }
 
-.qso_panel .sota_ref {
+.qso_panel #sota_ref-selectized {
     text-transform: uppercase;
 }
 
-.workedGrid {
+.qso_panel #wwff_ref-selectized {
+    text-transform: uppercase;
+}
+
+.qso_panel #pota_ref-selectized {
+    text-transform: uppercase;
+}
+
+.qso_panel #darc_dok-selectized {
+    text-transform: uppercase;
+}
+
+.card-body #callsign {
+    text-transform: uppercase;
+}
+
+.card-body #locator {
+    text-transform: uppercase;
+}
+
+.card-body #vucc_grids {
+    text-transform: uppercase;
+}
+
+.card-body #sota_ref_edit-selectized {
+    text-transform: uppercase;
+}
+
+.card-body #wwff_ref_edit-selectized {
+    text-transform: uppercase;
+}
+
+.card-body #pota_ref_edit-selectized {
+    text-transform: uppercase;
+}
+
+.card-body #darc_dok_edit-selectized {
+    text-transform: uppercase;
+}
+
+.card-body #exch_rcvd {
+    text-transform: uppercase;
+}
+
+.card-body #exch_sent {
+    text-transform: uppercase;
+}
+
+.card-body #exch_gridsquare_r {
+    text-transform: uppercase;
+}
+
+#oqrssearch:valid {
+    text-transform: uppercase;
+}
+
+.confirmedGrid {
     border-color: green;
+}
+
+.workedGrid {
+    border-color: yellow;
 }
 
 .newGrid {
@@ -102,38 +167,39 @@ TD.eqsl{
 }
 
 .eqsl-green{
-    color: #00A000;
+    color: #00A000 !important;
     font-size: 1.1em;
+    text-decoration: none !important;
 }
 .eqsl-red{
-    color: #F00;
+    color: #F00 !important;
     font-size: 1.1em;
 }
 .qsl-green{
-    color: #00A000;
+    color: #00A000 !important;
     font-size: 1.1em;
 }
 .qsl-red{
-    color: #F00;
+    color: #F00 !important;
     font-size: 1.1em;
 }
 .qsl-yellow{
-    color: #d39e00;
+    color: #d39e00 !important;
     font-size: 1.1em;
 }
 .qsl-grey{
-    color: #dddddd;
+    color: #dddddd !important;
     font-size: 1.1em;
 }
 TD.lotw{
     width: 33px;
 }
 .lotw-green{
-    color: #00A000;
+    color: #00A000 !important;
     font-size: 1.1em;
 }
 .lotw-red{
-    color: #F00;
+    color: #F00 !important;
     font-size: 1.1em;
 }
 
@@ -244,7 +310,272 @@ color: #ffffff;
         }
     }
 
+/*
+ * Timepicker alignment
+ */
+.exportdatepicker {
+	padding-right: 0;
+	padding-left: 0;
+}
+
 .modal-body {
 	max-height: calc(100vh - 200px);
 	overflow-y: auto;
 }
+
+/* Station Logbooks Styles */
+
+div#station_logbooks_table_length {
+    padding-top: 12px;
+    padding-left: 12px;
+    padding-bottom: 0px;
+}
+
+div#station_logbooks_table_filter {
+    padding-top: 12px;
+    padding-right: 12px;
+    padding-bottom: 0px;
+}
+
+div#station_logbooks_table_info {
+    padding-left: 12px;
+}
+
+div#station_logbooks_table_paginate {
+    padding-right: 12px;
+    padding-bottom: 12px;
+}
+
+div#station_logbooks_linked_table_length  {
+    padding-top: 12px;
+    padding-left: 12px;
+    padding-bottom: 0px;
+}
+
+div#station_logbooks_linked_table_filter {
+    padding-top: 12px;
+    padding-left: 12px;
+    padding-bottom: 0px;
+}
+
+div#station_logbooks_linked_table_info {
+    padding-left: 12px;
+}
+
+div#station_logbooks_linked_table_paginate {
+    padding-right: 12px;
+    padding-bottom: 12px;
+}
+
+/* qrz.com profile picture Styles */
+
+.card-title {
+    margin-bottom: 0px;
+ }
+
+.callsign-image {
+    margin-bottom: 10px;
+}
+
+.callsign-image-content {
+    display: block;
+    max-height: 300px;
+    text-align: center;
+}
+
+.callsign-image-pic {
+    max-height: 250px;
+    max-width: 100%;
+}
+
+#mapactivators {
+    height: calc(100vh - 380px) !important;
+    max-height: 900px !important;
+}
+
+.copy-icon {
+   display: block;
+   cursor: pointer;
+   padding-left: 0.5em;
+}
+
+.flash-copy {
+   animation-name: flash;
+   animation-timing-function: ease-out;
+   animation-duration: 1s;
+}
+
+@keyframes flash {
+   0% {
+      background: #28a745;
+   }
+   100% {
+      background: transparent;
+   }
+}
+
+.api-url {
+   font-family: Monospace;
+}
+
+.api-key {
+   font-family: Monospace;
+}
+
+.dropdown-menu {
+    z-index: 2000;
+}
+
+.qso_panel .dxccsummary {
+    margin-bottom: 10px;
+}
+
+.qso_panel .dxccsummaryheader {
+    cursor: pointer;
+}
+
+.table-striped>tbody>tr.activeRow {
+    background-color: #5cb85c;
+}
+
+.activeRow a {
+    color: #fff !important;
+}
+
+.w-qsl{
+    max-height: calc(100vh - 270px);
+	overflow-y: auto;
+}
+
+#lotw_manual_results {
+    padding-top: 10px;
+}
+
+.lotw_info_yellow {
+   background-image: linear-gradient(to bottom, #3fb618, yellow);
+}
+
+.lotw_info_orange {
+   background-image: linear-gradient(to bottom, #3fb618, orange);
+}
+
+.lotw_info_red {
+   background-image: linear-gradient(to bottom, #3fb618, red);
+}
+
+
+.highcharts-strong {
+    font-weight: bold;
+}
+
+.highcharts-figure,
+.highcharts-data-table table {
+    min-width: 320px;
+    max-width: 100%;
+    margin: 1em auto;
+	max-height: calc(100vh - 200px) !important;
+	overflow-y: auto;	
+}
+
+.highcharts-data-table table {
+    font-family: Verdana, sans-serif;
+    border-collapse: collapse;
+    border: 1px solid #ebebeb;
+    margin: 10px auto;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+}
+
+.highcharts-data-table caption {
+    padding: 1em 0;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.highcharts-data-table th {
+    font-weight: 600;
+    padding: 0.5em;
+}
+
+.highcharts-data-table td,
+.highcharts-data-table th,
+.highcharts-data-table caption {
+    padding: 0.5em;
+}
+
+.highcharts-data-table thead tr,
+.highcharts-data-table tr:nth-child(even) {
+    background: #f8f8f8;
+}
+
+.highcharts-data-table tr:hover {
+    background: #f1f7ff;
+}
+
+#radio_cat_state {
+    margin-bottom: 10px;
+}
+
+.previous-qsos table {
+    margin-bottom: 0px;
+}
+
+#advancedmap {
+	height: calc(100vh - 280px) !important;
+	max-height: 1000px !important;
+}
+
+.lotw-cert-list table {
+    margin-bottom: 0px;
+}
+
+.qso_panel a i.fa.fa-star:hover {
+    color: #FFD700 !important;
+}
+
+#dx, #state, #gridsquare, #sota, #wwff, #pota {
+    text-transform: uppercase;
+}
+#awardInfoButton {
+    display: flex;
+    align-items: center;
+}
+#awardInfoButton h2 {
+    margin-right: 30px; 
+}
+#simpleFleInfo {
+    display: flex;
+    align-items: center;
+}
+#simpleFleInfo h2 {
+    margin-right: 30px; 
+}
+
+.sfletable{
+    height: 470px;
+  }
+
+.sfletable.table {
+	width: 100%;
+}
+
+.sfletable.table thead, .sfletable.table tbody tr {
+	display: block;
+	width: 100%;
+	table-layout: fixed;
+	display: inline-table;
+}
+
+.sfletable.table tbody {
+    width: 95%;
+	overflow-y: scroll;
+	max-height: 440px;
+	position: absolute;
+}
+
+.red { color:var(--red); }
+.green { color:var(--green); }
+.blue { color:var(--indigo); }
+.gray { color:var(--gray); }
+.orange { color:var(--orange); }

@@ -20,11 +20,13 @@ class Contesting extends CI_Controller {
         $this->load->model('stations');
         $this->load->model('modes');
 		$this->load->model('contesting_model');
+		$this->load->model('bands');
 
 		$data['my_gridsquare'] = $this->stations->find_gridsquare();
         $data['radios'] = $this->cat->radios();
         $data['modes'] = $this->modes->active();
 		$data['contestnames'] = $this->contesting_model->getActivecontests();
+		$data['bands'] = $this->bands->get_user_bands_for_qso_entry();
 
 		$this->load->library('form_validation');
 
@@ -40,15 +42,37 @@ class Contesting extends CI_Controller {
     }
 
     public function getSessionQsos() {
-        //load model
         $this->load->model('Contesting_model');
 
         $qso = $this->input->post('qso');
 
-        // get QSOs to fill the table
-        $data = $this->Contesting_model->getSessionQsos($qso);
+		header('Content-Type: application/json');
+		echo json_encode($this->Contesting_model->getSessionQsos($qso));
+    }
+
+	public function getSession() {
+        $this->load->model('Contesting_model');
+
+        header('Content-Type: application/json');
+		echo json_encode($this->Contesting_model->getSession());
+    }
+
+	public function deleteSession() {
+        $this->load->model('Contesting_model');
+
+        $qso = $this->input->post('qso');
+
+        $data = $this->Contesting_model->deleteSession($qso);
 
         return json_encode($data);
+    }
+
+	public function setSession() {
+        $this->load->model('Contesting_model');
+
+        $this->Contesting_model->setSession();
+
+        return json_encode("ok");
     }
 
 	public function create() {
@@ -56,7 +80,7 @@ class Contesting extends CI_Controller {
 		$this->load->library('form_validation');
 
 		$this->form_validation->set_rules('name', 'Contest Name', 'required');
-		$this->form_validation->set_rules('adifname', 'Contest Adif Name', 'required');
+		$this->form_validation->set_rules('adifname', 'Adif Contest Name', 'required');
 
 		if ($this->form_validation->run() == FALSE)
 		{
@@ -82,15 +106,14 @@ class Contesting extends CI_Controller {
 	}
 
 	public function edit($id) {
-		$this->load->library('form_validation');
-
 		$this->load->model('Contesting_model');
+		$this->load->library('form_validation');
 
 		$item_id_clean = $this->security->xss_clean($id);
 
 		$data['contest'] = $this->Contesting_model->contest($item_id_clean);
 
-		$data['page_title'] = "Edit Contest";
+		$data['page_title'] = lang('admin_contest_edit_update_contest');
 
 		$this->form_validation->set_rules('name', 'Contest Name', 'required');
 		$this->form_validation->set_rules('adifname', 'Adif Contest Name', 'required');
@@ -159,13 +182,13 @@ class Contesting extends CI_Controller {
 		$band = $this->input->post('band');
 		$mode = $this->input->post('mode');
 		$contest = $this->input->post('contest');
-		$qso = $this->input->post('qso');
 
 		$this->load->model('Contesting_model');
-		$result = $this->Contesting_model->checkIfWorkedBefore($call, $band, $mode, $contest, $qso);
+
+		$result = $this->Contesting_model->checkIfWorkedBefore($call, $band, $mode, $contest);
 		
 		header('Content-Type: application/json');
-		if ($result->num_rows()) {
+		if ($result && $result->num_rows()) {
 			echo json_encode(array('message' => 'Worked before'));
 		}
 		return;

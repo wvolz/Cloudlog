@@ -21,28 +21,26 @@ class ADIF_Parser
 	var $data; //the adif data
     var $datasplit; // one entry is one QSO in the array
     var $currentarray = 0; // current place in the array
-	var $i; //the iterator
+	var $i = 0; //the iterator
 	var $headers = array();
 	
 	public function initialize() //this function locates the <EOH>
 	{
 
-        $pos = mb_stripos(mb_strtoupper($this->data, "UTF-8"), "<EOH>", 0, "UTF-8");
+		$pos = mb_stripos(mb_strtoupper($this->data, "UTF-8"), "<EOH>", 0, "UTF-8");
 
-		if($pos == false) //did we find the end of headers?
-		{
-			echo "Error: Adif_Parser Already Initialized or No <EOH> in ADIF File";
-			return 0;
-		};
-			
-		//get headers
-		
-		$this->i = 0;
 		$in_tag = false;
 		$tag = "";
 		$value_length = "";
 		$value = "";
-				
+
+		if($pos == false) //did we find the end of headers?
+		{
+			// Just skip if we did not find (optional) headers
+			$pos = 0;
+			goto noheaders;
+		};
+			
 		while($this->i < $pos)
 		{
 			//skip comments
@@ -102,8 +100,12 @@ class ADIF_Parser
 			$this->i++;
 			
 		};
+
 		
 		$this->i = $pos+5; //iterate past the <eoh>
+
+		// Skip to here in case we did not find headers
+		noheaders:
 		if($this->i >= mb_strlen($this->data, "UTF-8")) //is this the end of the file?
 		{
 			echo "Error: ADIF File Does Not Contain Any QSOs";
@@ -111,12 +113,21 @@ class ADIF_Parser
 		};
 
         $this->datasplit = preg_split("/<eor>/i", mb_substr($this->data, $this->i, NULL, "UTF-8"));
+		$this->currentarray = 0;
 		return 1;
 	}
 	
 	public function feed($input_data) //allows the parser to be fed a string
 	{
-		$this->data = $input_data;
+		
+		if (strpos($input_data, "<EOH>") !== false) {
+			$arr=explode("<EOH>",$input_data);
+			$newstring = $arr[1];
+			$this->data = $newstring;
+		} else {
+			$this->data = $input_data;
+		}
+
         $this->datasplit = preg_split("/<eor>/i", mb_substr($this->data, $this->i, NULL, "UTF-8"));
 	}
 	

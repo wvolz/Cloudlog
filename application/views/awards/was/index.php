@@ -1,7 +1,19 @@
 
 <div class="container">
-    <h2><?php echo $page_title; ?></h2>
-
+        <!-- Award Info Box -->
+        <br>
+        <div id="awardInfoButton">
+            <script>
+            var lang_awards_info_button = "<?php echo lang('awards_info_button'); ?>";
+            var lang_award_info_ln1 = "<?php echo lang('awards_was_description_ln1'); ?>";
+            var lang_award_info_ln2 = "<?php echo lang('awards_was_description_ln2'); ?>";
+            var lang_award_info_ln3 = "<?php echo lang('awards_was_description_ln3'); ?>";
+            var lang_award_info_ln4 = "<?php echo lang('awards_was_description_ln4'); ?>";
+            </script>
+            <h2><?php echo $page_title; ?></h2>
+            <button type="button" class="btn btn-sm btn-primary mr-1" id="displayAwardInfo"><?php echo lang('awards_info_button'); ?></button>
+        </div>
+        <!-- End of Award Info Box -->
     <form class="form" action="<?php echo site_url('awards/was'); ?>" method="post" enctype="multipart/form-data">
         <fieldset>
 
@@ -24,7 +36,7 @@
             </div>
 
             <div class="form-group row">
-                <div class="col-md-2">QSL / LoTW</div>
+                <div class="col-md-2">QSL Type</div>
                 <div class="col-md-10">
                     <div class="form-check-inline">
                         <input class="form-check-input" type="checkbox" name="qsl" value="1" id="qsl" <?php if ($this->input->post('qsl') || $this->input->method() !== 'post') echo ' checked="checked"'; ?> >
@@ -33,6 +45,10 @@
                     <div class="form-check-inline">
                         <input class="form-check-input" type="checkbox" name="lotw" value="1" id="lotw" <?php if ($this->input->post('lotw') || $this->input->method() !== 'post') echo ' checked="checked"'; ?> >
                         <label class="form-check-label" for="lotw">LoTW</label>
+                    </div>
+<div class="form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="eqsl" value="1" id="eqsl" <?php if ($this->input->post('eqsl')) echo ' checked="checked"'; ?> >
+                        <label class="form-check-label" for="eqsl">eQSL</label>
                     </div>
                 </div>
             </div>
@@ -78,7 +94,9 @@
                 <div class="col-md-10">
                     <button id="button2id" type="reset" name="button2id" class="btn btn-sm btn-warning">Reset</button>
                     <button id="button1id" type="submit" name="button1id" class="btn btn-sm btn-primary">Show</button>
-					<button type="button" onclick="load_was_map();" class="btn btn-info btn-sm"><i class="fas fa-globe-americas"></i> Show WAS Map</button>
+					<?php if ($was_array) {
+                        ?><button type="button" onclick="load_was_map();" class="btn btn-info btn-sm"><i class="fas fa-globe-americas"></i> Show WAS Map</button>
+                    <?php }?>
                 </div>
             </div>
 
@@ -118,7 +136,7 @@
         <thead>
         <tr><td></td>';
 
-        foreach($worked_bands as $band) {
+        foreach($bands as $band) {
             echo '<td>' . $band . '</td>';
         }
         echo '<td>Total</td></tr>

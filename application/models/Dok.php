@@ -2,133 +2,250 @@
 
 class DOK extends CI_Model {
 
-	public $bandslots = array("160m"=>0,
-                           "80m"=>0,
-                           "60m"=>0,
-                           "40m"=>0,
-                           "30m"=>0,
-                           "20m"=>0,
-                           "17m"=>0,
-                           "15m"=>0,
-                           "12m"=>0,
-                           "10m"=>0,
-                           "6m" =>0,
-                           "4m" =>0,
-                           "2m" =>0,
-                           "70cm"=>0,
-                           "23cm"=>0,
-                           "13cm"=>0,
-                           "9cm"=>0,
-                           "6cm"=>0,
-                           "3cm"=>0,
-                           "1.25cm"=>0);
+function get_dok_array($bands, $postdata, $location_list) {
+	$doks = array();
 
-	function __construct()
-	{
-		// Call the Model constructor
-		parent::__construct();
-	}
-
-	function get_worked_bands() {
-		$CI =& get_instance();
-      	$CI->load->model('Stations');
-      	$station_id = $CI->Stations->find_active();
-
-		// get all worked slots from database
-		$data = $this->db->query(
-			"SELECT distinct LOWER(`COL_BAND`) as `COL_BAND` FROM `".$this->config->item('table_name')."` WHERE station_id = ".$station_id." AND COL_DARC_DOK IS NOT NULL AND COL_DARC_DOK != ''  AND COL_DXCC = 230 "
-		);
-		$worked_slots = array();
-		foreach($data->result() as $row){
-			array_push($worked_slots, $row->COL_BAND);
+		$list = $this->getDoksFromDB($location_list);
+		foreach ($this->getSdoksFromDB($location_list) as $sdok) {
+			$list[] = $sdok;
+		}
+		foreach ($list as $dok) {
+			$doks[$dok->COL_DARC_DOK]['count'] = 0;
 		}
 
-
-		// bring worked-slots in order of defined $bandslots
-		$results = array();
-		foreach(array_keys($this->bandslots) as $slot) {
-			if(in_array($slot, $worked_slots)) {
-				array_push($results, $slot);
-			} 
+		$qsl = "";
+		if ($postdata['confirmed'] != NULL) {
+			if ($postdata['qsl'] != NULL ) {
+				$qsl .= "Q";
+			}
+			if ($postdata['lotw'] != NULL ) {
+				$qsl .= "L";
+			}
+			if ($postdata['eqsl'] != NULL ) {
+				$qsl .= "E";
+			}
 		}
-		return $results;
-	}
 
-	function show_stats(){
-		$CI =& get_instance();
-      	$CI->load->model('Stations');
-      	$station_id = $CI->Stations->find_active();
+		foreach ($bands as $band) {
+			foreach ($list as $dok) {
+				$bandDok[$dok->COL_DARC_DOK][$band] = '-';
+			}
 
-        $data = $this->db->query(
-            "select upper(COL_DARC_DOK) as COL_DARC_DOK, COL_MODE, lcase(COL_BAND) as COL_BAND, count(COL_DARC_DOK) as cnt
-            from ".$this->config->item('table_name')." WHERE station_id = ".$station_id." AND COL_DARC_DOK IS NOT NULL AND COL_DARC_DOK != '' AND COL_DXCC = 230
-            group by COL_DARC_DOK, COL_MODE, COL_BAND"
-            );
+			if ($postdata['worked'] != NULL) {
+				$dokBand = $this->getDokWorked($location_list, $band, $postdata);
+				foreach ($dokBand as $line) {
+					if (array_key_exists($line->COL_DARC_DOK, $bandDok)) {   /* For now ignore DOKs which are logged but not existing in the official lists any more */
+						$bandDok[$line->COL_DARC_DOK][$band] = '<div class="alert-danger"><a href=\'javascript:displayContacts("' . $line->COL_DARC_DOK . '","' . $band . '","' . $postdata['mode'] . '","DOK", "")\'>W</a></div>';
+						$doks[$line->COL_DARC_DOK]['count']++;
+					}
+				}
+			}
 
-        $results = array();
-        $last_dok = "";
-        foreach($data->result() as $row){
-            if ($last_dok != $row->COL_DARC_DOK){
-                // new row
-                $results[$row->COL_DARC_DOK] = $this->bandslots;
-                $last_dok = $row->COL_DARC_DOK;
-            }
+			if ($postdata['confirmed'] != NULL) {
+				$dokBand = $this->getDokConfirmed($location_list, $band, $postdata);
+				foreach ($dokBand as $line) {
+					if (array_key_exists($line->COL_DARC_DOK, $bandDok)) {   /* For now ignore DOKs which are logged but not existing in the official lists any more */
+						$bandDok[$line->COL_DARC_DOK][$band] = '<div class="alert-success"><a href=\'javascript:displayContacts("' . $line->COL_DARC_DOK . '","' . $band . '","' . $postdata['mode'] . '","DOK", "'.$qsl.'")\'>C</a></div>';
+						$doks[$line->COL_DARC_DOK]['count']++;
+					}
+				}
+			}
 
-            // update stats
-            if (!isset($results[$row->COL_DARC_DOK]))
-                $results[$row->COL_DARC_DOK] = []; 
+			// We want to remove the worked DOKs in the list, since we do not want to display them
+			if ($postdata['worked'] == NULL) {
+				$dokBand = $this->getDokWorked($location_list, $postdata['band'], $postdata);
+				foreach ($dokBand as $line) {
+					unset($bandDok[$line->COL_DARC_DOK]);
+				}
+			}
 
-            if (!isset($results[$row->COL_DARC_DOK][$row->COL_BAND]))
-                $results[$row->COL_DARC_DOK][$row->COL_BAND] = 0; 
+			// We want to remove the worked DOKs in the list, since we do not want to display them
+			if ($postdata['confirmed'] == NULL) {
+				$dokBand = $this->getDokConfirmed($location_list, $postdata['band'], $postdata);
+				foreach ($dokBand as $line) {
+					unset($bandDok[$line->COL_DARC_DOK]);
+				}
+			}
+		}
 
-            $results[$row->COL_DARC_DOK][$row->COL_BAND] += $row->cnt;
-        }
-        
-        return $results;
-	}
+		foreach ($list as $dok) {
+			if($doks[$dok->COL_DARC_DOK]['count'] == 0) {
+				unset($bandDok[$dok->COL_DARC_DOK]);
+			}
+		}
 
-	/**
-	*	Function: mostactive
-	*	Information: Returns the most active band
-	**/
-	function info($callsign)
-	{
-		$exceptions = $this->db->query('
-				SELECT *
-				FROM `dxcc_exceptions`
-				WHERE `prefix` = \''.$callsign.'\'
-				LIMIT 1
-			');
+		// We want to hide NM as marking not having a DOK at all
+		if (isset($bandDok['NM'])) {
+			unset($bandDok['NM']);
+		}
 
-		if ($exceptions->num_rows() > 0)
-		{
-			return $exceptions;
+		if (isset($bandDok)) {
+			return $bandDok;
 		} else {
-
-			$query = $this->db->query('
-					SELECT *
-					FROM dxcc_entities
-					WHERE prefix = SUBSTRING( \''.$callsign.'\', 1, LENGTH( prefix ) )
-					ORDER BY LENGTH( prefix ) DESC
-					LIMIT 1
-				');
-
-			return $query;
+			return 0;
 		}
+
 	}
 
-    function search(){
-        print_r($this->input->get());
-        return;
-    }
+	function getDokWorked($location_list, $band, $postdata) {
+		$sql = "SELECT DISTINCT COL_DARC_DOK FROM " . $this->config->item('table_name') . " thcv
+			WHERE station_id IN (" . $location_list . ") AND COL_DARC_DOK <> '' AND COL_DARC_DOK <> 'NM'";
 
-	function empty_table($table) {
-		$this->db->empty_table($table);
+		if ($postdata['mode'] != 'All') {
+			$sql .= " AND (COL_MODE = '" . $postdata['mode'] . "' OR COL_SUBMODE = '" . $postdata['mode'] . "')";
+		}
+		$sql .= $this->addDokTypeToQuery($postdata['doks']);
+		$sql .= $this->addBandToQuery($band);
+		$sql .= " AND NOT EXISTS (SELECT 1 from " . $this->config->item('table_name') .
+			" WHERE station_id in (" . $location_list .
+			") AND COL_DARC_DOK = thcv.COL_DARC_DOK AND COL_DARC_DOK <> '' AND COL_DARC_DOK <> 'NM' ";
+		$sql .= $this->addDokTypeToQuery($postdata['doks']);
+		$sql .= $this->addBandToQuery($band);
+		$sql .= $this->addQslToQuery($postdata);
+		$sql .= ")";
+		$query = $this->db->query($sql);
+
+		return $query->result();
+
 	}
 
-	function list() {
-		$this->db->order_by('name', 'ASC');
-		return $this->db->get('dxcc_entities');
+	function getDokConfirmed($location_list, $band, $postdata) {
+		$sql = "SELECT DISTINCT COL_DARC_DOK FROM " . $this->config->item('table_name') . " thcv
+			WHERE station_id IN (" . $location_list . ") AND COL_DARC_DOK <> '' AND COL_DARC_DOK <> '' AND COL_DARC_DOK <> 'NM'";
+		if ($postdata['mode'] != 'All') {
+			$sql .= " AND (COL_MODE = '" . $postdata['mode'] . "' or COL_SUBMODE = '" . $postdata['mode'] . "')";
+		}
+		$sql .= $this->addDokTypeToQuery($postdata['doks']);
+		$sql .= $this->addBandToQuery($band);
+		$sql .= $this->addQslToQuery($postdata);
+		$query = $this->db->query($sql);
+		return $query->result();
+	}
+
+	function addQslToQuery($postdata) {
+		$sql = '';
+		$qsl = array();
+		if ($postdata['lotw'] != NULL || $postdata['qsl'] != NULL || $postdata['eqsl'] != NULL) {
+			$sql .= ' and (';
+			if ($postdata['qsl'] != NULL) {
+				array_push($qsl, "col_qsl_rcvd = 'Y'");
+			}
+			if ($postdata['lotw'] != NULL) {
+				array_push($qsl, "col_lotw_qsl_rcvd = 'Y'");
+			}
+			if ($postdata['eqsl'] != NULL) {
+				array_push($qsl, "col_eqsl_qsl_rcvd = 'Y'");
+			}
+			$sql .= implode(' or ', $qsl);
+			$sql .= ')';
+		}
+		return $sql;
+	}
+
+	function addBandToQuery($band) {
+		$sql = '';
+		if ($band != 'All') {
+			if ($band == 'SAT') {
+				$sql .= " AND COL_PROP_MODE ='" . $band . "'";
+			} else {
+				$sql .= " AND COL_PROP_MODE !='SAT'";
+				$sql .= " AND col_BAND ='" . $band . "'";
+			}
+		}
+		return $sql;
+	}
+
+	function addDokTypeToQuery($doks) {
+		$sql = '';
+		if ($doks == 'dok') {
+			$sql .= " AND COL_DARC_DOK REGEXP '^[A-Z][0-9]{2}$'";
+		} else if ($doks == 'sdok') {
+			$sql .= " AND COL_DARC_DOK NOT REGEXP '^[A-Z][0-9]{2}$'";
+		}
+		return $sql;
+	}
+
+	function get_dok_summary($bands, $postdata, $location_list) {
+		foreach ($bands as $band) {
+			$worked = $this->getSummaryByBand($band, $postdata, $location_list);
+			$confirmed = $this->getSummaryByBandConfirmed($band, $postdata, $location_list);
+			$dokSummary['worked'][$band] = $worked[0]->count;
+			$dokSummary['confirmed'][$band] = $confirmed[0]->count;
+		}
+
+
+		$workedTotal = $this->getSummaryByBand($postdata['band'], $postdata, $location_list);
+		$confirmedTotal = $this->getSummaryByBandConfirmed($postdata['band'], $postdata, $location_list);
+
+		$dokSummary['worked']['Total'] = $workedTotal[0]->count;
+		$dokSummary['confirmed']['Total'] = $confirmedTotal[0]->count;
+
+		return $dokSummary;
+	}
+
+	function getSummaryByBand($band, $postdata, $location_list) {
+		$sql = "SELECT count(distinct thcv.COL_DARC_DOK) AS count FROM " . $this->config->item('table_name') . " thcv";
+		$sql .= " WHERE station_id IN (" . $location_list . ') AND COL_DARC_DOK != "" AND COL_DARC_DOK <> "NM"';
+		if ($band == 'SAT') {
+			$sql .= " AND thcv.COL_PROP_MODE ='" . $band . "'";
+		} else if ($band == 'All') {
+			$this->load->model('bands');
+			$bandslots = $this->bands->get_worked_bands('dok');
+			$bandslots_list = "'".implode("','",$bandslots)."'";
+			$sql .= " AND thcv.COL_BAND in (" . $bandslots_list . ")";
+		} else {
+			$sql .= " AND thcv.COL_PROP_MODE !='SAT'";
+			$sql .= " AND thcv.COL_BAND ='" . $band . "'";
+		}
+		if ($postdata['doks'] == 'dok') {
+			$sql .= " AND COL_DARC_DOK REGEXP '^[A-Z][0-9]{2}$'";
+		} else if ($postdata['doks'] == 'sdok') {
+			$sql .= " AND COL_DARC_DOK NOT REGEXP '^[A-Z][0-9]{2}$'";
+		}
+		$query = $this->db->query($sql);
+		return $query->result();
+	}
+
+	function getSummaryByBandConfirmed($band, $postdata, $location_list){
+		$sql = "SELECT count(distinct thcv.COL_DARC_DOK) AS count FROM " . $this->config->item('table_name') . " thcv";
+		$sql .= " WHERE station_id IN (" . $location_list . ') AND COL_DARC_DOK != "" AND COL_DARC_DOK <> "NM"';
+		if ($band == 'SAT') {
+			$sql .= " AND thcv.COL_PROP_MODE ='" . $band . "'";
+		} else if ($band == 'All') {
+			$this->load->model('bands');
+			$bandslots = $this->bands->get_worked_bands('dok');
+			$bandslots_list = "'".implode("','",$bandslots)."'";
+			$sql .= " AND thcv.COL_BAND in (" . $bandslots_list . ")";
+		} else {
+			$sql .= " AND thcv.COL_PROP_MODE !='SAT'";
+			$sql .= " AND thcv.COL_BAND ='" . $band . "'";
+		}
+		if ($postdata['doks'] == 'dok') {
+			$sql .= " AND COL_DARC_DOK REGEXP '^[A-Z][0-9]{2}$'";
+		} else if ($postdata['doks'] == 'sdok') {
+			$sql .= " AND COL_DARC_DOK NOT REGEXP '^[A-Z][0-9]{2}$'";
+		}
+		$sql .= $this->addQslToQuery($postdata);
+		$query = $this->db->query($sql);
+		return $query->result();
+	}
+
+	function getDoksFromDB($location_list) {
+		$sql = 'SELECT DISTINCT `COL_DARC_DOK` FROM '.$this->config->item('table_name');
+		$sql .= " WHERE station_id IN (" . $location_list . ') AND COL_DARC_DOK != "" AND COL_DARC_DOK <> "NM"';
+		$sql .= " AND COL_DARC_DOK REGEXP '^[A-Z][0-9]{2}$'";
+		$sql .= " ORDER BY COL_DARC_DOK ASC";
+		$query = $this->db->query($sql);
+		return $query->result();
+	}
+
+	function getSdoksFromDB($location_list) {
+		$sql = 'SELECT DISTINCT `COL_DARC_DOK` FROM '.$this->config->item('table_name');
+		$sql .= " WHERE station_id IN (" . $location_list . ') AND COL_DARC_DOK != "" AND COL_DARC_DOK <> "NM"';
+		$sql .= " AND COL_DARC_DOK NOT REGEXP '^[A-Z][0-9]{2}$'";
+		$sql .= " ORDER BY COL_DARC_DOK ASC";
+		$query = $this->db->query($sql);
+		return $query->result();
 	}
 }
 ?>

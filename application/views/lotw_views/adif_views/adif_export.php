@@ -10,14 +10,14 @@ $cert2 = str_replace("-----END CERTIFICATE-----", "", $cert1);
 <CERT_UID:1>1
 <CERTIFICATE:<?php echo strlen(trim($cert2)) + 1; ?>><?php echo trim($cert2); ?>
 
-<eor>
+<EOR>
 
 <Rec_Type:8>tSTATION
 <STATION_UID:1>1
 <CERT_UID:1>1
 <CALL:<?php echo strlen($lotw_cert_info->callsign); ?>><?php echo $lotw_cert_info->callsign; ?>
 
-<DXCC:<?php echo strlen($station_profile_dxcc->adif); ?>><?php echo $station_profile_dxcc->adif; ?>
+<DXCC:<?php echo strlen($lotw_cert_info->cert_dxcc_id); ?>><?php echo $lotw_cert_info->cert_dxcc_id; ?>
 
 <?php if(isset($station_profile->station_gridsquare)) { ?><GRIDSQUARE:<?php echo strlen($station_profile->station_gridsquare); ?>><?php echo $station_profile->station_gridsquare; ?><?php } ?>
 
@@ -27,13 +27,13 @@ $cert2 = str_replace("-----END CERTIFICATE-----", "", $cert1);
 
 <?php if(isset($station_profile->station_iota)) { ?><IOTA:<?php echo strlen($station_profile->station_iota); ?>><?php echo $station_profile->station_iota; ?><?php } ?>
 
-<?php if($station_profile->state != "" && $station_profile->station_country == "CANADA") { ?><CA_PROVINCE:<?php echo strlen($station_profile->state); ?>><?php echo $station_profile->state; ?><?php } ?>
+<?php if($station_profile->state != "" && $station_profile->station_country == "CANADA") { ?><CA_PROVINCE:<?php echo strlen($CI->lotw_ca_province_map($station_profile->state)); ?>><?php echo $CI->lotw_ca_province_map($station_profile->state); ?><?php } ?>
 
 <?php if($station_profile->state != "" && $station_profile->station_country == "UNITED STATES OF AMERICA") { ?><US_STATE:<?php echo strlen($station_profile->state); ?>><?php echo $station_profile->state; ?><?php } ?>
 
 <?php if($station_profile->station_cnty != ""  && $station_profile->station_country == "UNITED STATES OF AMERICA") { ?><US_COUNTY:<?php echo strlen($station_profile->station_cnty); ?>><?php echo $station_profile->station_cnty; ?><?php } ?>
 
-<eor>
+<EOR>
 
 <?php foreach ($qsos->result() as $qso) { ?>
 <Rec_Type:8>tCONTACT
@@ -42,7 +42,7 @@ $cert2 = str_replace("-----END CERTIFICATE-----", "", $cert1);
 
 <BAND:<?php echo strlen($qso->COL_BAND); ?>><?php echo strtoupper($qso->COL_BAND); ?>
 
-<MODE:<?php echo strlen($CI->mode_map($qso->COL_MODE, $qso->COL_SUBMODE)); ?>><?php echo strtoupper($CI->mode_map(strtoupper($qso->COL_MODE), strtoupper($qso->COL_SUBMODE))); ?>
+<MODE:<?php echo strlen($CI->mode_map($qso->COL_MODE, $qso->COL_SUBMODE)); ?>><?php echo strtoupper($CI->mode_map(($qso->COL_MODE == null ? '' : strtoupper($qso->COL_MODE)), ($qso->COL_SUBMODE == null ? '' : strtoupper($qso->COL_SUBMODE)))); ?>
 
 <?php if($qso->COL_FREQ != "" || $qso->COL_FREQ != "0") { ?><?php $freq_in_mhz = $qso->COL_FREQ / 1000000; ?><FREQ:<?php echo strlen($freq_in_mhz); ?>><?php echo $freq_in_mhz; ?><?php } ?>
 
@@ -160,7 +160,7 @@ if($qso->COL_SAT_NAME) {
 
 <SIGNDATA:<?php echo strlen($sign_string); ?>><?php echo $sign_string; ?>
 
-<eor>
+<EOR>
 
 <?php } ?>
 

@@ -14,6 +14,15 @@
 	      <li class="nav-item">
 	        <a class="nav-link" href="<?php echo site_url('search/filter'); ?>">Advanced Search</a>
 	      </li>
+		  <li class="nav-item">
+	        <a class="nav-link" href="<?php echo site_url('search/duplicates'); ?>">Duplicate QSOs</a>
+	      </li>
+		  <li class="nav-item">
+	        <a class="nav-link" href="<?php echo site_url('search/incorrect_cq_zones'); ?>">Incorrect CQ Zones</a>
+	      </li>
+		  <li class="nav-item">
+	        <a class="nav-link" href="<?php echo site_url('search/lotw_unconfirmed'); ?>">QSOs unconfirmed on LoTW</a>
+	      </li>
 	    </ul>
 	  </div>
 	  <div class="card-body">
@@ -21,7 +30,7 @@
 		  <div class="form-group row">
 		    <label for="callsign" class="col-sm-2 col-form-label">Callsign / Gridsquare</label>
 		    <div class="col-sm-8">
-		      <input type="text" class="form-control" id="callsign" value="<?php echo htmlspecialchars($this->input->post('callsign')); ?>">
+		      <input type="text" class="form-control" id="callsign" value="<?php if ($this->input->post('callsign') !== null) { echo htmlspecialchars($this->input->post('callsign')); }; ?>">
 		    </div>
 		    <div class="col-sm-2">
 		    	<button onclick="searchButtonPress()" class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-search"></i> Search</button>

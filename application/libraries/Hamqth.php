@@ -71,7 +71,7 @@ class Hamqth {
 
             // Create XML object
             $xml = simplexml_load_string($xml);
-            if (empty($xml)) return;
+            if (!empty($xml->session->error)) return $data['error'] = $xml->session->error;
 
             // Return Required Fields
             $data['callsign'] = (string)$xml->search->callsign;
@@ -81,6 +81,7 @@ class Hamqth {
             $data['lat'] = (string)$xml->search->latitude;
             $data['long'] = (string)$xml->search->longitude;
             $data['iota'] = (string)$xml->search->iota;
+            $data['image'] = (string)$xml->search->picture;
             $data['us_state'] = (string)$xml->search->us_state;
             $data['us_county'] = (string)$xml->search->us_county;
             $data['error'] = (string)$xml->session->error;

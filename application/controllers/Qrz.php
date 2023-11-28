@@ -24,10 +24,9 @@ class Qrz extends CI_Controller {
         $station_ids = $this->logbook_model->get_station_id_with_qrz_api();
 
         if ($station_ids) {
-            foreach ($station_ids as $station_id) {
-                $result = $this->logbook_model->exists_qrz_api_key($station_id);
-                $qrz_api_key = $result->qrzapikey;
-                if($this->mass_upload_qsos($station_id, $qrz_api_key)) {
+            foreach ($station_ids as $station) {
+                $qrz_api_key = $station->qrzapikey;
+                if($this->mass_upload_qsos($station->station_id, $qrz_api_key, true)) {
                     echo "QSOs have been uploaded to QRZ.com.";
                     log_message('info', 'QSOs have been uploaded to QRZ.com.');
                 } else{
@@ -54,9 +53,9 @@ class Qrz extends CI_Controller {
      * Function gets all QSOs from given station_id, that are not previously uploaded to qrz.
      * Adif is build for each qso, and then uploaded, one at a time
      */
-    function mass_upload_qsos($station_id, $qrz_api_key) {
+    function mass_upload_qsos($station_id, $qrz_api_key, $trusted = false) {
         $i = 0;
-        $data['qsos'] = $this->logbook_model->get_qrz_qsos($station_id);
+        $data['qsos'] = $this->logbook_model->get_qrz_qsos($station_id, $trusted);
         $errormessages=array();
 
         $CI =& get_instance();
@@ -72,9 +71,15 @@ class Qrz extends CI_Controller {
                     $result = $this->logbook_model->push_qso_to_qrz($qrz_api_key, $adif);
                 }
 
-                if ($result['status'] == 'OK') {
+		if ( ($result['status'] == 'OK') || ( ($result['status'] == 'error') && ($result['message'] == 'STATUS=FAIL&REASON=Unable to add QSO to database: duplicate&EXTENDED=')) ){
                     $this->markqso($qso->COL_PRIMARY_KEY);
                     $i++;
+		} elseif ( ($result['status']=='error') && (substr($result['message'],0,11)  == 'STATUS=AUTH')) {
+                    log_message('error', 'QRZ upload failed for qso: Call: ' . $qso->COL_CALL . ' Band: ' . $qso->COL_BAND . ' Mode: ' . $qso->COL_MODE . ' Time: ' . $qso->COL_TIME_ON);
+                    log_message('error', 'QRZ upload failed with the following message: ' .$result['message']);
+                    log_message('error', 'QRZ upload stopped for Station_ID: ' .$station_id);
+                    $errormessages[] = $result['message'] . ' Call: ' . $qso->COL_CALL . ' Band: ' . $qso->COL_BAND . ' Mode: ' . $qso->COL_MODE . ' Time: ' . $qso->COL_TIME_ON;
+		    break; /* If key is invalid, immediate stop syncing for more QSOs of this station */
                 } else {
                     log_message('error', 'QRZ upload failed for qso: Call: ' . $qso->COL_CALL . ' Band: ' . $qso->COL_BAND . ' Mode: ' . $qso->COL_MODE . ' Time: ' . $qso->COL_TIME_ON);
                     log_message('error', 'QRZ upload failed with the following message: ' .$result['message']);
@@ -108,7 +113,7 @@ class Qrz extends CI_Controller {
 
         $data['page_title'] = "QRZ Logbook";
 
-		$data['station_profiles'] = $this->stations->all();
+		$data['station_profiles'] = $this->stations->all_of_user();
         $data['station_profile'] = $this->stations->stations_with_qrz_api_key();
 
         $this->load->view('interface_assets/header', $data);

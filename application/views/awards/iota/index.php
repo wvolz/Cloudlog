@@ -1,7 +1,53 @@
 
-<div class="container">
-    <h2><?php echo $page_title; ?></h2>
+<style>
+    #iotamap {
+	height: calc(100vh - 500px) !important;
+	max-height: 900px !important;
+}
+/*Legend specific*/
+.legend {
+  padding: 6px 8px;
+  font: 14px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  line-height: 24px;
+  color: #555;
+}
+.legend h4 {
+  text-align: center;
+  font-size: 16px;
+  margin: 2px 12px 8px;
+  color: #777;
+}
+.legend span {
+  position: relative;
+  bottom: 3px;
+}
+.legend i {
+  width: 18px;
+  height: 18px;
+  float: left;
+  margin: 0 8px 0 0;
+  opacity: 0.7;
+}
+</style>
 
+
+<div class="container">
+        <!-- Award Info Box -->
+        <br>
+        <div id="awardInfoButton">
+            <script>
+            var lang_awards_info_button = "<?php echo lang('awards_info_button'); ?>";
+            var lang_award_info_ln1 = "<?php echo lang('awards_iota_description_ln1'); ?>";
+            var lang_award_info_ln2 = "<?php echo lang('awards_iota_description_ln2'); ?>";
+            var lang_award_info_ln3 = "<?php echo lang('awards_iota_description_ln3'); ?>";
+            var lang_award_info_ln4 = "<?php echo lang('awards_iota_description_ln4'); ?>";
+            </script>
+            <h2><?php echo $page_title; ?></h2>
+            <button type="button" class="btn btn-sm btn-primary mr-1" id="displayAwardInfo"><?php echo lang('awards_info_button'); ?></button>
+        </div>
+        <!-- End of Award Info Box -->
     <form class="form" action="<?php echo site_url('awards/iota'); ?>" method="post" enctype="multipart/form-data">
         <fieldset>
 
@@ -9,7 +55,7 @@
                 <div class="col-md-2 control-label" for="checkboxes">Deleted IOTA</div>
                 <div class="col-md-10">
                     <div class="form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="includedeleted" id="includedeleted" value="1" <?php if ($this->input->post('includedeleted') || $this->input->method() !== 'post') echo ' checked="checked"'; ?> >
+                        <input class="form-check-input" type="checkbox" name="includedeleted" id="includedeleted" value="1" <?php if ($this->input->post('includedeleted')) echo ' checked="checked"'; ?> >
                         <label class="form-check-label" for="includedeleted">Include deleted</label>
                     </div>
                 </div>
@@ -108,11 +154,35 @@
                 <div class="col-md-10">
                     <button id="button2id" type="reset" name="button2id" class="btn btn-sm btn-warning">Reset</button>
                     <button id="button1id" type="submit" name="button1id" class="btn btn-sm btn-primary">Show</button>
+                    <?php if ($iota_array) {
+                        ?><button type="button" onclick="load_iota_map();" class="btn btn-info btn-sm"><i class="fas fa-globe-americas"></i> Show IOTA Map</button>
+                    <?php }?>
                 </div>
             </div>
 
         </fieldset>
     </form>
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="table-tab" data-toggle="tab" href="#table" role="tab" aria-controls="table" aria-selected="true">Table</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="map-tab" onclick="load_iota_map();" data-toggle="tab" href="#iotamaptab" role="tab" aria-controls="home" aria-selected="false">Map</a>
+        </li>
+    </ul>
+    <br />
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade" id="iotamaptab" role="tabpanel" aria-labelledby="home-tab">
+    <br />
+
+    <div id="iotamap"></div>
+
+    </div>
+
+        <div class="tab-pane fade show active" id="table" role="tabpanel" aria-labelledby="table-tab">
+
     <?php
     $i = 1;
     if ($iota_array) {
@@ -125,7 +195,7 @@
                         <td>IOTA</td>
                         <td>Prefix</td>
                         <td>Name</td>';
-        if ($this->input->post('includedeleted') || $this->input->method() !== 'post')
+        if ($this->input->post('includedeleted'))
             echo '      <td>Deleted</td>';
 
         foreach($bands as $band) {
@@ -180,4 +250,6 @@
         echo '<div class="alert alert-danger" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Nothing found!</div>';
     }
     ?>
+                    </div>
+        </div>
 </div>

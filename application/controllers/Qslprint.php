@@ -8,25 +8,46 @@ class QSLPrint extends CI_Controller {
 		$this->load->helper(array('form', 'url'));
 
 		$this->load->model('user_model');
-		if(!$this->user_model->authorize(2)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
+
+		// Check if users logged in
+
+		if($this->user_model->validate_session() == 0) {
+			// user is not logged in
+			redirect('user/login');
+		}
 	}
 
-	public function index()
+	public function index($station_id = 'All')
 	{
 		$this->load->model('user_model');
-		if(!$this->user_model->authorize(99)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
 
+		// Check if users logged in
+
+		if($this->user_model->validate_session() == 0) {
+			// user is not logged in
+			redirect('user/login');
+		}
 		$this->load->model('stations');
-		$data['station_profile'] = $this->stations->all();
+		$data['station_id'] = $this->security->xss_clean($station_id);
+		$data['station_profile'] = $this->stations->all_of_user();
 
 		$this->load->model('qslprint_model');
-		$data['qsos'] = $this->qslprint_model->get_qsos_for_print();
+		if ( ($station_id != 'All') && ($this->stations->check_station_is_accessible($station_id)) ) {
+			$data['qsos'] = $this->qslprint_model->get_qsos_for_print($station_id);
+		} else {
+			$data['qsos'] = $this->qslprint_model->get_qsos_for_print();
+		}
+
+		$footerData = [];
+		$footerData['scripts'] = [
+			'assets/js/sections/qslprint.js',
+		];
 
 		$data['page_title'] = "Print Requested QSLs";
 
 		$this->load->view('interface_assets/header', $data);
 		$this->load->view('qslprint/index');
-		$this->load->view('interface_assets/footer');
+		$this->load->view('interface_assets/footer', $footerData);
 
 	}
 
@@ -93,8 +114,8 @@ class QSLPrint extends CI_Controller {
 		foreach ($myData->result() as $qso) {
 			fputcsv($file,
 				array($qso->STATION_CALLSIGN,
-				str_replace("0", "Ø", $qso->COL_CALL),
-				$qso->COL_QSL_VIA!=""?"Via ".str_replace("0", "Ø", $qso->COL_QSL_VIA):"",
+				$qso->COL_CALL,
+				$qso->COL_QSL_VIA!=""?"via ".$qso->COL_QSL_VIA:"",
 				$qso->COL_TIME_ON,
 				$qso->COL_MODE,
 				$qso->COL_FREQ,
@@ -125,11 +146,11 @@ class QSLPrint extends CI_Controller {
 		$this->load->model('user_model');
 		if(!$this->user_model->authorize(2)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
 
-			// Update Logbook to Mark Paper Card Received
+			// Update Logbook to Mark Paper Card Sent
 
 			$this->qslprint_model->mark_qsos_printed($station_id);
 
-			$this->session->set_flashdata('notice', 'QSOs are marked as sent via buro');
+			$this->session->set_flashdata('notice', 'QSOs are marked as sent');
 
 			redirect('logbook');
 	}
@@ -163,6 +184,15 @@ class QSLPrint extends CI_Controller {
 		$this->load->model('qslprint_model');
 
 		$this->qslprint_model->add_qso_to_print_queue($this->security->xss_clean($id));
+	}
+
+	public function show_oqrs() {
+		$id = $this->security->xss_clean($this->input->post('id'));
+
+		$this->load->model('qslprint_model');
+
+		$data['result'] = $this->qslprint_model->show_oqrs($id);
+		$this->load->view('oqrs/showoqrs', $data);
 	}
 
 }

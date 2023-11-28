@@ -28,12 +28,15 @@ class Lookup extends CI_Controller {
 
 	public function search() {
 		$CI =& get_instance();
-		$CI->load->model('Stations');
-		$station_id = $CI->Stations->find_active();
+		$CI->load->model('logbooks_model');
+		$logbooks_locations_array = $CI->logbooks_model->list_logbook_relationships($this->session->userdata('active_station_logbook'));
+
+		$location_list = "'".implode("','",$logbooks_locations_array)."'";
 
 		$this->load->model('lookup_model');
+		$this->load->model('bands');
 
-		$data['bands'] = $this->lookup_model->get_Worked_Bands($station_id);
+		$data['bands'] = $this->bands->get_worked_bands(xss_clean($this->input->post('type')));
 
 		$data['type'] = xss_clean($this->input->post('type'));
 		$data['dxcc'] = xss_clean($this->input->post('dxcc'));
@@ -43,17 +46,16 @@ class Lookup extends CI_Controller {
 		$data['iota'] = xss_clean($this->input->post('iota'));
 		$data['cqz']  = xss_clean($this->input->post('cqz'));
 		$data['wwff'] = xss_clean($this->input->post('wwff'));
-		$data['station_id'] = $station_id;
+		$data['location_list'] = $location_list;
 
 		$data['result'] = $this->lookup_model->getSearchResult($data);
 
 		$this->load->view('lookup/result', $data);
 	}
 
-	public function scp($call) {
-
-		if($call) {
-			$uppercase_callsign = strtoupper($call);
+	public function scp() {
+		if($_POST['callsign']) {
+			$uppercase_callsign = strtoupper($_POST['callsign']);
 		}
 
 		// SCP results from logbook
@@ -67,7 +69,7 @@ class Lookup extends CI_Controller {
 	    {
 	    	if (in_array($row->COL_CALL, $arCalls) == false)
 			{
-					$arCalls[] = $row->COL_CALL;
+					$arCalls[] = str_replace('0', 'Ø', $row->COL_CALL);
 			}
 	    }
 
@@ -81,7 +83,7 @@ class Lookup extends CI_Controller {
 			foreach ($result as &$value) {
 				if (in_array($value, $arCalls) == false)
 				{
-					$arCalls[] = $value;
+					$arCalls[] = str_replace('0', 'Ø', $value);
 				}
 			}
 		}
@@ -95,7 +97,7 @@ class Lookup extends CI_Controller {
 			foreach ($result as &$value) {
 				if (in_array($value, $arCalls) == false)
 				{
-					$arCalls[] = $value;
+					$arCalls[] = str_replace('0', 'Ø', $value);
 				}
 			}
 		}
@@ -107,6 +109,22 @@ class Lookup extends CI_Controller {
 			echo " " . $strCall . " ";
 		}
 
+	}
+
+	public function dok($call) {
+
+		if($call) {
+			$uppercase_callsign = strtoupper($call);
+		}
+
+		// DOK results from logbook
+		$this->load->model('logbook_model');
+
+		$query = $this->logbook_model->get_dok($uppercase_callsign);
+
+		if ($query->row()) {
+			echo $query->row()->COL_DARC_DOK;
+		}
 	}
 
 }

@@ -15,11 +15,14 @@ $lang['lotw_beta_warning'] = 'Lütfen LoTW Sync\'in BETA olduğunu unutmayın, y
 $lang['lotw_no_certs_uploaded'] = 'Bu alanı kullanmak için bazı LoTW p12 sertifikaları yüklemeniz gerekiyor.';
 
 $lang['lotw_date_created'] = 'Oluşturma Tarihi';
-$lang['lotw_date_expires'] = 'Tarih Sona Eriyor';
+$lang['lotw_date_expires'] = 'Geçeriliğini Yitirme Tarihi';
+$lang['lotw_qso_start_date'] = 'QSO Başlama Tarihi';
+$lang['lotw_qso_end_date'] = 'QSO Sonu Tarihi';
 $lang['lotw_status'] = 'Durum';
 $lang['lotw_options'] = 'Seçenekler';
 $lang['lotw_valid'] = 'Geçerli';
 $lang['lotw_expired'] = 'Süresi doldu';
+$lang['lotw_expiring'] = 'Expiring';
 $lang['lotw_not_synced'] = 'Senkronize Edilmedi';
 
 $lang['lotw_certificate_dxcc'] = 'DXCC Sertifikası';
@@ -27,11 +30,10 @@ $lang['lotw_certificate_dxcc_help_text'] = 'Sertifika DXCC varlığı. Örneğin
 
 $lang['lotw_input_a_file'] = 'Bir Dosya Yükle';
 
-$lang['lotw_upload_exported_adif_file_from_lotw'] = 'LoTW\'den Dışa Aktarılan ADIF dosyasını <a href="https://p1k.arrl.org/lotwuser/qsos?qsoscmd=adif" target="_blank">Raporu İndir<\'den yükleyin /a> Alan, QSO\'ları LOTW\'da onaylandı olarak işaretlemek için.';
+$lang['lotw_upload_exported_adif_file_from_lotw'] = 'LoTW\'den Dışa Aktarılan ADIF dosyasını <a href="https://p1k.arrl.org/lotwuser/qsos?qsoscmd=adif" target="_blank">Raporu İndir<\'den yükleyin /a> Alan, QSO\'ları LoTW\'da onaylandı olarak işaretlemek için.';
 $lang['lotw_upload_type_must_be_adi'] = 'Günlük dosyaları .adi dosya tipine sahip olmalıdır';
 
 $lang['lotw_pull_lotw_data_for_me'] = 'Benim için LoTW verilerini çek';
-$lang['lotw_import_missing_qsos_text'] = 'Eksik QSO\'ları günlüğe aktarın. QSO\'nun içe aktarılacağı doğru profili bulmaya çalışmak için çağrı ve gridsquare kontrol edilecektir. Bulunamazsa, QSO atlanacaktır.';
 
 $lang['lotw_report_download_overview_helptext'] ='Cloudlog, sizin için LoTW\'den bir rapor indirmek için kullanıcı profilinizde kayıtlı LoTW kullanıcı adını ve şifreyi kullanacak. Cloudlog indirmeleri raporu, seçilen tarihten itibaren veya son LoTW onayınızdan (günlüğünüzden alınır) bu yana şimdiye kadarki tüm onaylara sahip olacaktır.';
 
@@ -46,7 +48,15 @@ $lang['lotw_btn_import_matches'] = 'LoTW Eşleşmelerini İçe Aktar';
 // P12 Metni Dışa Aktar
 $lang['lotw_p12_export_step_one'] = 'TQSL &amp; Çağrı İmzası Sertifikaları Sekmesine gidin';
 $lang['lotw_p12_export_step_two'] = 'İstenen Çağrı İşaretine sağ tıklayın';
-$lang['lotw_p12_export_step_3,000'] = '"Çağrı İmzası Sertifika Dosyasını Kaydet"e tıklayın ve şifre eklemeyin';
+$lang['lotw_p12_export_step_three'] = '"Çağrı İmzası Sertifika Dosyasını Kaydet"e tıklayın ve şifre eklemeyin';
 $lang['lotw_p12_export_step_four'] = 'Aşağıdaki Dosyayı Yükleyin.';
 
 $lang['lotw_confirmed'] = 'Bu QSO LoTW\'de onaylandı';
+
+// LoTW Expiry
+$lang['lotw_cert_expiring'] = 'At least one of your LoTW certificates is about to expire!';
+$lang['lotw_cert_expired'] = 'At least one of your LoTW certificates is expired!';
+
+// Lotw User
+$lang['lotw_user'] = 'This station uses LoTW.';
+$lang['lotw_last_upload'] = 'Last upload';

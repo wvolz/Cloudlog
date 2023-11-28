@@ -18,6 +18,19 @@ class Update extends CI_Controller {
 	}
 
     /*
+     * Create a path to a file in the updates folder, respecting the datadir
+     * configuration option.
+     */
+    private function make_update_path($path) {
+        $path = "updates/" . $path;
+        $datadir = $this->config->item('datadir');
+        if(!$datadir) {
+            return $path;
+        }
+        return $datadir . "/" . $path;
+    }
+
+    /*
      * Load the dxcc entities
      */
 	public function dxcc_entities() {
@@ -25,7 +38,7 @@ class Update extends CI_Controller {
 		$this->load->model('dxcc_entities');
 
 		// Load the cty file
-		$xml_data = simplexml_load_file("updates/cty.xml");
+		$xml_data = simplexml_load_file($this->make_update_path("cty.xml"));
 		
 		//$xml_data->entities->entity->count();
 
@@ -74,7 +87,7 @@ class Update extends CI_Controller {
 		// Load Database connectors
 		$this->load->model('dxcc_exceptions');
 		// Load the cty file
-		$xml_data = simplexml_load_file("updates/cty.xml");
+		$xml_data = simplexml_load_file($this->make_update_path("cty.xml"));
 		
         $count = 0;
 		foreach ($xml_data->exceptions->exception as $record) {
@@ -114,7 +127,7 @@ class Update extends CI_Controller {
 		// Load Database connectors
 		$this->load->model('dxcc_prefixes');
 		// Load the cty file
-		$xml_data = simplexml_load_file("updates/cty.xml");
+		$xml_data = simplexml_load_file($this->make_update_path("cty.xml"));
 		
         $count = 0;
 		foreach ($xml_data->prefixes->prefix as $record) {
@@ -152,7 +165,7 @@ class Update extends CI_Controller {
 	public function dxcc() {
 	    $this->update_status("Downloading file");
 
-	    // give it 5 minutes...
+	    // give it 10 minutes...
 	    set_time_limit(600);
 	
 		// Load Migration data if any.
@@ -164,13 +177,31 @@ class Update extends CI_Controller {
 		$url = "https://cdn.clublog.org/cty.php?api=a11c3235cd74b88212ce726857056939d52372bd";
 		
 		$gz = gzopen($url, 'r');
+		if ($gz === FALSE) {
+            // If the download from clublog.org fails, try cloudlog.org CDN.
+            $url = "https://cdn.cloudlog.org/clublogxml.gz";
+            $gz = gzopen($url, 'r');
+
+            // Log failure to log file
+            log_message('info', 'Failed to download cty.xml from clublog.org, trying cloudlog.org CDN');
+
+            if ($gz === FALSE) {
+                $this->update_status("FAILED: Could not download from clublog.org or cloudlog.org");
+                log_message('error', 'FAILED: Could not download exceptions from clublog.org or cloudlog.org');
+                return;
+            }
+		}
+
 		$data = "";
 		while (!gzeof($gz)) {
 		  $data .= gzgetc($gz);
 		}
 		gzclose($gz);
-		
-		file_put_contents('./updates/cty.xml', $data);
+
+		if (file_put_contents($this->make_update_path("cty.xml"), $data) === FALSE) {
+			$this->update_status("FAILED: Could not write to cty.xml file");
+			return;
+		}
 	
 	    // Clear the tables, ready for new data
 		$this->db->empty_table("dxcc_entities");
@@ -203,7 +234,7 @@ class Update extends CI_Controller {
             $html = $done."....<br/>";
         }
 
-        file_put_contents('./updates/status.html', $html);
+        file_put_contents($this->make_update_path("status.html"), $html);
 	}
 
 
@@ -225,16 +256,26 @@ class Update extends CI_Controller {
 
 	}
 	
+	public function check_missing_continent() {
+		$this->load->model('logbook_model');
+		$this->logbook_model->check_missing_continent();
+	}
+
+	public function update_distances() {
+		$this->load->model('logbook_model');
+		$this->logbook_model->update_distances();
+	}
+
 	public function check_missing_grid($all = false){
 	    $this->load->model('logbook_model');
         $this->logbook_model->check_missing_grid_id($all);
 	}
 
     public function update_clublog_scp() {
-        $strFile = "./updates/clublog_scp.txt";
+        $strFile = $this->make_update_path("clublog_scp.txt");
         $url = "https://cdn.clublog.org/clublog.scp.gz";
         set_time_limit(300);
-        $this->update_status("Downloading Club Log SCP file");
+        echo "Downloading Club Log SCP file...<br>";
         $gz = gzopen($url, 'r');
         if ($gz)
         {
@@ -243,42 +284,79 @@ class Update extends CI_Controller {
                 $data .= gzgetc($gz);
             }
             gzclose($gz);
-            file_put_contents($strFile, $data);
-            if (file_exists($strFile))
+            if (file_put_contents($strFile, $data) !== FALSE)
             {
                 $nCount = count(file($strFile));
                 if ($nCount > 0)
                 {
-                    $this->update_status("DONE: " . number_format($nCount) . " callsigns loaded" );
+                    echo "DONE: " . number_format($nCount) . " callsigns loaded";
                 } else {
-                    $this->update_status("FAILED: Empty file");
+                    echo "FAILED: Empty file";
                 }
             } else {
-                $this->update_status("FAILED: Could not create Club Log SCP file locally");
+                echo "FAILED: Could not write to Club Log SCP file";
             }
         } else {
-            $this->update_status("FAILED: Could not connect to Club Log");
+            echo "FAILED: Could not connect to Club Log";
         }
     }
 
     public function download_lotw_users() {
-
-
-
         $contents = file_get_contents('https://lotw.arrl.org/lotw-user-activity.csv', true);
 
         if($contents === FALSE) { 
-            echo "something went wrong";
+            echo "Something went wrong with fetching the LoTW users file.";
         } else {
             $file = './updates/lotw_users.csv';
 
-            if(!is_file($file)){        // Some simple example content.
-                file_put_contents($file, $contents);     // Save our content to the file.
+            if (file_put_contents($file, $contents) !== FALSE) {     // Save our content to the file.
+                echo "LoTW User Data Saved.";
+            } else {
+                echo "FAILED: Could not write to LoTW users file";
             }
-
-            echo "LoTW User Data Saved.";
         }
 
+    }
+
+    public function lotw_users() {
+        $mtime = microtime(); 
+        $mtime = explode(" ",$mtime); 
+        $mtime = $mtime[1] + $mtime[0]; 
+        $starttime = $mtime; 
+
+        $file = 'https://lotw.arrl.org/lotw-user-activity.csv';
+
+        $handle = fopen($file, "r");
+        if ($handle === FALSE) {
+            echo "Something went wrong with fetching the LoTW uses file";
+            return;
+        }
+        $this->db->empty_table("lotw_users"); 
+        $i = 0;
+        $data = fgetcsv($handle,1000,",");
+        do {
+            if ($data[0]) {
+                $lotwdata[$i]['callsign'] = $data[0];
+                $lotwdata[$i]['lastupload'] = $data[1] . ' ' . $data[2];
+                if (($i % 2000) == 0) {
+                    $this->db->insert_batch('lotw_users', $lotwdata); 
+                    unset($lotwdata);
+                    // echo 'Record ' . $i . '<br />';
+                }
+                $i++;
+            }
+        } while ($data = fgetcsv($handle,1000,","));
+        fclose($handle);
+
+        $this->db->insert_batch('lotw_users', $lotwdata); 
+
+        $mtime = microtime(); 
+        $mtime = explode(" ",$mtime); 
+        $mtime = $mtime[1] + $mtime[0]; 
+        $endtime = $mtime; 
+        $totaltime = ($endtime - $starttime); 
+        echo "This page was created in ".$totaltime." seconds <br />"; 
+        echo "Records inserted: " . $i . " <br/>";
     }
 
     public function lotw_check() {
@@ -305,10 +383,7 @@ class Update extends CI_Controller {
         } else {
             $file = './assets/json/dok.txt';
 
-            file_put_contents($file, $contents);     // Save our content to the file.
-
-            if (file_exists($file))
-            {
+            if (file_put_contents($file, $contents) !== FALSE) {     // Save our content to the file.
                 $nCount = count(file($file));
                 if ($nCount > 0)
                 {
@@ -317,7 +392,7 @@ class Update extends CI_Controller {
                     echo"FAILED: Empty file";
                 }
             } else {
-                echo"FAILED: Could not create dok.txt file locally";
+                echo"FAILED: Could not write to dok.txt file";
             }
         }
     }
@@ -330,39 +405,130 @@ class Update extends CI_Controller {
 
         $sotafile = './assets/json/sota.txt';
 
-        if($csvfile === FALSE) {
+        $csvhandle = fopen($csvfile,"r");
+        if ($csvhandle === FALSE) {
             echo "Something went wrong with fetching the SOTA file";
-        } else {
-            $csvhandle = fopen($csvfile,"r");
+            return;
+        }
 
-            $data = fgetcsv($csvhandle,1000,","); // Skip line we are not interested in
-            $data = fgetcsv($csvhandle,1000,","); // Skip line we are not interested in
-            $data = fgetcsv($csvhandle,1000,",");
-            $sotafilehandle = fopen($sotafile, 'w');
+        $data = fgetcsv($csvhandle,1000,","); // Skip line we are not interested in
+        $data = fgetcsv($csvhandle,1000,","); // Skip line we are not interested in
+        $data = fgetcsv($csvhandle,1000,",");
+        $sotafilehandle = fopen($sotafile, 'w');
 
-            do {
-                if ($data[0]) {
-                    fwrite($sotafilehandle, $data[0].PHP_EOL);
-                }
-            } while ($data = fgetcsv($csvhandle,1000,","));
+        if ($sotafilehandle === FALSE) {
+            echo"FAILED: Could not write to sota.txt file";
+            return;
+        }
 
-            fclose($csvhandle);
-            fclose($sotafilehandle);
-            if (file_exists($sotafile))
-            {
-                $nCount = count(file($sotafile));
-                if ($nCount > 0)
-                {
-                    echo "DONE: " . number_format($nCount) . " SOTA's saved";
-                } else {
-                    echo"FAILED: Empty file";
-                }
-            } else {
-                echo"FAILED: Could not create sota.txt file locally";
+        $nCount = 0;
+        do {
+            if ($data[0]) {
+                fwrite($sotafilehandle, $data[0].PHP_EOL);
+                $nCount++;
             }
+        } while ($data = fgetcsv($csvhandle,1000,","));
+
+        fclose($csvhandle);
+        fclose($sotafilehandle);
+
+        if ($nCount > 0)
+        {
+            echo "DONE: " . number_format($nCount) . " SOTA's saved";
+        } else {
+            echo"FAILED: Empty file";
         }
     }
 
+    /*
+     * Pulls the WWFF directory for autocompletion in QSO dialogs
+     */
+    public function update_wwff() {
+        $csvfile = 'https://wwff.co/wwff-data/wwff_directory.csv';
+
+        $wwfffile = './assets/json/wwff.txt';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $csvfile);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Cloudlog Updater');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $csv = curl_exec($ch);
+        curl_close($ch);
+        if ($csv === FALSE) {
+            echo "Something went wrong with fetching the WWFF file";
+            return;
+        }
+
+        $wwfffilehandle = fopen($wwfffile, 'w');
+        if ($wwfffilehandle === FALSE) {
+            echo"FAILED: Could not write to wwff.txt file";
+            return;
+        }
+
+        $data = str_getcsv($csv,"\n");
+        $nCount = 0;
+        foreach ($data as $idx => $row) {
+           if ($idx == 0) continue; // Skip line we are not interested in
+           $row = str_getcsv($row, ',');
+           if ($row[0]) {
+              fwrite($wwfffilehandle, $row[0].PHP_EOL);
+              $nCount++;
+           }
+        }
+
+        fclose($wwfffilehandle);
+
+        if ($nCount > 0)
+        {
+            echo "DONE: " . number_format($nCount) . " WWFF's saved";
+        } else {
+            echo"FAILED: Empty file";
+        }
+    }
+
+    public function update_pota() {
+        $csvfile = 'https://pota.app/all_parks.csv';
+
+        $potafile = './assets/json/pota.txt';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $csvfile);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Cloudlog Updater');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $csv = curl_exec($ch);
+        curl_close($ch);
+        if ($csv === FALSE) {
+            echo "Something went wrong with fetching the POTA file";
+            return;
+        }
+
+        $potafilehandle = fopen($potafile, 'w');
+        if ($potafilehandle === FALSE) {
+            echo"FAILED: Could not write to pota.txt file";
+            return;
+        }
+        $data = str_getcsv($csv,"\n");
+        $nCount = 0;
+        foreach ($data as $idx => $row) {
+           if ($idx == 0) continue; // Skip line we are not interested in
+           $row = str_getcsv($row, ',');
+           if ($row[0]) {
+              fwrite($potafilehandle, $row[0].PHP_EOL);
+              $nCount++;
+           }
+        }
+
+        fclose($potafilehandle);
+
+        if ($nCount > 0)
+        {
+            echo "DONE: " . number_format($nCount) . " POTA's saved";
+        } else {
+            echo"FAILED: Empty file";
+        }
+    }
 
 }
 ?>

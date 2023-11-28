@@ -8,120 +8,93 @@
 
 class API_Model extends CI_Model {
 
-    function __construct()
-    {
-        // Call the Model constructor
-        parent::__construct();
-    }
-
     // GET API Keys
     function keys() {
+		$this->db->where('user_id', $this->session->userdata('user_id'));
     	return $this->db->get('api');
     }
 
+	function CountKeysWithNoUserID() {
+		$this->db->where('user_id =', NULL);
+		$query = $this->db->get('api');
+		return $query->num_rows();
+    }
+
+	function ClaimAllAPIKeys($id = NULL) {
+		// if $id is empty then use session user_id
+		if (empty($id)) {
+			// Get the first USER ID from user table in the database
+			$id = $this->db->get("users")->row()->user_id;
+		}
+
+		$data = array(
+				'user_id' => $id,
+		);
+			
+		$this->db->update('api', $data);
+	}
+
     function key_description($key) {
-    	$this->db->where('key', $key); 
+		$this->db->where('user_id', $this->session->userdata('user_id'));
+    	$this->db->where('key', $key);
     	$query = $this->db->get('api');
 
     	return $query->result_array()[0];
     }
 
+	function key_userid($key) {
+    	$this->db->where('key', $key);
+    	$query = $this->db->get('api');
+
+    	return $query->result_array()[0]['user_id'];
+    }
 
     function update_key_description($key, $description) {
-    	
+
     	$data = array(
         'description' => xss_clean($description),
 		);
 
 		$this->db->where('key', xss_clean($key));
+		$this->db->where('user_id', $this->session->userdata('user_id'));
 		$this->db->update('api', xss_clean($data));
 
     }
 
 
-    function country_worked($dxcc_num, $band, $mode){
-
-    	if($band == "all") {
-    		if($mode != NULL) {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_DXCC = "'.$dxcc_num.'" AND COL_MODE = "'.$mode.'"');
-	    	} else {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_DXCC = "'.$dxcc_num.'"');
-	    	}
-    	} else {
-	    	if($mode != NULL) {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_DXCC = "'.$dxcc_num.'" AND COL_BAND = "'.$band.'" AND COL_MODE = "'.$mode.'"');
-	    	} else {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_DXCC = "'.$dxcc_num.'" AND COL_BAND = "'.$band.'"');
-	    	}
-    	}
-
-    	if ($query->num_rows() > 0)
-        {
-            foreach ($query->result() as $row)
-            {
-                 return $row->count;
-            }
-        }
-    }
-
-
-    function gridsquare_worked($gridsquare, $band, $mode){
-
-    	if($band == "all") {
-			if($mode != NULL) {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_GRIDSQUARE LIKE "%'.$gridsquare.'%" AND COL_MODE = "'.$mode.'"');
-	    	} else {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_GRIDSQUARE LIKE "%'.$gridsquare.'%"');
-	    	}
-    	} else {
-			if($mode != NULL) {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_GRIDSQUARE LIKE "%'.$gridsquare.'%" AND COL_BAND = "'.$band.'" AND COL_MODE = "'.$mode.'"');
-	    	} else {
-	    		$query = $this->db->query('SELECT COUNT(1) as count FROM '.$this->config->item('table_name').' WHERE COL_GRIDSQUARE LIKE "%'.$gridsquare.'%" AND COL_BAND ="'.$band.'"');
-	    	}
-    	}
-
-    	if ($query->num_rows() > 0)
-        {
-            foreach ($query->result() as $row)
-            {
-                 return $row->count;
-            }
-        }
-    }
-
-
-
     function delete_key($key) {
+		$this->db->where('user_id', $this->session->userdata('user_id'));
     	$this->db->where('key', xss_clean($key));
 		$this->db->delete('api');
     }
     // Generate API Key
     function generate_key($rights) {
-    	
+
     	// Expects either rw (Read, Write) or r (read only)
 
     	// Generate Unique Key
     	$data['key'] = uniqid("cl");
 
     	$data['rights'] = $rights;
-    	
+
     	// Set API key to active
     	$data['status'] = "active";
 
-    	$this->db->insert('api', $data); 
+		$data['user_id'] = $this->session->userdata('user_id');
+
+    	$this->db->insert('api', $data);
 
     }
 
     function access($key) {
-    	
+
       // No key = no access, mate
       if(!$key) {
         return $status = "No Key Found";
       }
 
     	// Check that the key is valid
-    	$this->db->where('key', $key); 
+    	$this->db->where('key', $key);
      	$query = $this->db->get('api');
 
 		  if ($query->num_rows() > 0)
@@ -148,6 +121,12 @@ class API_Model extends CI_Model {
     } else {
       return 0;
     }
+  }
+
+  function update_last_used($key) {
+    $this->db->set('last_used', 'NOW()', FALSE);
+    $this->db->where('key', xss_clean($key));
+    $this->db->update('api');
   }
 
 	// FUNCTION: string name(string $column)
@@ -204,188 +183,7 @@ class API_Model extends CI_Model {
 		return 0;
 	}
 
-	function insert_parse($arguments)
-	{
-#		$q = "INSERT INTO ".$this->config->item('table_name');
-
-		$f = explode(",", $arguments['query']);
-		$r = $this->_insert_field_translate($f);
-
-		return $r;
-	}
-
-	// FUNCTION: string select_parse(array $arguments)
-	// Converts an array of arguments into a MySQL query string
-	// See documentation for search() under the API controller for more details
-	function select_parse($arguments)
-	{
-		// Initialise our string
-		$q = "SELECT ";
-
-		// Cycle through the fields, converting friendly names to MySQL column names
-		if($arguments['fields'] != "") {
-			$field = "";
-			$fields = explode(",", $arguments['fields']);
-			foreach ($fields as $f) {
-				if($field != "") {
-					$field .= ",";
-				}
-				// Add field to the query, with '++' placeholders for later translation
-				$field .= "++$f++";
-			}
-			// Handle any DISTINCT arguments
-			$field = str_replace("++distinct&#40;", "DISTINCT(++", $field);
-			$field = str_replace("&#41;++", "++)", $field);
-			// Add the MySQL column name to the query
-			$q .= $field." ";
-		} else {
-			// If no fields are specified, display all fields
-			$q .= "* ";
-		}
-
-		// Append the table we're pulling data from
-		$q .= "FROM ".$this->config->item('table_name');
-
-		// Parse the 'query' string, which is converted into a standard MySQL 'WHERE'
-		// clause.
-		// $s and $r can be refactored into single array definitions, but during
-		// development it's easier to list them in this way for quick reference.
-
-		if($arguments['query'] != "")
-		{
-			$q .= " WHERE ";
-			$q = $this->_query_parse($q, $arguments['query']);
-		}
-
-		// Parse any order arguments
-		if($arguments['order'] != "")
-		{
-			$q .= " ORDER BY ";
-
-			$s = null;
-			$r = null;
-			$s[0]   = '/&#40;/';
-			$s[1]	= '/&#41;/';
-			$s[2]	= '/([a-zA-Z0-9\-\_]+)([,\(]{1}|$)/';
-		    $s[3]   = '/\(asc\)/';
-	    	$s[4]   = '/\(desc\)/';
-			$s[5]	= '/,$/';
-      $s[6] = '/\[/';
-      $s[7] = '/\]/';
-
-			$r[0]	= '(';
-			$r[1]	= ')';
-			$r[2]	= '++$1++ $2';
-		    $r[3]   = ' ASC ';
-		    $r[4]   = ' DESC ';
-			$r[5]	= '';
-			$r[6]	= '';
-			$r[7]	= '';
-
-			$q .= preg_replace($s, $r, $arguments['order']);
-
-		}
-
-		$q = $this->_select_field_translate($q);
-
-		// Parse any limit arguments
-		if($arguments['limit'] != "")
-		{
-			// Add the limit arguments, removing any characters other than numbers and commas
-			$q .= " LIMIT " . preg_replace(array("/[^0-9\,]/","/,$/"), "", $arguments['limit']);
-		}
-		else
-		{
-			// If no limit argument is given, default to the first 20 results
-			$q .= " LIMIT 0,20";
-		}
-
-		return $q;
-	}
-
-	private function _query_parse($q, $qs)
-	{
-		if($qs != "")
-		{
-			$s = null;
-			$r = null;
-			// (and), becomes ' AND '
-			$s[0]   = '/&#40;and&#41;/';
-			// (or), becomes ' OR '
-			$s[1]   = '/&#40;or&#41;/';
-			// <, >, [ and ] all translated from their urlencoded forms
-			$s[2]   = '/%3C/';
-			$s[3]   = '/%3E/';
-			$s[4]   = '/%5B/';
-			$s[5]   = '/%5D/';
-			// FieldName=, which becomes '++FieldName++ = '
-			$s[6]   = '/([a-zA-Z0-9\-\_\*\(\)\=\~]+)=/';
-			// =Value, which becomes '= 'Value''
-			$s[7]   = '/=([a-zA-Z0-9\-\_\*\(\)\=\~]+)/';
-			// now(), which becomes 'UNIX_TIMESTAMP(NOW())'
-			$s[8]   = '/now()/';
-			// (, and ), which are translated to their non-HTML entity forms,
-			// and with added padding
-			$s[9]   = '/&#40;/';
-			$s[10]  = '/&#41;/';
-			// FieldName~, becomes '++FieldName++ LIKE~'
-			$s[11]  = '/([a-zA-Z0-9\-\_\*\(\)\=\~]+)~/';
-			// ~Value, becomes ' 'Value''
-			$s[12]  = '/~([a-zA-Z0-9\-\_\*\(\)\=\~]+)/';
-			// *, which becomes '%'
-			$s[13]  = '/\*/';
 	
-			$r[0]   = ' AND ';
-			$r[1]   = ' OR ';
-			$r[2]   = ' < ';
-			$r[3]   = ' > ';
-      // Strip out square brackets
-			$r[4]   = '';
-			$r[5]   = '';
-			$r[6]   = '++$1++ =';
-			$r[7]   = '= \'$1\'';
-			$r[8]   = 'UNIX_TIMESTAMP(NOW())';
-			$r[9]   = '( ';
-			$r[10]  = ' )';
-			$r[11]  = '++$1++ LIKE~';
-			$r[12]  = ' \'$1\'';
-			$r[13]  = '%';
-
-			// Bulk replace everything
-			$q .= preg_replace($s, $r, $qs);
-		}
-
-		return $q;
-	}
-
-	private function _select_field_translate($q)
-	{
-		// Do search/replace on field names, to convert from friendly names
-		// to MySQL column names
-
-		foreach($this->_columnName as $key => $val) {
-			$q = str_replace("++".$val['Name']."++", $key, $q);
-		}
-
-
-
-		return $q;
-	}
-
-	private function _insert_field_translate($q)
-	{
-		// Do search/replace on field names, to convert from friendly names
-		// to MySQL column names
-		$r = array();
-
-		foreach($q as $key => $val) {
-			$f = explode('=', $val);
-			$r[$this->column($f[0])] = $f[1];
-		}
-
-		return $r;
-	}
-
 	// ARRAY: $_columnName
 	// An array matching MySQL column names to friendly names, descriptions and types
 	private $_columnName = array(
@@ -410,7 +208,7 @@ class API_Model extends CI_Model {
 		'COL_CONTEST_ID'				=> array('Name' => 'ContestID', 'Description' => '', 'Type' => ''),
 		'COL_COUNTRY'					=> array('Name' => 'Country', 'Description' => '', 'Type' => ''),
 		'COL_CQZ'						=> array('Name' => 'CQZone', 'Description' => '', 'Type' => ''),
-		'COL_DARC_DOK'					=> array('Name' => 'Dok', 'Description' => '', 'Type' => ''),
+		'COL_DARC_DOK'					=> array('Name' => 'DOK', 'Description' => '', 'Type' => ''),
 		'COL_DISTANCE'					=> array('Name' => 'Distance', 'Description' => '', 'Type' => ''),
 		'COL_DXCC'						=> array('Name' => 'DXCC', 'Description' => '', 'Type' => ''),
 		'COL_EMAIL'						=> array('Name' => 'EMail', 'Description' => '', 'Type' => ''),

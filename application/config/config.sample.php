@@ -8,16 +8,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |--------------------------------------------------------------------------
 |
 |	'app_name'		Name of the App 'Cloudlog'
-|	'app_version'	Set by the dev team.
+|	'app_version'		Set by the dev team.
 |	'directory'		directory where cloudlog is installed eg "logger"
 |	'callbook'		Selects which Callbook lookup to use defaults "hamqth" but supports "qrz"
 */
 
 $config['app_name'] = "Cloudlog";
-$config['app_version'] = "1.7";
+$config['app_version'] = "2.4.5";
 $config['directory'] = "logbook";
-
 $config['callbook'] = "hamqth"; // Options are hamqth or qrz
+$config['datadir'] = null; // default to install directory
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +25,8 @@ $config['callbook'] = "hamqth"; // Options are hamqth or qrz
 |--------------------------------------------------------------------------
 |
 | 	'table_name'	SQL table where log can be found
-|	'locator'		Default locator used to calculate bearings/distance
-|	'display_freq'	Show or Hide frequnecy info 
+|	'locator'	Default locator used to calculate bearings/distance
+|	'display_freq'	Show or Hide frequnecy info
 */
 
 $config['table_name'] = "TABLE_HRD_CONTACTS_V01";
@@ -40,11 +40,12 @@ $config['display_freq'] = true;
 |
 | 	'qrz_username'	QRZ.com user login
 |	'qrz_password'	QRZ.com user password
+|	'use_fullname'  Get full names from QRZ, may not be GDPR compliant
 */
 
 $config['qrz_username'] = "";
 $config['qrz_password'] = "";
-
+$config['use_fullname'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +58,6 @@ $config['qrz_password'] = "";
 $config['hamqth_username'] = "";
 $config['hamqth_password'] = "";
 
-
 /*
 |--------------------------------------------------------------------------
 | Authentication
@@ -65,19 +65,16 @@ $config['hamqth_password'] = "";
 |
 | 'use_auth'	False turns all authentication off, best used when setting up
 | 'auth_table'	MySQL Database Table defaults "users"
-| 'auth_mode'	Minimum user level required 0 = anonymous, 1 = viewer, 
+| 'auth_mode'	Minimum user level required 0 = anonymous, 1 = viewer,
 |				2 = editor, 3 = api user, 99 = owner
 | 'auth_level[]'	Defines level titles
 */
 
 $config['use_auth'] = true;
 $config['auth_table'] = "users";
-$config['auth_mode'] = "0";
+$config['auth_mode'] = "3";
 
-$config['auth_level'][0] = "Anonymous";
-$config['auth_level'][1] = "Viewer";
-$config['auth_level'][2] = "Editor";
-$config['auth_level'][3] = "API User";
+$config['auth_level'][3] = "Operator";
 $config['auth_level'][99] = "Administrator";
 
 /*
@@ -154,8 +151,62 @@ $config['url_suffix'] = '';
 | there is an available translation if you intend to use something other
 | than english.
 |
-*/
-$config['language']	= 'english';
+ */
+$lang = 'english'; // this language will be used per default
+
+if (isset($_COOKIE["language"])) {
+	$tmp_value = $_COOKIE["language"];
+	if (!empty($tmp_value)) { $lang = $tmp_value; }
+}
+switch ($lang) {	// do this for security-reasons! parse only langs, which are known to us
+case 'dutch':
+	$config['language'] = $lang;
+	break;
+case 'chinese_simplified':
+	$config['language'] = $lang;
+	break;
+case 'spanish':
+	$config['language'] = $lang;
+	break;
+case 'czech':
+	$config['language'] = $lang;
+	break;
+case 'bulgarian':
+	$config['language'] = $lang;
+	break;
+case 'turkish':
+	$config['language'] = $lang;
+	break;
+case 'swedish':
+	$config['language'] = $lang;
+	break;
+case 'polish':
+	$config['language'] = $lang;
+	break;
+case 'italian':
+	$config['language'] = $lang;
+	break;
+case 'greek':
+	$config['language'] = $lang;
+	break;
+case 'french':
+	$config['language'] = $lang;
+	break;
+case 'finnish':
+	$config['language'] = $lang;
+	break;
+case 'russian':
+	$config['language'] = $lang;
+	break;
+case 'english':
+	$config['language'] = $lang;
+	break;
+case 'german':
+	$config['language'] = $lang;
+	break;
+}
+
+$config['cl_multilanguage']=true;
 
 /*
 |--------------------------------------------------------------------------
@@ -569,6 +620,7 @@ $config['compress_output'] = FALSE;
 */
 $config['time_reference'] = 'UTC';
 date_default_timezone_set($config['time_reference']);
+
 /*
 |--------------------------------------------------------------------------
 | Rewrite PHP Short Tags

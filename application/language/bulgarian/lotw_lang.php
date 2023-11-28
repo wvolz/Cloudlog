@@ -16,10 +16,13 @@ $lang['lotw_no_certs_uploaded'] = 'Трябва да качите някои LoT
 
 $lang['lotw_date_created'] = 'Дата на създаване';
 $lang['lotw_date_expires'] = 'Дата изтичане';
+$lang['lotw_qso_start_date'] = 'QSO Start Date';
+$lang['lotw_qso_end_date'] = 'QSO End Date';
 $lang['lotw_status'] = 'Състояние';
 $lang['lotw_options'] = 'Опции';
 $lang['lotw_valid'] = 'Валиден';
 $lang['lotw_expired'] = 'Изтекъл';
+$lang['lotw_expiring'] = 'Expiring';
 $lang['lotw_not_synced'] = 'Не е синхронизиран';
 
 $lang['lotw_certificate_dxcc'] = 'DXCC сертификат';
@@ -27,13 +30,12 @@ $lang['lotw_certificate_dxcc_help_text'] = 'Certificate DXCC entity. Напри�
 
 $lang['lotw_input_a_file'] = 'Качете файл';
 
-$lang['lotw_upload_exported_adif_file_from_lotw'] = 'Upload the Exported ADIF file from LoTW from the <a href="https://p1k.arrl.org/lotwuser/qsos?qsoscmd=adif" target="_blank">Download Report</a> Area, to mark QSOs as confirmed on LOTW.';
+$lang['lotw_upload_exported_adif_file_from_lotw'] = 'Upload the Exported ADIF file from LoTW from the <a href="https://p1k.arrl.org/lotwuser/qsos?qsoscmd=adif" target="_blank">Download Report</a> Area, to mark QSOs as confirmed on LoTW.';
 $lang['lotw_upload_type_must_be_adi'] = 'Log files must have the file type .adi';
 
 $lang['lotw_pull_lotw_data_for_me'] = 'Pull LoTW data for me';
-$lang['lotw_import_missing_qsos_text'] = 'Import missing QSOs into the log. Call and gridsquare will be checked to try to find the correct profile to import the QSO into. If not found, the QSO will be skipped.';
 
-$lang['lotw_report_download_overview_helptext'] ='Cloudlog will use the LoTW username and password stored in your user profile to download a report from LoTW for you. The report Cloudlog downloads will have all confirmations since chosen date, or since your last LoTW confirmation (fetched from your log), up until now.';
+$lang['lotw_report_download_overview_helptext'] = 'Cloudlog will use the LoTW username and password stored in your user profile to download a report from LoTW for you. The report Cloudlog downloads will have all confirmations since chosen date, or since your last LoTW confirmation (fetched from your log), up until now.';
 
 // Buttons
 $lang['lotw_btn_lotw_import'] = 'LoTW импорт';
@@ -50,3 +52,11 @@ $lang['lotw_p12_export_step_three'] = 'Щракнете върху "Save Callsig
 $lang['lotw_p12_export_step_four'] = 'Качете файла по-долу.';
 
 $lang['lotw_confirmed'] = 'Това QSO е потвърдено на LoTW';
+
+// LoTW Expiry
+$lang['lotw_cert_expiring'] = 'At least one of your LoTW certificates is about to expire!';
+$lang['lotw_cert_expired'] = 'At least one of your LoTW certificates is expired!';
+
+// Lotw User
+$lang['lotw_user'] = 'This station uses LoTW.';
+$lang['lotw_last_upload'] = 'Last upload';

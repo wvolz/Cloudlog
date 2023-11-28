@@ -7,13 +7,21 @@ $db_file_path = $db_config_path."database.php";
 
 function delDir($dir) {
 	$files = glob( $dir . '*', GLOB_MARK );
-    foreach( $files as $file ){
-        if( substr( $file, -1 ) == '/' )
-            delDir( $file );
-        else
-            unlink( $file );
+    foreach ( $files as $file ) {
+        if ( substr( $file, -1 ) == '/' ) {
+			if (file_exists($file)) {
+            	delDir( $file );
+			}
+		} else {
+			if (file_exists($file)) {
+				unlink( $file );
+			}
+		}
     }
-    rmdir( $dir );
+	// This step may be not needed
+    // if (file_exists($dir)) {
+	// 	rmdir( $dir );
+	// }
 }
 
 if (file_exists($db_file_path)) {
@@ -131,8 +139,8 @@ if($_POST) {
 
 		  <fieldset>
 		  	<legend>Configuration Settings</legend>
-		  	<label for="directory">Directory</label><input type="text" id="directory" value="<?php echo str_replace("/install/", "", $_SERVER['REQUEST_URI']); ?>" class="input_text" name="directory" />
-		  	<label for="websiteurl">Website URL</label><input type="text" id="websiteurl" value="<?php echo $_SERVER['REQUEST_SCHEME']; ?>://<?php echo $_SERVER['HTTP_HOST'].str_replace("/install/", "", $_SERVER['REQUEST_URI']); ?>" class="input_text" name="websiteurl" />
+		  	<label for="directory">Directory</label><input type="text" id="directory" value="<?php echo str_replace("index.php", "", str_replace("/install/", "", $_SERVER['REQUEST_URI'])); ?>" class="input_text" name="directory" />
+		  	<label for="websiteurl">Website URL</label><input type="text" id="websiteurl" value="<?php echo $_SERVER['REQUEST_SCHEME']; ?>://<?php echo str_replace("index.php", "", $_SERVER['HTTP_HOST'].str_replace("/install/", "", $_SERVER['REQUEST_URI'])); ?>" class="input_text" name="websiteurl" />
 		  	<label for="locator">Default Gridsquare</label><input type="text" id="locator" value="IO91JS" class="input_text" name="locator" />
 		  </fieldset>
 

@@ -12,6 +12,12 @@ class Search extends CI_Controller {
             $this->load->model('user_model');
             if(!$this->user_model->authorize(2)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
         }
+
+        // Load language files
+        $this->lang->load(array(
+          'lotw',
+          'eqsl',
+        ));
     }
 
 	public function index()
@@ -49,6 +55,42 @@ class Search extends CI_Controller {
             $this->load->view('interface_assets/footer');
         }
     }
+
+	// Searches for duplicate QSOs within 30m of time difference
+    public function duplicates() {
+		$this->load->model('stations');
+
+		$data['station_profile'] = $this->stations->all_of_user();
+        $data['page_title'] = "Duplicate QSOs within 30m time difference";
+
+		$this->load->view('interface_assets/header', $data);
+		$this->load->view('search/duplicates');
+		$this->load->view('interface_assets/footer');
+    }
+
+	// Searches for incorrect CQ Zones
+	public function incorrect_cq_zones() {
+		$this->load->model('stations');
+
+		$data['station_profile'] = $this->stations->all_of_user();
+		$data['page_title'] = "Incorrectly logged CQ zones";
+
+		$this->load->view('interface_assets/header', $data);
+		$this->load->view('search/cqzones');
+		$this->load->view('interface_assets/footer');
+	}
+
+	// Searches for unconfirmed Lotw QSOs where QSO partner has uploaded to LoTW after the QSO date
+	public function lotw_unconfirmed() {
+		$this->load->model('stations');
+
+		$data['station_profile'] = $this->stations->all_of_user();
+		$data['page_title'] = "QSOs unconfirmed on LoTW, but the callsign has uploaded to LoTW after QSO date";
+
+		$this->load->view('interface_assets/header', $data);
+		$this->load->view('search/lotw_unconfirmed');
+		$this->load->view('interface_assets/footer');
+	}
 
     function json_result() {
           if(isset($_POST['search'])) {
@@ -262,13 +304,18 @@ class Search extends CI_Controller {
 	}
 
 	function fetchQueryResult($json, $returnquery) {
-
 		$search_items = json_decode($json, true);
 
+		$this->db->select($this->config->item('table_name').'.*, station_profile.*, dxcc_entities.name as station_country');
+
+		$this->db->group_start();
 		$this->buildWhere($search_items);
+		$this->db->group_end();
 
 		$this->db->order_by('COL_TIME_ON', 'DESC');
 		$this->db->join('station_profile', 'station_profile.station_id = '.$this->config->item('table_name').'.station_id');
+		$this->db->join('dxcc_entities', $this->config->item('table_name').'.col_dxcc = dxcc_entities.adif', 'left');
+		$this->db->where('station_profile.user_id', $this->session->userdata('user_id'));
 
 		if ($returnquery) {
 			$query = $this->db->get_compiled_select($this->config->item('table_name'));

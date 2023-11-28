@@ -54,7 +54,7 @@ class Qrz {
 	}
 
 
-	public function search($callsign, $key, $use_fullname)
+	public function search($callsign, $key, $use_fullname = false)
 	{
         $data = null;
         try {
@@ -71,7 +71,7 @@ class Qrz {
 
             // Create XML object
             $xml = simplexml_load_string($xml);
-            if (empty($xml)) return;
+            if (!empty($xml->Session->Error)) return $data['error'] = $xml->Session->Error;
 
             // Return Required Fields
             $data['callsign'] = (string)$xml->Callsign->call;
@@ -82,12 +82,18 @@ class Qrz {
                 $data['name'] = (string)$xml->Callsign->fname;
             }
             $data['name'] = trim($data['name']);
-            $data['gridsquare'] = (string)$xml->Callsign->grid;
+
+            // Sanitise gridsquare to only allow up to 8 characters
+            $unclean_gridsquare = (string)$xml->Callsign->grid; // Get the gridsquare from QRZ convert to string
+            $clean_gridsquare = strlen($unclean_gridsquare) > 8 ? substr($unclean_gridsquare,0,8) : $unclean_gridsquare; // Trim gridsquare to 8 characters max
+            $data['gridsquare'] = $clean_gridsquare;
+
             $data['city'] = (string)$xml->Callsign->addr2;
             $data['lat'] = (string)$xml->Callsign->lat;
             $data['long'] = (string)$xml->Callsign->lon;
             $data['iota'] = (string)$xml->Callsign->iota;
             $data['qslmgr'] = (string)$xml->Callsign->qslmgr;
+            $data['image'] = (string)$xml->Callsign->image;
 
             if ($xml->Callsign->country == "United States") {
                 $data['state'] = (string)$xml->Callsign->state;

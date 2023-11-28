@@ -55,12 +55,12 @@
                                 <div class="form-row">
                                     <div class="form-group col-sm-6">
                                         <label for="start_date">Start Date/Time</label>
-                                        <input type="text" class="form-control form-control-sm input_date" name="time_on" id="time_on" value="<?php echo $qso->COL_TIME_ON; ?>">
+                                        <input type="text" class="form-control form-control-sm" name="time_on" id="time_on" value="<?php echo $qso->COL_TIME_ON; ?>">
                                     </div>
 
                                     <div class="form-group col-sm-6">
                                         <label for="start_time">End Date/Time</label>
-                                        <input type="text" class="form-control form-control-sm input_time" name="time_off" id="time_off" value="<?php echo $qso->COL_TIME_OFF; ?>">
+                                        <input type="text" class="form-control form-control-sm" name="time_off" id="time_off" value="<?php echo $qso->COL_TIME_OFF; ?>">
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -88,35 +88,16 @@
                                     <div class="form-group col-sm-6">
                                         <label for="freq">Band</label>
                                         <select id="band" class="form-control form-control-sm" name="band">
-                                            <optgroup label="HF">
-                                                <option value="160m" <?php if(strtolower($qso->COL_BAND == "160m")) { echo "selected=\"selected\""; } ?>>160m</option>
-                                                <option value="80m" <?php if(strtolower($qso->COL_BAND == "80m")) { echo "selected=\"selected\""; } ?>>80m</option>
-                                                <option value="60m" <?php if(strtolower($qso->COL_BAND == "60m")) { echo "selected=\"selected\""; } ?>>60m</option>
-                                                <option value="40m" <?php if(strtolower($qso->COL_BAND == "40m")) { echo "selected=\"selected\""; } ?>>40m</option>
-                                                <option value="30m" <?php if(strtolower($qso->COL_BAND == "30m")) { echo "selected=\"selected\""; } ?>>30m</option>
-                                                <option value="20m" <?php if(strtolower($qso->COL_BAND == "20m")) { echo "selected=\"selected\""; } ?>>20m</option>
-                                                <option value="17m" <?php if(strtolower($qso->COL_BAND == "17m")) { echo "selected=\"selected\""; } ?>>17m</option>
-                                                <option value="15m" <?php if(strtolower($qso->COL_BAND == "15m")) { echo "selected=\"selected\""; } ?>>15m</option>
-                                                <option value="12m" <?php if(strtolower($qso->COL_BAND == "12m")) { echo "selected=\"selected\""; } ?>>12m</option>
-                                                <option value="10m" <?php if(strtolower($qso->COL_BAND == "10m")) { echo "selected=\"selected\""; } ?>>10m</option>
-                                            </optgroup>
-
-                                            <optgroup label="VHF">
-                                                <option value="6m" <?php if(strtolower($qso->COL_BAND == "6m")) { echo "selected=\"selected\""; } ?>>6m</option>
-                                                <option value="4m" <?php if(strtolower($qso->COL_BAND == "4m")) { echo "selected=\"selected\""; } ?>>4m</option>
-                                                <option value="2m" <?php if(strtolower($qso->COL_BAND == "2m")) { echo "selected=\"selected\""; } ?>>2m</option>
-                                            </optgroup>
-
-                                            <optgroup label="UHF">
-                                                <option value="70cm" <?php if(strtolower($qso->COL_BAND == "70cm")) { echo "selected=\"selected\""; } ?>>70cm</option>
-                                                <option value="23cm" <?php if(strtolower($qso->COL_BAND == "23cm")) { echo "selected=\"selected\""; } ?>>23cm</option>
-                                                <option value="13cm" <?php if(strtolower($qso->COL_BAND == "13cm")) { echo "selected=\"selected\""; } ?>>13cm</option>
-                                                <option value="9cm" <?php if(strtolower($qso->COL_BAND == "9cm")) { echo "selected=\"selected\""; } ?>>9cm</option>
-                                            </optgroup>
-
-                                            <optgroup label="Microwave">
-                                                <option value="3cm" <?php if($qso->COL_BAND == "3cm") { echo "selected=\"selected\""; } ?>>3cm</option>
-                                            </optgroup>
+                                        <?php foreach($bands as $key=>$bandgroup) {
+                                            echo '<optgroup label="' . strtoupper($key) . '">';
+                                            foreach($bandgroup as $band) {
+                                                echo '<option value="' . $band . '"';
+                                                if (strtolower($qso->COL_BAND) == $band) echo ' selected';
+                                                echo '>' . $band . '</option>'."\n";
+                                            }
+                                            echo '</optgroup>';
+                                            }
+                                        ?>
                                         </select>
                                     </div>
 
@@ -124,35 +105,17 @@
                                         <label for="freq">RX Band</label>
                                         <select id="band_rx" class="form-control form-control-sm" name="band_rx">
                                             <option value="" <?php if(strtolower($qso->COL_BAND_RX == "")) { echo "selected=\"selected\""; } ?>></option>
-                                            <optgroup label="HF">
-                                                <option value="160m" <?php if(strtolower($qso->COL_BAND_RX == "160m")) { echo "selected=\"selected\""; } ?>>160m</option>
-                                                <option value="80m" <?php if(strtolower($qso->COL_BAND_RX == "80m")) { echo "selected=\"selected\""; } ?>>80m</option>
-                                                <option value="60m" <?php if(strtolower($qso->COL_BAND_RX == "60m")) { echo "selected=\"selected\""; } ?>>60m</option>
-                                                <option value="40m" <?php if(strtolower($qso->COL_BAND_RX == "40m")) { echo "selected=\"selected\""; } ?>>40m</option>
-                                                <option value="30m" <?php if(strtolower($qso->COL_BAND_RX == "30m")) { echo "selected=\"selected\""; } ?>>30m</option>
-                                                <option value="20m" <?php if(strtolower($qso->COL_BAND_RX == "20m")) { echo "selected=\"selected\""; } ?>>20m</option>
-                                                <option value="17m" <?php if(strtolower($qso->COL_BAND_RX == "17m")) { echo "selected=\"selected\""; } ?>>17m</option>
-                                                <option value="15m" <?php if(strtolower($qso->COL_BAND_RX == "15m")) { echo "selected=\"selected\""; } ?>>15m</option>
-                                                <option value="12m" <?php if(strtolower($qso->COL_BAND_RX == "12m")) { echo "selected=\"selected\""; } ?>>12m</option>
-                                                <option value="10m" <?php if(strtolower($qso->COL_BAND_RX == "10m")) { echo "selected=\"selected\""; } ?>>10m</option>
-                                            </optgroup>
-
-                                            <optgroup label="VHF">
-                                                <option value="6m" <?php if(strtolower($qso->COL_BAND_RX == "6m")) { echo "selected=\"selected\""; } ?>>6m</option>
-                                                <option value="4m" <?php if(strtolower($qso->COL_BAND_RX == "4m")) { echo "selected=\"selected\""; } ?>>4m</option>
-                                                <option value="2m" <?php if(strtolower($qso->COL_BAND_RX == "2m")) { echo "selected=\"selected\""; } ?>>2m</option>
-                                            </optgroup>
-
-                                            <optgroup label="UHF">
-                                                <option value="70cm" <?php if(strtolower($qso->COL_BAND_RX == "70cm")) { echo "selected=\"selected\""; } ?>>70cm</option>
-                                                <option value="23cm" <?php if(strtolower($qso->COL_BAND_RX == "23cm")) { echo "selected=\"selected\""; } ?>>23cm</option>
-                                                <option value="13cm" <?php if(strtolower($qso->COL_BAND_RX == "13cm")) { echo "selected=\"selected\""; } ?>>13cm</option>
-                                                <option value="9cm" <?php if(strtolower($qso->COL_BAND_RX == "9cm")) { echo "selected=\"selected\""; } ?>>9cm</option>
-                                            </optgroup>
-
-                                            <optgroup label="Microwave">
-                                                <option value="3cm" <?php if($qso->COL_BAND_RX == "3cm") { echo "selected=\"selected\""; } ?>>3cm</option>
-                                            </optgroup>
+                                            <?php foreach($bands as $key=>$bandgroup) {
+                                            echo '<optgroup label="' . strtoupper($key) . '">';
+                                            foreach($bandgroup as $band) {
+                                                echo '<option value="' . $band . '"';
+                                                if (strtolower($qso->COL_BAND_RX) == $band) echo ' selected';
+                                                echo '>' . $band . '</option>'."\n";
+                                            }
+                                            echo '</optgroup>';
+                                            }
+                                        ?>
+                                        </select>
                                         </select>
                                     </div>
                                 </div>
@@ -187,8 +150,8 @@
                                     </div>
 
                                     <div class="form-group col-sm-6">
-                                        <label for="rst_recv">RST (R)</label>
-                                        <input type="text" class="form-control form-control-sm" name="rst_recv" id="rst_recv" value="<?php echo $qso->COL_RST_RCVD; ?>">
+                                        <label for="rst_rcvd">RST (R)</label>
+                                        <input type="text" class="form-control form-control-sm" name="rst_rcvd" id="rst_rcvd" value="<?php echo $qso->COL_RST_RCVD; ?>">
                                     </div>
                                 </div>
 
@@ -198,7 +161,10 @@
                                     <div class="form-group col-sm-6">
                                         <label for="locator">Gridsquare</label>
                                         <input type="text" class="form-control" id="locator" name="locator" value="<?php echo $qso->COL_GRIDSQUARE; ?>">
+                                        <small id="locator_info" class="form-text text-muted"><?php if ($qso->COL_DISTANCE != "") echo $qso->COL_DISTANCE." km"; ?></small>
                                     </div>
+
+                                    <input type="hidden" name="distance" id="distance" value="<?php print ($qso->COL_DISTANCE != "") ? $qso->COL_DISTANCE : "0"; ?>">
 
                                     <div class="form-group col-sm-6">
                                         <label for="vucc_grids">VUCC Gridsquare</label>
@@ -221,7 +187,7 @@
 
                                 <div class="form-group">
                                     <label for="comment">Comment</label>
-                                    <input type="text" class="form-control" id="comment" name="comment" value="<?php echo $qso->COL_COMMENT; ?>">
+                                    <input type="text" class="form-control" id="comment" name="comment" value="<?php echo htmlspecialchars($qso->COL_COMMENT ? $qso->COL_COMMENT : '', ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
 
                                 <div class="form-row">
@@ -229,6 +195,7 @@
                                         <label for="prop_mode">Propagation Mode</label>
                                         <select class="custom-select" id="prop_mode" name="prop_mode">
                                             <option value="" <?php if($qso->COL_PROP_MODE == "") { echo "selected=\"selected\""; } ?>></option>
+                                            <option value="AS" <?php if($qso->COL_PROP_MODE == "AS") { echo "selected=\"selected\""; } ?>>Aircraft Scatter</option>
                                             <option value="AUR" <?php if($qso->COL_PROP_MODE == "AUR") { echo "selected=\"selected\""; } ?>>Aurora</option>
                                             <option value="AUE" <?php if($qso->COL_PROP_MODE == "AUE") { echo "selected=\"selected\""; } ?>>Aurora-E</option>
                                             <option value="BS" <?php if($qso->COL_PROP_MODE == "BS") { echo "selected=\"selected\""; } ?>>Back scatter</option>
@@ -251,20 +218,39 @@
 
                                     <input type="hidden" class="form-control" id="country" name="country" value="<?php echo $qso->COL_COUNTRY; ?>">
 
+                                </div>
+                                <div class="form-row">
                                     <div class="form-group col-sm-6">
                                         <label for="dxcc_id">DXCC</label>
                                         <select class="custom-select" id="dxcc_id" name="dxcc_id" required>
-                                            <option value="0">None</option>
+                                            <option value="0">- NONE -</option>
                                             <?php
                                             foreach($dxcc as $d){
                                                 echo '<option value=' . $d->adif;
                                                 if ($qso->COL_DXCC == $d->adif) {
                                                     echo " selected=\"selected\"";
                                                 }
-                                                echo '>' . $d->prefix . ' - ' . $d->name . '</option>';
+                                                echo '>' . $d->prefix . ' - ' . ucwords(strtolower(($d->name)));
+                                                if ($d->Enddate != null) {
+                                                    echo ' ('.lang('gen_hamradio_deleted_dxcc').')';
+                                                }
+                                                echo '</option>';
                                             }
                                             ?>
 
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-6">
+                                        <label for="continent"><?php echo lang('gen_hamradio_continent'); ?></label>
+                                        <select class="custom-select" id="continent" name="continent">
+                                            <option value=""></option>
+                                            <option value="AF" <?php if($qso->COL_CONT == "AF") { echo "selected=\"selected\""; } ?>><?php echo lang('africa'); ?></option>
+                                            <option value="AN" <?php if($qso->COL_CONT == "AN") { echo "selected=\"selected\""; } ?>><?php echo lang('antarctica'); ?></option>
+                                            <option value="AS" <?php if($qso->COL_CONT == "AS") { echo "selected=\"selected\""; } ?>><?php echo lang('asia'); ?></option>
+                                            <option value="EU" <?php if($qso->COL_CONT == "EU") { echo "selected=\"selected\""; } ?>><?php echo lang('europe'); ?></option>
+                                            <option value="NA" <?php if($qso->COL_CONT == "NA") { echo "selected=\"selected\""; } ?>><?php echo lang('northamerica'); ?></option>
+                                            <option value="OC" <?php if($qso->COL_CONT == "OC") { echo "selected=\"selected\""; } ?>><?php echo lang('oceania'); ?></option>
+                                            <option value="SA" <?php if($qso->COL_CONT == "SA") { echo "selected=\"selected\""; } ?>><?php echo lang('southamerica'); ?></option>
                                         </select>
                                     </div>
                                 </div>
@@ -390,6 +376,16 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="wwff_ref">WWFF</label>
+                                    <input type="text" class="form-control" id="wwff_ref_edit" name="wwff_ref" value="<?php echo $qso->COL_WWFF_REF; ?>">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="pota_ref">POTA</label>
+                                    <input type="text" class="form-control" id="pota_ref_edit" name="pota_ref" value="<?php echo $qso->COL_POTA_REF; ?>">
+                                </div>
+
+                                <div class="form-group">
                                     <label for="sig">Sig</label>
                                     <input type="text" class="form-control" id="sig" name="sig" value="<?php echo $qso->COL_SIG; ?>">
                                 </div>
@@ -423,7 +419,7 @@
                                         <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">eQSL</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">LOTW</a>
+                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">LoTW</a>
                                     </li>
                                 </ul>
                                 <div class="tab-content" id="myTabContent">
@@ -464,7 +460,7 @@
                                         <div class="form-group row">
                                             <label for="sent-method" class="col-sm-3 col-form-label">Received</label>
                                             <div class="col-sm-9">
-                                                <select class="custom-select" name="qsl_recv">
+                                                <select class="custom-select" name="qsl_rcvd">
                                                     <option value="N" <?php if($qso->COL_QSL_RCVD == "N") { echo "selected=\"selected\""; } ?>>No</option>
                                                     <option value="Y" <?php if($qso->COL_QSL_RCVD == "Y") { echo "selected=\"selected\""; } ?>>Yes</option>
                                                     <option value="R" <?php if($qso->COL_QSL_RCVD == "R") { echo "selected=\"selected\""; } ?>>Requested</option>
@@ -477,7 +473,7 @@
                                         <div class="form-group row">
                                             <label for="sent-method" class="col-sm-3 col-form-label">Received Method</label>
                                             <div class="col-sm-9">
-                                                <select class="custom-select" name="qsl_recv_method">
+                                                <select class="custom-select" name="qsl_rcvd_method">
                                                     <option value="" <?php if($qso->COL_QSL_RCVD_VIA == "") { echo "selected=\"selected\""; } ?>>Method</option>
                                                     <option value="D" <?php if($qso->COL_QSL_RCVD_VIA == "D") { echo "selected=\"selected\""; } ?>>Direct</option>
                                                     <option value="B" <?php if($qso->COL_QSL_RCVD_VIA == "B") { echo "selected=\"selected\""; } ?>>Bureau</option>
@@ -505,7 +501,7 @@
                                         <div class="form-group row">
                                             <label for="sent" class="col-sm-3 col-form-label">Received</label>
                                             <div class="col-sm-9">
-                                                <select class="custom-select" name="eqsl_recv">
+                                                <select class="custom-select" name="eqsl_rcvd">
                                                     <option value="N" <?php if($qso->COL_EQSL_QSL_RCVD == "N") { echo "selected=\"selected\""; } ?>>No</option>
                                                     <option value="Y" <?php if($qso->COL_EQSL_QSL_RCVD == "Y") { echo "selected=\"selected\""; } ?>>Yes</option>
                                                     <option value="R" <?php if($qso->COL_EQSL_QSL_RCVD == "R") { echo "selected=\"selected\""; } ?>>Requested</option>
@@ -513,6 +509,18 @@
                                                     <option value="V" <?php if($qso->COL_EQSL_QSL_RCVD == "V") { echo "selected=\"selected\""; } ?>>Verified (Match)</option>
                                                 </select></div>
                                         </div>
+                                        <div class="form-group row">
+                                             <div class="col-sm-9">
+                                                 <label for="qslmsg"><?php echo lang('general_word_notes'); ?></label>
+                                                 <div class="alert alert-info" role="alert">
+                                                     <span class="badge badge-info"><?php echo lang('general_word_info'); ?></span> <?php echo lang('qsl_notes_helptext'); ?>
+                                                 </div>
+                                             </div>
+                                             <div class="col-sm-9">
+                                                 <textarea  type="text" class="form-control" id="qslmsg" name="qslmsg" rows="5"><?php echo $qso->COL_QSLMSG; ?></textarea>
+                                             </div>
+                                        </div>
+
                                     </div>
                                     <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
                                         <div class="form-group row">
@@ -530,7 +538,7 @@
                                         <div class="form-group row">
                                             <label for="sent" class="col-sm-3 col-form-label">Received</label>
                                             <div class="col-sm-9">
-                                                <select class="custom-select" name="lotw_recv">
+                                                <select class="custom-select" name="lotw_rcvd">
                                                     <option value="N" <?php if($qso->COL_LOTW_QSL_RCVD == "N") { echo "selected=\"selected\""; } ?>>No</option>
                                                     <option value="Y" <?php if($qso->COL_LOTW_QSL_RCVD == "Y") { echo "selected=\"selected\""; } ?>>Yes</option>
                                                     <option value="R" <?php if($qso->COL_LOTW_QSL_RCVD == "R") { echo "selected=\"selected\""; } ?>>Requested</option>
@@ -549,7 +557,7 @@
                                 <?php
                                 $CI =& get_instance();
                                 $CI->load->model('stations');
-                                $my_stations = $CI->stations->all();
+                                $my_stations = $CI->stations->all_of_user();
                                 ?>
 
                                 <div class="form-group">

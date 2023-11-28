@@ -64,7 +64,7 @@ $autoload['libraries'] = array('database', 'session', 'curl', 'OptionsLib', 'Fre
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url', 'security');
+$autoload['helper'] = array('url', 'security', 'language');
 
 
 /*
@@ -96,8 +96,26 @@ $autoload['config'] = array('cloudlog', 'bands', 'lotw');
 |
 */
 
-$autoload['language'] = array('general_words');
-
+$autoload['language'] = array(
+    'account',
+    'adif',
+    'admin',
+    'awards',
+    'contesting',
+    'eqsl',
+    'export',
+    'filter',
+    'general_words',
+    'gridsquares',
+    'lotw',
+    'menu',
+    'notes',
+    'options',
+    'qslcard',
+    'qso',
+    'station',
+    'statistics'
+    );
 
 /*
 | -------------------------------------------------------------------

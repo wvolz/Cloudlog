@@ -19,26 +19,28 @@ class Station extends CI_Controller {
 	{
 		$this->load->model('stations');
 		$this->load->model('Logbook_model');
+		$this->load->model('user_model');
+
+		$data['is_admin'] = ($this->user_model->authorize(99));
 
 		$data['stations'] = $this->stations->all_with_count();
 		$data['current_active'] = $this->stations->find_active();
 		$data['is_there_qsos_with_no_station_id'] = $this->Logbook_model->check_for_station_id();
 
 		// Render Page
-		$data['page_title'] = "Station Location";
+		$data['page_title'] = lang('station_location');
 		$this->load->view('interface_assets/header', $data);
 		$this->load->view('station_profile/index');
 		$this->load->view('interface_assets/footer');
 	}
 
-	public function create() 
-	{
+	public function create() {
 		$this->load->model('stations');
 		$this->load->model('dxcc');
 		$data['dxcc_list'] = $this->dxcc->list();
 
-        $this->load->model('logbook_model');
-        $data['iota_list'] = $this->logbook_model->fetchIota();
+		$this->load->model('logbook_model');
+		$data['iota_list'] = $this->logbook_model->fetchIota();
 
 		$this->load->library('form_validation');
 
@@ -46,62 +48,105 @@ class Station extends CI_Controller {
 
 		if ($this->form_validation->run() == FALSE)
 		{
-			$data['page_title'] = "Create Station Location";
+			$data['page_title'] = lang('station_location_create_header');
 			$this->load->view('interface_assets/header', $data);
 			$this->load->view('station_profile/create');
 			$this->load->view('interface_assets/footer');
 		}
 		else
-		{	
+		{
 			$this->stations->add();
-			
+
 			redirect('station');
 		}
 	}
 
-	public function edit($id)
-	{
+	public function edit($id) {
+		$this->load->model('stations');
+		if ($this->stations->check_station_is_accessible($id)) {
+			$data = $this->load_station_for_editing($id);
+			$data['page_title'] = lang('station_location_edit') . $data['my_station_profile']->station_profile_name;
+
+			if ($this->form_validation->run() == FALSE) {
+				$this->load->view('interface_assets/header', $data);
+				$this->load->view('station_profile/edit');
+				$this->load->view('interface_assets/footer');
+			} else {
+				$this->stations->edit();
+
+				$data['notice'] = lang('station_location') . $this->security->xss_clean($this->input->post('station_profile_name', true)) . " Updated";
+
+				redirect('station');
+			}
+		} else {
+			redirect('station');
+		}
+	}
+
+	public function copy($id) {
+		$this->load->model('stations');
+		if ($this->stations->check_station_is_accessible($id)) {
+			$data = $this->load_station_for_editing($id);
+			$data['page_title'] = "Duplicate Station Location: {$data['my_station_profile']->station_profile_name}";
+
+			// we NULLify station_id and station_profile_name to make sure we are creating a new station
+			$data['copy_from'] = $data['my_station_profile']->station_id;
+			$data['my_station_profile']->station_id = NULL;
+			$data['my_station_profile']->station_profile_name = '';
+
+			if ($this->form_validation->run() == FALSE)
+			{
+				$this->load->view('interface_assets/header', $data);
+				$this->load->view('station_profile/edit');
+				$this->load->view('interface_assets/footer');
+			}
+			else
+			{
+				$this->stations->add();
+
+				redirect('station');
+			}
+		} else {
+			redirect('station');
+		}
+	}
+
+	function load_station_for_editing($id): array {
 		$this->load->library('form_validation');
 
 		$this->load->model('stations');
 		$this->load->model('dxcc');
-        $this->load->model('logbook_model');
+		$this->load->model('logbook_model');
 
-        $data['iota_list'] = $this->logbook_model->fetchIota();
+		$data['iota_list'] = $this->logbook_model->fetchIota();
 
 		$item_id_clean = $this->security->xss_clean($id);
 
 		$station_profile_query = $this->stations->profile($item_id_clean);
 
 		$data['my_station_profile'] = $station_profile_query->row();
-		
-		$data['dxcc_list'] = $this->dxcc->list();
 
-		$data['page_title'] = "Edit Station Location";
+		$data['dxcc_list'] = $this->dxcc->list();
 
 		$this->form_validation->set_rules('station_profile_name', 'Station Profile Name', 'required');
 
-        if ($this->form_validation->run() == FALSE)
-        {
-        	$this->load->view('interface_assets/header', $data);
-            $this->load->view('station_profile/edit');
-            $this->load->view('interface_assets/footer');
-        }
-        else
-        {
-            $this->stations->edit();
+		return $data;
+	}
 
-            $data['notice'] = "Station Profile ".$this->security->xss_clean($this->input->post('station_profile_name', true))." Updated";
-
-            redirect('station');
-        }
+	// This function allows a user to claim ownership of a station location
+	function claim_user($id) {
+		// $id is the profile id
+		$this->load->model('stations');
+		$this->stations->claim_user($id);
+		
+		redirect('station');
 	}
 
 	function reassign_profile($id) {
 		// $id is the profile that needs reassigned to QSOs
 		$this->load->model('stations');
 		$this->stations->reassign($id);
-		
+
 		//$this->stations->logbook_session_data();
 		redirect('station');
 	}
@@ -109,29 +154,24 @@ class Station extends CI_Controller {
 	function set_active($current, $new) {
 		$this->load->model('stations');
 		$this->stations->set_active($current, $new);
-		
-		//$this->stations->logbook_session_data();
-		redirect('station');
-	}
 
-	function assign_all() {
-		$this->load->model('Logbook_model');
-		$this->Logbook_model->update_all_station_ids();
-		
+		//$this->stations->logbook_session_data();
 		redirect('station');
 	}
 
 	public function delete($id) {
 		$this->load->model('stations');
-		$this->stations->delete($id);
-		
+		if ($this->stations->check_station_is_accessible($id)) {
+			$this->stations->delete($id);
+		}
 		redirect('station');
 	}
 
-    public function deletelog($id) {
+    	public function deletelog($id) {
         $this->load->model('stations');
-        $this->stations->deletelog($id);
-
+	if ($this->stations->check_station_is_accessible($id)) {
+        	$this->stations->deletelog($id);
+	}
         redirect('station');
     }
 

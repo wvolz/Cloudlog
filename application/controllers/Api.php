@@ -5,46 +5,19 @@ class API extends CI_Controller {
 	// Do absolutely nothing
 	function index()
 	{
-	}
-
-
-	/*
-		TODOs
-		- Search Callsign (Return Json)
-		- Add QSO return json
-	*/
-
-
-	function search_callsign($callsign) {
-		$this->db->select('COL_PRIMARY_KEY, COL_CALL, COL_MODE, COL_SUBMODE, COL_BAND, COL_COUNTRY, COL_FREQ, COL_GRIDSQUARE, COL_RST_RCVD, COL_RST_SENT, COL_SAT_MODE, COL_SAT_NAME');
-		//$this->db->select("DATE_FORMAT(COL_TIME_ON, '%H:%i') AS time_on", FALSE );
-		//$this->db->select("DATE_FORMAT(COL_TIME_ON, '%d/%c/%Y') AS date_on", FALSE );
-		$this->db->like('COL_CALL', $callsign);
-		$this->db->or_like('COL_GRIDSQUARE', $callsign);
-		$query = $this->db->get($this->config->item('table_name'));
-
-
-		$results = array();
-
-		foreach ($query->result() as $result)
-		{
-			$results[] = $result;
-		}
-
-		header('Content-type: application/json');
-
-		//$arr = array ('a'=>1,'b'=>2,'c'=>3,'d'=>4,'e'=>5);
-		echo $_GET['jsoncallback'].'('.json_encode($results).')'; //assign resulting code to $_GET['jsoncallback].
-
-		//echo json_encode($results);
-
+		echo "nothing to see";
 	}
 
 	function help()
 	{
 		$this->load->model('user_model');
-		if(!$this->user_model->authorize(99)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
 
+		// Check if users logged in
+
+		if($this->user_model->validate_session() == 0) {
+			// user is not logged in
+			redirect('user/login');
+		}
 
 		$this->load->model('api_model');
 
@@ -61,7 +34,12 @@ class API extends CI_Controller {
 	function edit($key) {
 		$this->load->model('user_model');
 
-		if(!$this->user_model->authorize(99)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
+		// Check if users logged in
+
+		if($this->user_model->validate_session() == 0) {
+			// user is not logged in
+			redirect('user/login');
+		}
 
 		$this->load->model('api_model');
 
@@ -97,7 +75,13 @@ class API extends CI_Controller {
 
 	function generate($rights) {
 		$this->load->model('user_model');
-		if(!$this->user_model->authorize(99)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
+
+		// Check if users logged in
+
+		if($this->user_model->validate_session() == 0) {
+			// user is not logged in
+			redirect('user/login');
+		}
 
 
 		$this->load->model('api_model');
@@ -109,7 +93,13 @@ class API extends CI_Controller {
 
 	function delete($key) {
 		$this->load->model('user_model');
-		if(!$this->user_model->authorize(99)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
+
+		// Check if users logged in
+
+		if($this->user_model->validate_session() == 0) {
+			// user is not logged in
+			redirect('user/login');
+		}
 
 
 		$this->load->model('api_model');
@@ -137,258 +127,32 @@ class API extends CI_Controller {
 		}
 	}
 
-	// FUNCTION: search()
-	// Handle search requests
-	/*
-		Okay, so here's how it works in a nutshell...
-
-		*******************************************************************
-		Because this is effectively just a filter between the query string
-		and a MySQL statement, if done wrong we're just asking for pain.
-
-		DO NOT alter any of the filtering statements without fully
-		understanding what you're doing. CodeIgniter provides some
-		protection against unwanted characters in the query string, but
-		this should in no way be relied upon for safety.
-		*******************************************************************
-
-		Example query:-
-		.../search/query[Call~M0*(and)(Locator~I*(or)Locator~J*)]/limit[10]/fields[distinct(Call),Locator]/order[Call(asc)]
-
-		There's four parts to this query, separated with forward slashes. It's effectively a heavily-sanitised
-		MySQL query, hence the hideous search and replace code blocks below.
-
-		FIELDS
-		------
-		Straightforward - input is sanitised and passed on - in the example, this ends up as "DISTINCT (Call),Locator",
-		which is then the first argument to 'SELECT'
-
-		QUERY
-		-----
-		This forms the 'WHERE' clause.
-
-		* '(and)' and '(or)' are expanded out to ' AND ' and ' OR '
-		* Parentheses are preserved
-		* '~' is expanded out to ' LIKE '
-		* '*' is translated to '%'
-		* Values are encapsulated in quote marks
-
-		So in the example, this translates to "WHERE Call LIKE 'M0%' AND (Locator LIKE 'I%' OR Locator LIKE 'J%')"
-
-		ORDER
-		-----
-		Sanitised, so our example ends up as "ORDER BY Call ASC".
-
-		LIMIT
-		-----
-		Straightforward - what's between the square brackets is passed as an argument to 'LIMIT'
-
-		Finally, once this has been done, each field name is translated to the MySQL column name.
-	*/
-	function search()
-	{
-		// Load the API and Logbook models
+	function station_info($key) {
 		$this->load->model('api_model');
-		$this->load->model('logbook_model');
-		$this->load->model('user_model');
-
-		$arguments = $this->_retrieve();
-		print_r($arguments);
-		return;
-
-		if((!$this->user_model->authorize(3)) && ($this->api_model->authorize($arguments['key']) == 0)) {
-            $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard');
-        }
-
-		// Retrieve the arguments from the query string
-        $data['data']['format'] = $arguments['format'];
-
-		// Call the parser within the API model to build the query
-		$query = $this->api_model->select_parse($arguments);
-
-		// Execute the query, and retrieve the results
-		$s = $this->logbook_model->api_search_query($query);
-		$a = 0;
-
-        // Print query results using original column names and exit
-        if ($arguments['format'] == 'original'){
-            $results = array();
-            foreach($s['results']->result() as $row){
-                //print_r($row);
-                array_push($results,  $row);
-            }
-
-            print json_encode($results);
-            return;
-		}
-
-        if(isset($s['results'])) {
-            $results = $s['results'];
-
-            // Cycle through the results, and translate between MySQL column names
-            // and more friendly, descriptive names
-            if($results->num_rows() != 0)
-            {
-                foreach ($results->result() as $row) {
-                    $record = (array)$row;
-                    $r[$a]['rid'] = $a;
-                    while (list($key, $val) = each($record)) {
-                        $r[$a][$this->api_model->name($key)] = $val;
-                    }
-                    $a++;
-                }
-                // Add the result record to the main results array
-                $data['data']['search_Result']['results'] = $r;
-            }
-            else
-            {
-                // We've got no results, so make this empty for completeness
-            $data['data']['search_Result']['results'] = "";
-            }
-        } else {
-            $data['data']['error'] = $s['error'];
-            $data['data']['search_Result']['results'] = "";
-        }
-
-		// Add some debugging information to the XML output
-		$data['data']['queryInfo']['call'] = "search";
-		$data['data']['queryInfo']['dbQuery'] = $s['query'];
-		$data['data']['queryInfo']['numResults'] = $a;
-		$data['data']['queryInfo']['executionTime'] = $s['time'];
-
-		// Load the XML output view
-		$this->load->view('api/index', $data);
-	}
-
-	/*
-	 * version of search that is callable internally
-	 * $arguments is an array of columns to query
-	 */
-	function api_search($arguments){
-		// Load the API and Logbook models
-		$this->load->model('api_model');
-		$this->load->model('logbook_model');
-		$this->load->model('user_model');
-
-		if((!$this->user_model->authorize(3)) && ($this->api_model->authorize($arguments['key']) == 0)) {
-            $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard');
-        }
-
-		// Retrieve the arguments from the query string
-        $data['data']['format'] = $arguments['format'];
-
-		// Call the parser within the API model to build the query
-		$query = $this->api_model->select_parse($arguments);
-
-		// Execute the query, and retrieve the results
-		$s = $this->logbook_model->api_search_query($query);
-		return $s;
-	}
-
-  function validate()
-  {
-		// Load the API and Logbook models
-		$this->load->model('api_model');
-		$this->load->model('logbook_model');
-
-		// Retrieve the arguments from the query string
-		$arguments = $this->_retrieve();
-
-		// Add some debugging information to the XML output
-    $data['data'] = $arguments;
-		$data['data']['queryInfo']['call'] = "validate";
-		$data['data']['queryInfo']['dbQuery'] = "";
-		$data['data']['queryInfo']['numResults'] = 1;
-		$data['data']['queryInfo']['executionTime'] = 0;
-
-    $data['data']['validate_Result']['results'] = array(0 => array('Result' => $this->api_model->authorize($arguments['key'])));
-
-    $this->load->view('api/index', $data);
-  }
-
-	function add()
-	{
-		// Load the API and Logbook models
-		$this->load->model('api_model');
-		$this->load->model('logbook_model');
-		$this->load->model('user_model');
-		if(!$this->user_model->authorize(3)) { $this->session->set_flashdata('notice', 'You\'re not allowed to do that!'); redirect('dashboard'); }
-
-		// Retrieve the arguments from the query string
-		$arguments = $this->_retrieve();
-
-		// Call the parser within the API model to build the query
-		$query = $this->api_model->insert_parse($arguments);
-
-		# Check for guessable fields
-		if(!isset($query['COL_TIME_ON']))
-		{
-			$query['COL_TIME_ON'] = date("m-d-Y H:i:s", time());
-		}
-		if(!isset($query['COL_TIME_OFF']))
-		{
-			$query['COL_TIME_OFF'] = date("m-d-Y H:i:s", time());
-		}
-
-		$data['data']['queryInfo']['dbQuery'] = "";
-		$data['data']['queryInfo']['executionTime'] = 0;
-
-		if(!isset($query['COL_CALL'])) {
-			$data['data']['add_Result']['results'] = array(0 => array('Result' => 'EMISSINGCALL'));
+		$this->load->model('stations');
+		header("Content-type: application/json");
+		if(substr($this->api_model->access($key),0,1) == 'r') { /* Checkpermission for  _r_eading */
+			$this->api_model->update_last_used($key);
+			$userid = $this->api_model->key_userid($key);
+ 			$station_ids = array();
+			$stations=$this->stations->all_of_user($userid);
+ 			foreach ($stations->result() as $row) {
+				$result['station_id']=$row->station_id;
+				$result['station_profile_name']=$row->station_profile_name;
+				$result['station_gridsquare']=$row->station_gridsquare;
+				$result['station_callsign']=$row->station_callsign;;
+				$result['station_active']=$row->station_active;
+ 				array_push($station_ids, $result);
+ 			}
+			echo json_encode($station_ids);
 		} else {
-			$s = $this->logbook_model->api_insert_query($query);
-			$data['data']['queryInfo']['dbQuery'] = $s['query'];
-			$data['data']['queryInfo']['executionTime'] = $s['time'];
-
-			$data['data']['add_Result']['results'] = array(0 => array('Result' => $s['result_string']));
+			http_response_code(401);
+			echo json_encode(['status' => 'failed', 'reason' => "missing or invalid api key"]);
 		}
-
-		// Add some debugging information to the XML output
-		$data['data']['queryInfo']['call'] = "add";
-		$data['data']['queryInfo']['numResults'] = 0;
-
-		$this->load->view('api/index', $data);
 	}
 
-	// FUNCTION: _retrieve()
-	// Pull the search query arguments from the query string
-	private function _retrieve()
-	{
-		// This whole function could probably have been done in one line... if this was Perl.
-		$arguments = array();
 
-		// Retrieve each arguments
-		$query = preg_grep("/^query=(.*)$/", $this->uri->segments);
-		$limit = preg_grep("/^limit=(.*)$/", $this->uri->segments);
-		$order = preg_grep("/^order=(.*)$/", $this->uri->segments);
-		$fields = preg_grep("/^fields=(.*)$/", $this->uri->segments);
-		$format = preg_grep("/^format=(.*)$/", $this->uri->segments);
-		$key = preg_grep("/^key=(.*)$/", $this->uri->segments);
-
-		// Strip each argument
-		$arguments['query'] = substr(array_pop($query), 6);
-		$arguments['query'] = substr($arguments['query'], 0, strlen($arguments['query']));
-		$arguments['limit'] = substr(array_pop($limit), 6);
-		$arguments['limit'] = substr($arguments['limit'], 0, strlen($arguments['limit']));
-		$arguments['order'] = substr(array_pop($order), 6);
-		$arguments['order'] = substr($arguments['order'], 0, strlen($arguments['order']));
-		$arguments['fields'] = substr(array_pop($fields), 7);
-		$arguments['fields'] = substr($arguments['fields'], 0, strlen($arguments['fields']));
-		$arguments['format'] = substr(array_pop($format), 7);
-		$arguments['format'] = substr($arguments['format'], 0, strlen($arguments['format']));
-		$arguments['key'] = substr(array_pop($key), 4);
-		$arguments['key'] = substr($arguments['key'], 0, strlen($arguments['key']));
-
-    // By default, assume XML for the format if not otherwise set
-    if($arguments['format'] == "") {
-      $arguments['format'] = "xml";
-    }
-
-		// Return the arguments
-		return $arguments;
-	}
-
-	/*
+  	/*
 	*
 	*	Function: QSO
 	*	Task: allows passing of ADIF data to Cloudlog
@@ -397,6 +161,11 @@ class API extends CI_Controller {
 		header('Content-type: application/json');
 
 		$this->load->model('api_model');
+
+		$this->load->model('stations');
+
+		$return_msg = array();
+		$return_count = 0;
 
 		// Decode JSON and store
 		$obj = json_decode(file_get_contents("php://input"), true);
@@ -411,6 +180,13 @@ class API extends CI_Controller {
 		   die();
 		}
 
+		$userid = $this->api_model->key_userid($obj['key']);
+
+		if(!isset($obj['station_profile_id']) || $this->stations->check_station_against_user($obj['station_profile_id'], $userid) == false) {
+			http_response_code(401);
+			echo json_encode(['status' => 'failed', 'reason' => "station id does not belong to the API key owner."]);
+			die();
+		}
 
 		if($obj['type'] == "adif" && $obj['string'] != "") {
 			// Load the logbook model for adding QSO records
@@ -432,31 +208,190 @@ class API extends CI_Controller {
 
 
 				if(isset($obj['station_profile_id'])) {
-					$this->logbook_model->import($record, $obj['station_profile_id'], NULL, NULL, NULL, NULL, false, false);
-				} else {
-					$this->logbook_model->import($record, 0, NULL, NULL, NULL, NULL, false, false);
+					if(isset($record['station_callsign']) && $this->stations->check_station_against_callsign($obj['station_profile_id'], $record['station_callsign']) == false) {
+						http_response_code(401);
+						echo json_encode(['status' => 'failed', 'reason' => "station callsign does not match station callsign in station profile."]);
+						die();
+					}
+
+					$this->api_model->update_last_used($obj['key']);
+
+					$msg = $this->logbook_model->import($record, $obj['station_profile_id'], NULL, NULL, NULL, NULL, NULL, NULL, false, false, true);
+
+					if ( $msg == "" ) {
+						$return_count++;
+					} else {
+						$return_msg[] = $msg;
+					}
 				}
 
 			};
 			http_response_code(201);
-			echo json_encode(['status' => 'created', 'type' => $obj['type'], 'string' => $obj['string']]);
+			echo json_encode(['status' => 'created', 'type' => $obj['type'], 'string' => $obj['string'], 'imported_count' => $return_count, 'messages' => $return_msg ]);
 
 		}
 
 	}
 
-	function country_worked($dxcc_num, $band, $mode = NULL) {
+	// API function to check if a callsign is in the logbook already
+	function logbook_check_callsign() {
+		header('Content-type: application/json');
+
 		$this->load->model('api_model');
 
-		echo $this->api_model->country_worked($dxcc_num, $band, $mode);
+		// Decode JSON and store
+		$obj = json_decode(file_get_contents("php://input"), true);
+		if ($obj === NULL) {
+		    echo json_encode(['status' => 'failed', 'reason' => "wrong JSON"]);
+			return;
+		}
+
+		if(!isset($obj['key']) || $this->api_model->authorize($obj['key']) == 0) {
+		   http_response_code(401);
+		   echo json_encode(['status' => 'failed', 'reason' => "missing api key"]);
+			return;
+		}
+
+		if(!isset($obj['logbook_public_slug']) || !isset($obj['callsign'])) {
+		   http_response_code(401);
+		   echo json_encode(['status' => 'failed', 'reason' => "missing fields"]);
+			return;
+		}
+
+		if($obj['logbook_public_slug'] != "" && $obj['callsign'] != "") {
+
+			$logbook_slug = $obj['logbook_public_slug'];
+			$callsign = $obj['callsign'];
+
+			// If $obj['band'] exists
+			if(isset($obj['band'])) {
+				$band = $obj['band'];
+			} else {
+				$band = null;
+			}
+
+			$this->load->model('logbooks_model');
+
+			if($this->logbooks_model->public_slug_exists($logbook_slug)) {
+				$logbook_id = $this->logbooks_model->public_slug_exists_logbook_id($logbook_slug);
+				if($logbook_id != false)
+				{
+					// Get associated station locations for mysql queries
+					$logbooks_locations_array = $this->logbooks_model->list_logbook_relationships($logbook_id);
+	
+					if (!$logbooks_locations_array) {
+						// Logbook not found
+						http_response_code(404);
+						echo json_encode(['status' => 'failed', 'reason' => "Empty Logbook"]);
+						die();
+					}
+				} else {
+					// Logbook not found
+					http_response_code(404);
+					echo json_encode(['status' => 'failed', 'reason' => $logbook_slug." has no associated station locations"]);
+					die();
+				}
+				// Search Logbook for callsign
+				$this->load->model('logbook_model');
+
+				$result = $this->logbook_model->check_if_callsign_worked_in_logbook($callsign, $logbooks_locations_array, $band);
+
+				http_response_code(201);
+				if($result > 0)
+				{
+					echo json_encode(['callsign' => $callsign, 'result' => 'Found']);
+				} else {
+					echo json_encode(['callsign' => $callsign, 'result' => 'Not Found']);
+				}
+			} else {
+				// Logbook not found
+				http_response_code(404);
+				echo json_encode(['status' => 'failed', 'reason' => "logbook not found"]);
+				die();
+			}
+
+		}
+
 	}
 
-	function gridsquare_worked($gridsquare, $band, $mode = NULL) {
+	// API function to check if a grid is in the logbook already
+	function logbook_check_grid() {
+		header('Content-type: application/json');
+
 		$this->load->model('api_model');
 
-		echo $this->api_model->gridsquare_worked($gridsquare, $band, $mode);
-	}
+		// Decode JSON and store
+		$obj = json_decode(file_get_contents("php://input"), true);
+		if ($obj === NULL) {
+		    echo json_encode(['status' => 'failed', 'reason' => "wrong JSON"]);
+		}
 
+		if(!isset($obj['key']) || $this->api_model->authorize($obj['key']) == 0) {
+		   http_response_code(401);
+		   echo json_encode(['status' => 'failed', 'reason' => "missing api key"]);
+		}
+
+		if(!isset($obj['logbook_public_slug']) || !isset($obj['grid'])) {
+		   http_response_code(401);
+		   echo json_encode(['status' => 'failed', 'reason' => "missing fields"]);
+			return;
+		}
+
+		if($obj['logbook_public_slug'] != "" && $obj['grid'] != "") {
+
+			$logbook_slug = $obj['logbook_public_slug'];
+			$grid = $obj['grid'];
+
+			// If $obj['band'] exists
+			if(isset($obj['band'])) {
+				$band = $obj['band'];
+			} else {
+				$band = null;
+			}
+
+			$this->load->model('logbooks_model');
+
+			if($this->logbooks_model->public_slug_exists($logbook_slug)) {
+				$logbook_id = $this->logbooks_model->public_slug_exists_logbook_id($logbook_slug);
+				if($logbook_id != false)
+				{
+					// Get associated station locations for mysql queries
+					$logbooks_locations_array = $this->logbooks_model->list_logbook_relationships($logbook_id);
+	
+					if (!$logbooks_locations_array) {
+						// Logbook not found
+						http_response_code(404);
+						echo json_encode(['status' => 'failed', 'reason' => "Empty Logbook"]);
+						die();
+					}
+				} else {
+					// Logbook not found
+					http_response_code(404);
+					echo json_encode(['status' => 'failed', 'reason' => $logbook_slug." has no associated station locations"]);
+					die();
+				}
+				// Search Logbook for callsign
+				$this->load->model('logbook_model');
+
+				$result = $this->logbook_model->check_if_grid_worked_in_logbook($grid, $logbooks_locations_array, $band);
+
+				http_response_code(201);
+				if($result > 0)
+				{
+					echo json_encode(['gridsquare' => strtoupper($grid), 'result' => 'Found']);
+				} else {
+					echo json_encode(['gridsquare' => strtoupper($grid), 'result' => 'Not Found']);
+				}
+			} else {
+				// Logbook not found
+				http_response_code(404);
+				echo json_encode(['status' => 'failed', 'reason' => "logbook not found"]);
+				die();
+			}
+
+		}
+
+	}
 
 	/* ENDPOINT for Rig Control */
 
@@ -475,12 +410,17 @@ class API extends CI_Controller {
 		$obj = json_decode(file_get_contents("php://input"), true);
 
 		if(!isset($obj['key']) || $this->api_model->authorize($obj['key']) == 0) {
-		   echo json_encode(['status' => 'failed', 'reason' => "missing api key"]);
-		   die();
+			http_response_code(401);
+			echo json_encode(['status' => 'failed', 'reason' => "missing api key"]);
+			die();
 		}
 
+		$this->api_model->update_last_used($obj['key']);
+
+		$user_id = $this->api_model->key_userid($obj['key']);
+
 		// Store Result to Database
-		$this->cat->update($obj);
+		$this->cat->update($obj, $user_id);
 
 		// Return Message
 
@@ -496,14 +436,14 @@ class API extends CI_Controller {
 	*
 	*/
 
-	function statistics() {
+	function statistics($key = null) {
 		header('Content-type: application/json');
 		$this->load->model('logbook_model');
 
-		$data['todays_qsos'] = $this->logbook_model->todays_qsos();
-		$data['total_qsos'] = $this->logbook_model->total_qsos();
-		$data['month_qsos'] = $this->logbook_model->month_qsos();
-		$data['year_qsos'] = $this->logbook_model->year_qsos();
+		$data['todays_qsos'] = $this->logbook_model->todays_qsos(null, $key);
+		$data['total_qsos'] = $this->logbook_model->total_qsos(null, $key);
+		$data['month_qsos'] = $this->logbook_model->month_qsos(null, $key);
+		$data['year_qsos'] = $this->logbook_model->year_qsos(null, $key);
 
 		http_response_code(201);
 		echo json_encode(['Today' => $data['todays_qsos'], 'total_qsos' => $data['total_qsos'], 'month_qsos' => $data['month_qsos'], 'year_qsos' => $data['year_qsos']]);
@@ -643,7 +583,7 @@ class API extends CI_Controller {
 
 		/*
 		*
-		*	Check if callsign is active on LOTW
+		*	Check if callsign is active on LoTW
 		*
 		*/
 
