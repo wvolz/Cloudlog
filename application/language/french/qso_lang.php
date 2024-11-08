@@ -6,13 +6,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $lang['qso_title_qso_map'] = 'Carte QSO';
 $lang['qso_title_suggestions'] = 'Suggestions';
 $lang['qso_title_previous_contacts'] = 'Contacts précédents';
+$lang['qso_title_times_worked_before'] = "times worked before";
 $lang['qso_title_image'] = 'Profile Picture';
+$lang['qso_previous_max_shown'] = "Max. 5 previous contacts are shown";
 
 // Quicklog on Dashboard
 $lang['qso_quicklog_enter_callsign'] = 'QUICKLOG Enter Callsign';
 
 // Input Help Text on the /QSO Display
-$lang['qso_transmit_power_helptext'] = 'Saisissez la ouissance en Watts en utilisant uniquement des chiffres.';
+$lang['qso_transmit_power_helptext'] = 'Saisissez la puissance en Watts en utilisant uniquement des chiffres.';
 
 $lang['qso_sota_ref_helptext'] = 'Par exemple: GM/NS-001.';
 $lang['qso_wwff_ref_helptext'] = 'Par exemple: DLFF-0069.';
@@ -25,6 +27,11 @@ $lang['qso_dok_helptext'] = 'Par exemple: Q03';
 
 $lang['qso_notes_helptext'] = 'A noter : le contenu est utilisé par Cloudlog uniquement et n\'est pas exporté vers d\'autre services';
 $lang['qsl_notes_helptext'] = 'This note content is exported to QSL services like eqsl.cc.';
+
+$lang['qso_eqsl_qslmsg_helptext'] = "Récupérer le message par défaut pour ce lieu de station.";
+
+// error text //
+$lang['qso_error_timeoff_less_timeon'] = "Heure de fin inférieure à celle de début";
 
 // Button Text on /qso Display
 

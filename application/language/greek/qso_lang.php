@@ -6,7 +6,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $lang['qso_title_qso_map'] = 'Χάρτης QSO';
 $lang['qso_title_suggestions'] = 'Εισήγησης';
 $lang['qso_title_previous_contacts'] = 'Προηγούμενες Επαφές';
+$lang['qso_title_times_worked_before'] = "times worked before";
 $lang['qso_title_image'] = 'Εικόνα προφίλ';
+$lang['qso_previous_max_shown'] = "Max. 5 previous contacts are shown";
 
 // Quicklog on Dashboard
 $lang['qso_quicklog_enter_callsign'] = 'QUICKLOG Enter Callsign';
@@ -25,6 +27,11 @@ $lang['qso_dok_helptext'] = 'Για παράδειγμα: Q03';
 
 $lang['qso_notes_helptext'] = 'Το περιεχόμενο σημείωσης χρησιμοποιείται μόνο στο Cloudlog και δεν εξάγεται σε άλλες υπηρεσίες.';
 $lang['qsl_notes_helptext'] = 'Αυτό το περιεχόμενο σημείωσης εξάγεται σε υπηρεσίες QSL όπως το eqsl.cc.';
+
+$lang['qso_eqsl_qslmsg_helptext'] = "Get the default message for eQSL, for this station.";
+
+// error text //
+$lang['qso_error_timeoff_less_timeon'] = "TimeOff is less than TimeOn";
 
 // Button Text on /qso Display
 

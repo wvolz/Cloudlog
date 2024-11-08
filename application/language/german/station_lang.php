@@ -36,6 +36,7 @@ $lang['station_logbooks_select_avail_loc'] = "Wähle verfügbare Stationsstandor
 $lang['station_logbooks_link_loc'] = "Verknüpfe Standort";
 $lang['station_logbooks_linked_loc'] = "Verknüpfte Standorte";
 $lang['station_logbooks_no_linked_loc'] = "Keine verknüpften Standorte";
+$lang['station_logbooks_unlink_station_location'] = "Entferne Verknüpfung";
 
 
 
@@ -94,11 +95,16 @@ $lang['station_location_signature_name_hint'] = "Signatur/Referenz der Station (
 $lang['station_location_signature_info'] = "Signatur Information";
 $lang['station_location_signature_info_hint'] = "Signatur/Referenz Information der Station (z.B. DA/NW-357).";
 $lang['station_location_eqsl_hint'] = "Der 'QTH Nickname' wie er in deinem eQSL Profil konfiguriert ist.";
+$lang['station_location_eqsl_defaultqslmsg'] = "Standard QSLMSG";
+$lang['station_location_eqsl_defaultqslmsg_hint'] = "Definiere eine Standard-Nachricht, welche für jedes QSO in diesem Stationsstandort an eQSL übertragen wird.";
 $lang['station_location_qrz_subscription'] = 'Abonnement erforderlich';
 $lang['station_location_qrz_hint'] = "Finde deinen 'QRZ Logbook API Key' in den <a href='https://logbook.qrz.com/logbook' target='_blank'>QRZ.com Logbuch Einstellungen";
 $lang['station_location_qrz_realtime_upload'] = 'QRZ.com Logbuch Echtzeit Upload';
+$lang['station_location_hrdlog_username'] = "HRDLog.net Benutzername";
+$lang['station_location_hrdlog_username_hint'] = "Der Benutzername mit dem du bei HRDlog.net registriert bist (normalerweise dein Rufzeichen).";
+$lang['station_location_hrdlog_code'] = "HRDLog.net API Key";
 $lang['station_location_hrdlog_realtime_upload'] = "HRDLog.net Logbuch Echtzeit Upload";
-$lang['station_location_hrdlog_hint'] = "Erstelle deinen API Key auf <a href='http://www.hrdlog.net/EditUser.aspx' target='_blank'>HRDLog.net Benutzerprofil Seite";
+$lang['station_location_hrdlog_code_hint'] = "Erstelle deinen API Key auf <a href='http://www.hrdlog.net/EditUser.aspx' target='_blank'>HRDLog.net Benutzerprofil Seite";
 $lang['station_location_qo100_hint'] = "Erstelle deinen API Key auf <a href='https://qo100dx.club' target='_blank'>deiner QO-100 Dx Club's Profil Seite";
 $lang['station_location_qo100_realtime_upload'] = "QO-100 Dx Club Echtzeit Upload";
 $lang['station_location_oqrs_enabled'] = "OQRS aktivieren";
@@ -106,6 +112,4 @@ $lang['station_location_oqrs_email_alert'] = "OQRS Email Benachrichtigung";
 $lang['station_location_oqrs_email_hint'] = "Stelle sicher, dass du E-Mail unter Admin/Globale Optionen konfiguriert hast.";
 $lang['station_location_oqrs_text'] = "OQRS Text";
 $lang['station_location_oqrs_text_hint'] = "Einige Informationen, die du zum QSL-Vorgang hinzufügen möchtest.";
-
-
-
+$lang['station_location_clublog_realtime_upload']='ClubLog Realtime Upload';

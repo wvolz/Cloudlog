@@ -14,7 +14,9 @@ function distPlot(form) {
 		url: base_url+'index.php/distances/get_distances',
 		type: 'post',
 		data: {'band': form.distplot_bands.value,
-			'sat': form.distplot_sats.value},
+			'sat': form.distplot_sats.value,
+			'mode': form.distplot_modes.value,
+			'pwr': form.distplot_powers.value},
 		success: function(tmp) {
 			if (tmp.ok == 'OK') {
 				if (!($('#information').length > 0))
@@ -117,7 +119,8 @@ function distPlot(form) {
 				$('#information').html(tmp.qrb.Qsos + " " + lang_statistics_distances_part1_contacts_were_plotted_furthest + " " + tmp.qrb.Callsign
 					+ " " + lang_statistics_distances_part2_contacts_were_plotted_furthest + " " + tmp.qrb.Grid
 					+". " + lang_statistics_distances_part3_contacts_were_plotted_furthest + " "
-					+ tmp.qrb.Distance + tmp.unit + ".");
+					+ tmp.qrb.Distance + " " + tmp.unit + ". " + lang_statistics_distances_part4_contacts_were_plotted_furthest + " "
+					+ tmp.qrb.Avg_distance + " " + tmp.unit + ".");
 
 				var chart = new Highcharts.Chart(options);
 			}
@@ -141,6 +144,8 @@ function getDistanceQsos(distance) {
 			'distance': distance,
 			'band': $("#distplot_bands").val(),
 			'sat' : $("#distplot_sats").val(),
+			'mode': $("#distplot_modes").val(),
+			'pwr': $("#distplot_powers").val(),
 		},
 		success: function (html) {
 			BootstrapDialog.show({
@@ -150,7 +155,7 @@ function getDistanceQsos(distance) {
 				nl2br: false,
 				message: html,
 				onshown: function(dialog) {
-				   $('[data-toggle="tooltip"]').tooltip();
+				   $('[data-bs-toggle="tooltip"]').tooltip();
 				   $('.contacttable').DataTable({
 						"pageLength": 25,
 						responsive: false,
@@ -159,11 +164,17 @@ function getDistanceQsos(distance) {
 						"scrollCollapse": true,
 						"paging":         false,
 						"scrollX": true,
+						"language": {
+							url: getDataTablesLanguageUrl(),
+						},
 						dom: 'Bfrtip',
 						buttons: [
 							'csv'
 						]
 					});
+                    $('.table-responsive .dropdown-toggle').off('mouseenter').on('mouseenter', function () {
+                        showQsoActionsMenu($(this).closest('.dropdown'));
+                    });
 				},
 				buttons: [{
 					label: lang_admin_close,

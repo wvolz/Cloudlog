@@ -15,6 +15,10 @@ $lang['general_word_info'] = 'Info';
 $lang['general_word_choose_file'] = 'Välj fil';
 $lang['general_word_next'] = 'Next';
 $lang['general_word_previous'] = 'Previous';
+$lang['general_word_not_display'] = "Not display";
+$lang['general_word_icon'] = "Icon";
+$lang['general_word_never'] = "Never";
+$lang['general_word_undefined'] = "Undefined";
 
 $lang['general_word_cancel'] = "Cancel";
 $lang['general_word_ok'] = "OK";
@@ -23,6 +27,7 @@ $lang['general_word_enabled'] = "Enabled";
 $lang['general_word_disabled'] = "Disabled";
 $lang['general_word_count'] = "Count";
 $lang['general_word_filtering_on'] = "Filtering on";
+$lang['general_word_never'] = "Never";
 $lang['general_word_export'] = "Export";
 $lang['general_word_import'] = "Import";
 $lang['general_word_startdate'] = "Start Date";
@@ -35,6 +40,7 @@ $lang['general_word_time_off'] = 'Time off';
 $lang['general_word_datetime'] = 'Datum/Tid';
 $lang['general_word_none'] = 'Ingen';
 $lang['general_word_name'] = 'Namn';
+$lang['general_word_flag'] = 'Flagga';
 $lang['general_word_location'] = 'QTH';
 $lang['general_word_comment'] = 'Notering';
 $lang['general_word_general'] = 'Allmänt';
@@ -45,6 +51,8 @@ $lang['general_word_country'] = 'Land';
 $lang['general_word_city'] = 'City';
 
 $lang['general_word_total'] = 'Totalt';
+$lang['general_word_day'] = "Day";
+$lang['general_word_days'] = "Days";
 $lang['general_word_year'] = 'I år';
 $lang['general_word_month'] = 'Denna månad';
 
@@ -77,6 +85,10 @@ $lang['general_word_qslcard_manager'] = 'Manager';
 $lang['general_word_qslcard_via'] = 'Via';
 $lang['general_word_eqslcard'] = 'eQSL Card';
 $lang['general_word_eqslcards'] = 'eQSL Cards';
+$lang['general_word_sstv_management'] = 'SSTV Management';
+$lang['general_word_sstvimages'] = 'SSTV Images';
+$lang['general_sstv_upload'] = 'Uploaded SSTV images';
+$lang['general_sstv_upload_button'] = 'Upload SSTV image(s)';
 $lang['general_word_lotw'] = 'Logbook of the World';
 $lang['general_word_lotw_short'] = 'LoTW';
 
@@ -120,6 +132,8 @@ $lang['gen_hamradio_callsign'] = 'Signal';
 $lang['gen_hamradio_de'] = 'De';
 $lang['gen_hamradio_dx'] = 'Dx';
 $lang['gen_hamradio_mode'] = 'Mode';
+$lang['gen_hamradio_ant_az'] = 'Antenna Azimuth';
+$lang['gen_hamradio_ant_el'] = 'Antenna Elevation';
 $lang['gen_hamradio_rst_sent'] = 'Skickat';
 $lang['gen_hamradio_rst_rcvd'] = 'Mottagen\'d';
 $lang['gen_hamradio_band'] = 'Band';
@@ -171,6 +185,7 @@ $lang['gen_hamradio_latitude'] = "Latitude";
 $lang['gen_hamradio_longitude'] = "Longitude";
 $lang['gen_hamradio_bearing'] = "Bearing";
 $lang['gen_hamradio_get_gridsquare'] = 'Get Gridsquare';
+$lang['gen_hamradio_gridsquare_show'] = "Show Locator";
 $lang['gen_hamradio_distance'] = 'Distance';
 $lang['gen_hamradio_operator'] = 'Operatör';
 
@@ -215,3 +230,5 @@ $lang['dashboard_locations_warning'] = 'You have no station locations. Go <a hre
 $lang['dashboard_logbooks_warning'] = 'You have no station logbook. Go <a href="'. site_url('logbooks') . '">here</a> to create it!';
 
 $lang['hams_at_no_activations_found'] = 'No upcoming activations found. Please check back later.';
+
+$lang['datatables_language'] = "en-GB";

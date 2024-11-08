@@ -23,6 +23,10 @@ $lang['general_word_export'] = "Export";
 $lang['general_word_import'] = "Import";
 $lang['general_word_count'] = "Count";
 $lang['general_word_filtering_on'] = "Filtering on";
+$lang['general_word_not_display'] = "Not display";
+$lang['general_word_icon'] = "Icon";
+$lang['general_word_never'] = "Never";
+$lang['general_word_undefined'] = "Undefined";
 
 $lang['general_word_date'] = 'Ημερομηνία';
 $lang['general_word_startdate'] = "Start Date";
@@ -33,6 +37,7 @@ $lang['general_word_time_off'] = 'Time off';
 $lang['general_word_datetime'] = 'Ημερομηνία/Ωρα';
 $lang['general_word_none'] = 'None';
 $lang['general_word_name'] = 'όνομα';
+$lang['general_word_flag'] = 'Σημαία';
 $lang['general_word_location'] = 'Τοποθεσία';
 $lang['general_word_comment'] = 'Σχόλιο';
 $lang['general_word_general'] = 'Γενικα';
@@ -45,6 +50,8 @@ $lang['general_word_city'] = 'City';
 $lang['general_word_total'] = 'Σύνολο';
 $lang['general_word_year'] = 'Ετος';
 $lang['general_word_month'] = 'Μήνας';
+$lang['general_word_day'] = "Day";
+$lang['general_word_days'] = "Days";
 
 $lang['general_word_colors'] = "Colors";
 $lang['general_word_light'] = "Light/Laser";
@@ -76,6 +83,10 @@ $lang['general_word_qslcard_manager'] = 'Διευθυντής';
 $lang['general_word_qslcard_via'] = 'Μέσω';
 $lang['general_word_eqslcard'] = 'eQSL Card';
 $lang['general_word_eqslcards'] = 'Κάρτες eQSL';
+$lang['general_word_sstv_management'] = 'SSTV Management';
+$lang['general_word_sstvimages'] = 'SSTV Images';
+$lang['general_sstv_upload'] = 'Uploaded SSTV images';
+$lang['general_sstv_upload_button'] = 'Upload SSTV image(s)';
 $lang['general_word_lotw'] = 'Logbook of the World';
 $lang['general_word_lotw_short'] = 'LoTW';
 
@@ -119,6 +130,8 @@ $lang['gen_hamradio_suffix'] = "Suffix";
 $lang['gen_hamradio_de'] = 'De';
 $lang['gen_hamradio_dx'] = 'Dx';
 $lang['gen_hamradio_mode'] = 'Τρόπος';
+$lang['gen_hamradio_ant_az'] = 'Antenna Azimuth';
+$lang['gen_hamradio_ant_el'] = 'Antenna Elevation';
 $lang['gen_hamradio_rst_sent'] = 'Απεσταλμένα';
 $lang['gen_hamradio_rst_rcvd'] = 'Ελήφθη\'d';
 $lang['gen_hamradio_band'] = 'Ζώνη';
@@ -167,6 +180,7 @@ $lang['gen_hamradio_wwff'] = 'WWFF';
 $lang['gen_hamradio_pota'] = 'POTA';
 $lang['gen_hamradio_gridsquare'] = 'Gridsquare';
 $lang['gen_hamradio_get_gridsquare'] = 'Get Gridsquare';
+$lang['gen_hamradio_gridsquare_show'] = "Show Locator";
 $lang['gen_hamradio_latitude'] = "Latitude";
 $lang['gen_hamradio_longitude'] = "Longitude";
 $lang['gen_hamradio_bearing'] = "Bearing";
@@ -214,3 +228,5 @@ $lang['dashboard_locations_warning'] = 'You have no station locations. Go <a hre
 $lang['dashboard_logbooks_warning'] = 'You have no station logbook. Go <a href="'. site_url('logbooks') . '">here</a> to create it!';
 
 $lang['hams_at_no_activations_found'] = 'No upcoming activations found. Please check back later.';
+
+$lang['datatables_language'] = "en-GB";

@@ -1,17 +1,16 @@
 <?php if ($query->num_rows() > 0) {  foreach ($query->result() as $row) { ?>
 <div class="container-fluid">
-
     <ul style="margin-bottom: 10px;" class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" id="table-tab" data-toggle="tab" href="#qsodetails" role="tab" aria-controls="table" aria-selected="true"><?php echo lang('qso_details'); ?></a>
+            <a class="nav-link active" id="table-tab" data-bs-toggle="tab" href="#qsodetails" role="tab" aria-controls="table" aria-selected="true"><?php echo lang('qso_details'); ?></a>
         </li>
         <li class="nav-item">
-            <a id="station-tab" class="nav-link" data-toggle="tab" href="#stationdetails" role="tab" aria-controls="table" aria-selected="true"><?php echo lang('cloudlog_station_profile'); ?></a>
+            <a id="station-tab" class="nav-link" data-bs-toggle="tab" href="#stationdetails" role="tab" aria-controls="table" aria-selected="true"><?php echo lang('cloudlog_station_profile'); ?></a>
         </li>
         <?php
         if ($row->COL_NOTES != null) {?>
         <li class="nav-item">
-            <a id="notes-tab" class="nav-link" data-toggle="tab" href="#notesdetails" role="tab" aria-controls="table" aria-selected="true"><?php echo "Notes"; ?></a>
+            <a id="notes-tab" class="nav-link" data-bs-toggle="tab" href="#notesdetails" role="tab" aria-controls="table" aria-selected="true"><?php echo "Notes"; ?></a>
         </li>
         <?php }?>
         <?php
@@ -22,11 +21,27 @@
                 echo 'hidden ';
             }
                 echo 'class="qslcardtab nav-item">
-                <a class="nav-link" id="qsltab" data-toggle="tab" href="#qslcard" role="tab" aria-controls="home" aria-selected="false">'. lang('general_word_qslcard') .'</a>
+                <a class="nav-link" id="qsltab" data-bs-toggle="tab" href="#qslcard" role="tab" aria-controls="home" aria-selected="false">'. lang('general_word_qslcard') .'</a>
                 </li>';
 
             echo '<li class="nav-item">
-            <a class="nav-link" id="qslmanagementtab" data-toggle="tab" href="#qslupload" role="tab" aria-controls="home" aria-selected="false">'. lang('general_word_qslcard_management') .'</a>
+            <a class="nav-link" id="qslmanagementtab" data-bs-toggle="tab" href="#qslupload" role="tab" aria-controls="home" aria-selected="false">'. lang('general_word_qslcard_management') .'</a>
+            </li>';
+        }
+
+        ?>
+        <?php
+        if (($this->config->item('use_auth')) && ($this->session->userdata('user_type') >= 2) && ($row->COL_MODE == 'SSTV')) {
+            echo '<li ';
+            if (count($sstvimages) == 0) {
+                echo 'hidden ';
+            }
+                echo 'class="sstvimagetab nav-item">
+                <a class="nav-link" id="sstvtab" data-bs-toggle="tab" href="#sstvimage" role="tab" aria-controls="home" aria-selected="false">'. lang('general_word_sstvimages') .'</a>
+                </li>';
+
+            echo '<li class="nav-item">
+            <a class="nav-link" id="sstvmanagementtab" data-bs-toggle="tab" href="#sstvupload" role="tab" aria-controls="home" aria-selected="false">'. lang('general_word_sstv_management') .'</a>
             </li>';
         }
 
@@ -39,7 +54,7 @@
                 echo 'hidden ';
             }
                 echo 'class="eqslcardtab nav-item">
-                <a class="nav-link" id="eqsltab" data-toggle="tab" href="#eqslcard" role="tab" aria-controls="home" aria-selected="false">'. $this->lang->line('general_word_eqslcard') .'</a>
+                <a class="nav-link" id="eqsltab" data-bs-toggle="tab" href="#eqslcard" role="tab" aria-controls="home" aria-selected="false">'. $this->lang->line('general_word_eqslcard') .'</a>
                 </li>';
         }
 
@@ -128,12 +143,8 @@
                         <td><?php echo lang('general_total_distance'); //Total distance ?></td>
                         <td>
                             <?php
-                                // Load the QRA Library
-                                $CI =& get_instance();
-                                $CI->load->library('qra');
-
                                 // Cacluate Distance
-                                $distance = $CI->qra->distance($row->station_gridsquare, $row->COL_GRIDSQUARE, $measurement_base);
+                                $distance = $this->qra->distance($row->station_gridsquare, $row->COL_GRIDSQUARE, $measurement_base);
 
                                 switch ($measurement_base) {
                                     case 'M':
@@ -156,21 +167,38 @@
                     <tr>
                         <td>Gridsquare (Multi):</td>
                         <td><?php echo $row->COL_VUCC_GRIDS; ?> <a href="javascript:spawnQrbCalculator('<?php echo $row->station_gridsquare . '\',\'' . $row->COL_VUCC_GRIDS; ?>')"><i class="fas fa-globe"></i></a></td>
+                            <?php
+                                // Cacluate Distance
+                                $distance = $this->qra->distance($row->station_gridsquare, $row->COL_VUCC_GRIDS, $measurement_base);
+
+                                switch ($measurement_base) {
+                                    case 'M':
+                                        $distance .= " mi";
+                                        break;
+                                    case 'K':
+                                        $distance .= " km";
+                                        break;
+                                    case 'N':
+                                        $distance .= " nmi";
+                                        break;
+                                }
+                                echo $distance;
+                            ?>
                     </tr>
                     <?php } ?>
 
                     <?php if($row->COL_STATE != null) { ?>
                     <tr>
-                        <td>USA State:</td>
+                        <td><?php echo $primary_subdivision ?>:</td>
                         <td><?php echo $row->COL_STATE; ?></td>
                     </tr>
                     <?php } ?>
 
                     <?php if($row->COL_CNTY != null && $row->COL_CNTY != ",") { ?>
-                        <tr>
-                            <td>USA County:</td>
-                            <td><?php echo $row->COL_CNTY; ?></td>
-                        </tr>
+                    <tr>
+                        <td><?php echo $secondary_subdivision ?>:</td>
+                        <td><?php echo $row->COL_CNTY; ?></td>
+                    </tr>
                     <?php } ?>
 
                     <?php if($row->COL_NAME != null) { ?>
@@ -202,10 +230,30 @@
                         <td><?php echo (strlen($row->COL_SAT_MODE) == 2 ? (strtoupper($row->COL_SAT_MODE[0]).'/'.strtoupper($row->COL_SAT_MODE[1])) : strtoupper($row->COL_SAT_MODE)); ?></td>
                     </tr>
                     <?php } ?>
+
+                    <?php if($row->COL_ANT_AZ != null) { ?>
+                    <tr>
+                        <td><?php echo lang('gen_hamradio_ant_az'); ?></td>
+                        <td><?php echo $row->COL_ANT_AZ; ?>&deg; <span style="margin-left: 2px; display: inline-block; transform: rotate(<?php echo (-45+$row->COL_ANT_AZ); ?>deg);"><i class="fas fa-location-arrow fa-xs"></i></span></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if($row->COL_ANT_EL != null) { ?>
+                    <tr>
+                        <td><?php echo lang('gen_hamradio_ant_el'); ?></td>
+                        <td><?php echo $row->COL_ANT_EL; ?>&deg; <span style="margin-left: 2px; display: inline-block; transform: rotate(<?php echo (-$row->COL_ANT_EL); ?>deg);"><i class="fas fa-arrow-right fa-xs"></i></span></td>
+                    </tr>
+                    <?php } ?>
+
                     <?php if($row->name != null) { ?>
                     <tr>
                         <td><?php echo lang('general_word_country'); ?></td>
-                        <td><?php echo ucwords(strtolower(($row->name)), "- (/"); if ($row->end != null) { echo ' <span class="badge badge-danger">'.lang('gen_hamradio_deleted_dxcc').'</span>'; } ?></td>
+                        <td><?php
+						$ci =& get_instance();
+						$ci->load->library('DxccFlag');	
+						$flag = strtolower($ci->dxccflag->getISO($row->COL_DXCC));
+						echo '<span class="fi fi-' . $flag .'"></span> '; 
+						echo ucwords(strtolower(($row->name)), "- (/"); if ($row->end != null) { echo ' <span class="badge text-bg-danger">'.lang('gen_hamradio_deleted_dxcc').'</span>'; } ?></td>
                     </tr>
                     <?php } ?>
 
@@ -308,6 +356,8 @@
                         <td><?php echo lang('gen_hamradio_dok'); ?></td>
                         <?php if (preg_match('/^[A-Y]\d{2}$/', $row->COL_DARC_DOK)) { ?>
                         <td><a href="https://www.darc.de/<?php echo $row->COL_DARC_DOK; ?>" target="_blank"><?php echo $row->COL_DARC_DOK; ?></a></td>
+                        <?php } else if (preg_match('/^DV[ABCDEFGHIKLMNOPQRSTUVWXY]$/', $row->COL_DARC_DOK)) { ?>
+                        <td><a href="https://www.darc.de/der-club/distrikte/<?php echo strtolower(substr($row->COL_DARC_DOK, 2, 1)); ?>" target="_blank"><?php echo $row->COL_DARC_DOK; ?></a></td>
                         <?php } else if (preg_match('/^Z\d{2}$/', $row->COL_DARC_DOK)) { ?>
                         <td><a href="https://<?php echo $row->COL_DARC_DOK; ?>.vfdb.org" target="_blank"><?php echo $row->COL_DARC_DOK; ?></a></td>
                         <?php } else { ?>
@@ -359,12 +409,12 @@
                     <br /><p><?php echo lang('lotw_user'); ?> <a href="https://lotw.arrl.org/lotwuser/act?act=<?php echo $row->COL_CALL;?>" target="_blank"><?php echo lang('lotw_last_upload').'</a>: '; ?><?php $timestamp = strtotime($row->lastupload); echo date($custom_date_format, $timestamp); $timestamp = strtotime($row->lastupload); echo " ".date('H:i', $timestamp);?> UTC.</p>
                     <?php } ?>
 
-                    <?php if($row->COL_LOTW_QSL_RCVD == "Y") { ?>
+                    <?php if($row->COL_LOTW_QSL_RCVD == "Y" && $row->COL_LOTW_QSLRDATE != null) { ?>
                     <h3><?php echo lang('lotw_short'); ?></h3>
                     <p><?php echo lang('gen_this_qso_was_confirmed_on'); ?> <?php $timestamp = strtotime($row->COL_LOTW_QSLRDATE); echo date($custom_date_format, $timestamp); ?>.</p>
                     <?php } ?>
 
-                    <?php if($row->COL_EQSL_QSL_RCVD == "Y") { ?>
+                    <?php if($row->COL_EQSL_QSL_RCVD == "Y" && $row->COL_EQSL_QSLRDATE != null) { ?>
                     <h3>eQSL</h3>
                         <p><?php echo lang('gen_this_qso_was_confirmed_on'); ?> <?php $timestamp = strtotime($row->COL_EQSL_QSLRDATE); echo date($custom_date_format, $timestamp); ?>.</p>
                     <?php } ?>
@@ -372,7 +422,7 @@
 
                 <div class="col-md">
 
-                    <div id="mapqso" style="width: 100%; height: 250px"></div>
+                    <div id="mapqso" class="map-leaflet" style="width: 100%; height: 250px"></div>
 
                     <?php if(($this->config->item('use_auth') && ($this->session->userdata('user_type') >= 2)) || $this->config->item('use_auth') === FALSE) { ?>
                         <br>
@@ -383,7 +433,7 @@
                     <?php
 
                         if($row->COL_SAT_NAME != null) {
-                            $twitter_band_sat = $row->COL_SAT_NAME;
+                            $twitter_band_sat = $row->COL_SAT_NAME." \u{1F6F0}\u{FE0F}";
                             $hashtags = "#hamr #cloudlog #amsat";
                         } else {
                             $twitter_band_sat = $row->COL_BAND;
@@ -401,6 +451,9 @@
                         if($row->COL_WWFF_REF != null) {
                             $hashtags .= " #WWFF ".$row->COL_WWFF_REF;
                         }
+                        if($row->COL_SIG != null && $row->COL_SIG_INFO != null) {
+                            $hashtags .= " #".$row->COL_SIG." ".$row->COL_SIG_INFO;
+                        }
                         if (!isset($distance)) {
                             $twitter_string = urlencode("Just worked ".$row->COL_CALL." ");
                             if ($row->COL_DXCC != 0) {
@@ -411,8 +464,23 @@
                             $twitter_string = urlencode("Just worked ".$row->COL_CALL." ");
                             if ($row->COL_DXCC != 0) {
                                $twitter_string .= urlencode("in ".ucwords(strtolower(($row->COL_COUNTRY)))." ");
+                               if (isset($dxccFlag)) {
+                                  $twitter_string .= $dxccFlag." ";
+                               }
                             }
-                            $twitter_string .= urlencode("(Gridsquare: ".$row->COL_GRIDSQUARE." / distance: ".$distance.") on ".$twitter_band_sat." using ".($row->COL_SUBMODE==null?$row->COL_MODE:$row->COL_SUBMODE)." ".$hashtags);
+                            $distancestring = '';
+                            if ($row->COL_VUCC_GRIDS == null) {
+                               $distancestring = "(Gridsquare: ".$row->COL_GRIDSQUARE." / distance: ".$distance.")";
+                            } else {
+                               if (substr_count($row->COL_VUCC_GRIDS, ',') == 1) {
+                                  $distancestring = "(Gridline: ".preg_replace('/\s+/', '', $row->COL_VUCC_GRIDS)." / distance: ".$distance.")";
+                               } else if (substr_count($row->COL_VUCC_GRIDS, ',') == 3) {
+                                  $distancestring = "(Gridcorner: ".preg_replace('/\s+/', '', $row->COL_VUCC_GRIDS)." / distance: ".$distance.")";
+                               } else {
+                                  $distancestring = "(Grids: ".$row->COL_VUCC_GRIDS.")";
+                               }
+                            }
+                            $twitter_string .= urlencode($distancestring." on ".$twitter_band_sat." using ".($row->COL_SUBMODE==null?$row->COL_MODE:$row->COL_SUBMODE)." ".$hashtags);
                         }
                     ?>
 
@@ -428,57 +496,78 @@
 
             <table width="100%">
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('gen_hamradio_callsign'); ?></td>
+                        <td><?php echo lang('gen_hamradio_callsign'); ?></td>
                         <td><?php echo $row->station_callsign; ?></td>
                     </tr>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('general_word_name'); ?></td>
+                        <td><?php echo lang('general_word_name'); ?></td>
                         <td><?php echo $row->station_profile_name; ?></td>
                     </tr>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('gen_hamradio_gridsquare'); ?></td>
+                        <td><?php echo lang('gen_hamradio_gridsquare'); ?></td>
                         <td><?php echo $row->station_gridsquare; ?></td>
                     </tr>
 
                     <?php if($row->station_city) { ?>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('general_word_city'); ?></td>
+                        <td><?php echo lang('general_word_city'); ?></td>
                         <td><?php echo $row->station_city; ?></td>
                     </tr>
                     <?php } ?>
 
                     <?php if($row->station_country) { ?>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('general_word_country'); ?></td>
-                        <td><?php echo ucwords(strtolower(($row->station_country)), "- (/"); if ($row->station_end != null) echo ' <span class="badge badge-danger">'.lang('gen_hamradio_deleted_dxcc').'</span>'; ?></td>
+                        <td><?php echo lang('general_word_country'); ?></td>
+                        <td><?php echo ucwords(strtolower(($row->station_country)), "- (/"); if ($row->station_end != null) echo ' <span class="badge text-bg-danger">'.lang('gen_hamradio_deleted_dxcc').'</span>'; ?></td>
                     </tr>
                     <?php } ?>
 
                     <?php if($row->COL_OPERATOR) { ?>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('gen_hamradio_operator'); ?></td>
+                        <td><?php echo lang('gen_hamradio_operator'); ?></td>
                         <td><?php echo $row->COL_OPERATOR; ?></td>
                     </tr>
                     <?php } ?>
 
                     <?php if($row->COL_TX_PWR) { ?>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('gen_hamradio_transmit_power'); ?></td>
+                        <td><?php echo lang('gen_hamradio_transmit_power'); ?></td>
                         <td><?php echo $row->COL_TX_PWR; ?> W</td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if($row->COL_MY_IOTA) { ?>
+                    <tr>
+                        <td><?php echo lang('gen_hamradio_iota_reference'); ?></td>
+                        <td><?php echo $row->COL_MY_IOTA; ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if($row->COL_MY_SOTA_REF) { ?>
+                    <tr>
+                        <td><?php echo lang('gen_hamradio_sota_reference'); ?></td>
+                        <td><?php echo $row->COL_MY_SOTA_REF; ?></td>
                     </tr>
                     <?php } ?>
 
                     <?php if($row->COL_MY_WWFF_REF) { ?>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('gen_hamradio_wwff_reference'); ?></td>
+                        <td><?php echo lang('gen_hamradio_wwff_reference'); ?></td>
                         <td><?php echo $row->COL_MY_WWFF_REF; ?></td>
                     </tr>
                     <?php } ?>
 
                     <?php if($row->COL_MY_POTA_REF) { ?>
                     <tr>
-                        <td><?php echo lang('gen_hamradio_station') . ' ' . lang('gen_hamradio_pota_reference'); ?></td>
+                        <td><?php echo lang('gen_hamradio_pota_reference'); ?></td>
                         <td><?php echo $row->COL_MY_POTA_REF; ?></td>
+                    </tr>
+                    <?php } ?>
+
+                    <?php if($row->station_wab) { ?>
+                    <tr>
+                        <td>WAB Reference</td>
+                        <td><?php echo $row->station_wab; ?></td>
                     </tr>
                     <?php } ?>
             </table>
@@ -492,6 +581,45 @@
         <?php
         if (($this->config->item('use_auth')) && ($this->session->userdata('user_type') >= 2)) {
         ?>
+        <div class="tab-pane fade" id="sstvupload" role="tabpanel" aria-labelledby="table-tab">
+            <?php
+                if (count($sstvimages) > 0) {
+                echo '<table style="width:100%" class="sstvtable table table-sm table-bordered table-hover table-striped table-condensed">
+                    <thead>
+                    <tr>
+                        <th style=\'text-align: center\'>SSTV image file</th>
+                        <th style=\'text-align: center\'></th>
+                        <th style=\'text-align: center\'></th>
+                    </tr>
+                    </thead><tbody>';
+
+                    foreach ($sstvimages as $sstv) {
+                    echo '<tr>';
+                        echo '<td style=\'text-align: center\'>' . $sstv->filename . '</td>';
+                        echo '<td id="'.$sstv->id.'" style=\'text-align: center\'><button onclick="deleteSstv('.$sstv->id.')" class="btn btn-sm btn-danger">Delete</button></td>';
+                        echo '<td style=\'text-align: center\'><button onclick="viewSstv(\''.$sstv->filename.'\')" class="btn btn-sm btn-success">View</button></td>';
+                        echo '</tr>';
+                    }
+
+                    echo '</tbody></table>';
+                }
+            ?>
+            <p><div class="alert alert-warning" role="alert"><span class="badge text-bg-warning"><?php echo lang('general_word_warning'); ?></span><?php echo lang('gen_max_file_upload_size'); ?> <?php echo $max_upload; ?>B.</div></p>
+            <form class="form" id="sstvinfo" name="sstvinfo" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md">
+                            <fieldset>
+                                <div class="mb-3">
+                                    <label for="sstvimages"><?php echo lang('general_sstv_upload'); ?></label>
+                                    <input class="form-control" type="file" id="sstvimages" name="sstvimages[]" accept="image/*" multiple>
+                                </div>
+                                <input type="hidden" class="form-control" id="qsoinputid" name="qsoid" value="<?php echo $row->COL_PRIMARY_KEY; ?>">
+                                <button type="button" onclick="uploadSSTV();" id="button2id"  name="button2id" class="btn btn-primary"><?php echo lang('general_sstv_upload_button'); ?></button>
+                            </fieldset>
+                    </div>
+                </div>
+            </form>
+        </div>
         <div class="tab-pane fade" id="qslupload" role="tabpanel" aria-labelledby="table-tab">
             <?php
             if (count($qslimages) > 0) {
@@ -516,16 +644,16 @@
             }
             ?>
 
-            <p><div class="alert alert-warning" role="alert"><span class="badge badge-warning"><?php echo lang('general_word_warning'); ?></span> <?php echo lang('gen_max_file_upload_size'); ?> <?php echo $max_upload; ?>B.</div></p>
+            <p><div class="alert alert-warning" role="alert"><span class="badge text-bg-warning"><?php echo lang('general_word_warning'); ?></span> <?php echo lang('gen_max_file_upload_size'); ?> <?php echo $max_upload; ?>B.</div></p>
 
             <form class="form" id="fileinfo" name="fileinfo" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md">
                         <fieldset>
 
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label for="qslcardfront"><?php echo lang('qslcard_upload_front'); ?></label>
-                                <input class="form-control-file" type="file" id="qslcardfront" name="qslcardfront" accept="image/*" >
+                                <input class="form-control" type="file" id="qslcardfront" name="qslcardfront" accept="image/*" >
                             </div>
 
                             <input type="hidden" class="form-control" id="qsoinputid" name="qsoid" value="<?php echo $row->COL_PRIMARY_KEY; ?>">
@@ -533,9 +661,9 @@
 
                 </div>
                 <div class="col-md">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <label for="qslcardback"><?php echo lang('qslcard_upload_back'); ?></label>
-                                <input class="form-control-file" type="file" id="qslcardback" name="qslcardback" accept="image/*">
+                                <input class="form-control" type="file" id="qslcardback" name="qslcardback" accept="image/*">
                             </div>
 
                         </fieldset>
@@ -567,6 +695,11 @@
 
         <div class="tab-pane fade" id="qslcard" role="tabpanel" aria-labelledby="table-tab">
             <?php $this->load->view('qslcard/qslcarousel', $qslimages); ?>
+        </div>
+
+        
+        <div class="tab-pane fade" id="sstvimage" role="tabpanel" aria-labelledby="table-tab">
+            <?php $this->load->view('sstv/sstvcarousel', $sstvimages); ?>
         </div>
 
         <div class="tab-pane fade" id="eqslcard" role="tabpanel" aria-labelledby="table-tab">

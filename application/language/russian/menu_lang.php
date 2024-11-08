@@ -9,14 +9,15 @@ $lang['menu_overview'] = 'Обычный вид';
 $lang['menu_advanced'] = 'Расширенный вид';
 
 $lang['menu_qso'] = 'QSO';
-$lang['menu_live_qso'] = 'добавить QSO';
-$lang['menu_post_qso'] = 'добавить прошедшее QSO';
-$lang['menu_fast_log_entry'] = "Simple Fast Log Entry";
+$lang['menu_live_qso'] = 'Добавить QSO';
+$lang['menu_post_qso'] = 'Добавить прошедшее QSO';
+$lang['menu_fast_log_entry'] = "Простая быстрая запись в журнал";
 $lang['menu_live_contest_logging'] = 'Журнал соревнований';
 $lang['menu_post_contest_logging'] = 'Журнал прошедших соревнований';
 $lang['menu_bandmap'] = 'План диапазонов';
 $lang['menu_view_qsl'] = 'Просмотр QSL';
 $lang['menu_view_eqsl'] = 'Просмотр eQSL';
+$lang['menu_view_sstv'] = 'Просмотр SSTV изображений';
 
 $lang['menu_notes'] = 'Заметки';
 
@@ -36,15 +37,18 @@ $lang['menu_continents'] = 'Континенты';
 
 $lang['menu_awards'] = 'Дипломы';
 $lang['menu_cq'] = 'CQ';
+$lang['menu_dl_gridmaster'] = 'DL Gridmaster';
 $lang['menu_dok'] = 'DOK';
 $lang['menu_dxcc'] = 'DXCC';
 $lang['menu_iota'] = 'IOTA';
+$lang['menu_lx_gridmaster'] = 'LX Gridmaster';
 $lang['menu_pota'] = 'POTA';
 $lang['menu_sig'] = 'SIG';
 $lang['menu_sota'] = 'SOTA';
 $lang['menu_us_counties'] = 'US Counties';
 $lang['menu_us_gridmaster'] = 'US Gridmaster';
 $lang['menu_vucc'] = 'VUCC';
+$lang['menu_waja'] = 'WAJA';
 $lang['menu_was'] = 'WAS';
 $lang['menu_wwff'] = 'WWFF';
 
@@ -59,15 +63,15 @@ $lang['menu_update_country_files'] = 'Обновить файлы стран';
 $lang['menu_debug_information'] = 'Отладочная информация';
 
 $lang['menu_search_text'] = 'Поиск позывного';
-$lang['menu_search_text_quicklog'] = "Add/Search Callsign";
+$lang['menu_search_text_quicklog'] = "Добавить/Найти позывной";
 
 $lang['menu_search_button'] = 'Поиск';
-$lang['menu_search_button_qicksearch_log'] = "Log";
+$lang['menu_search_button_qicksearch_log'] = "Журнал";
 $lang['menu_login_button'] = 'Вход';
 
 $lang['menu_account'] = 'Аккаунт';
-$lang['menu_station_logbooks'] = 'Аппаратные журналы';
-$lang['menu_station_locations'] = 'Расположения станции';
+$lang['menu_station_logbooks'] = 'Журналы';
+$lang['menu_station_locations'] = 'Местоположения станции';
 $lang['menu_bands'] = 'Диапазоны';
 $lang['menu_adif_import_export'] = 'Импорт / экспорт ADIF';
 $lang['menu_kml_export'] = 'Экспорт KML';
@@ -90,4 +94,5 @@ $lang['menu_logout'] = 'Выход';
 
 $lang['menu_ffma'] = "Fred Fish Memorial Award";
 $lang['menu_ja_gridmaster'] = 'JA Gridmaster';
-$lang['menu_maintenance']='Maintenance';
+$lang['menu_maintenance']='Обслуживание';
+$lang['menu_uk_gridmaster'] = 'UK Gridmaster';

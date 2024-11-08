@@ -50,6 +50,15 @@ class Contesting extends CI_Controller {
 		echo json_encode($this->Contesting_model->getSessionQsos($qso));
     }
 
+	public function getSessionFreshQsos() {
+        $this->load->model('Contesting_model');
+
+        $contest_id = $this->input->post('contest_id');
+
+		header('Content-Type: application/json');
+		echo json_encode($this->Contesting_model->getSessionFreshQsos($contest_id));
+    }
+
 	public function getSession() {
         $this->load->model('Contesting_model');
 
@@ -189,7 +198,12 @@ class Contesting extends CI_Controller {
 		
 		header('Content-Type: application/json');
 		if ($result && $result->num_rows()) {
-			echo json_encode(array('message' => 'Worked before'));
+			$timeb4=substr($result->row()->b4,0,5);
+        		$custom_date_format = $this->session->userdata('user_date_format');
+			$abstimeb4=date($custom_date_format, strtotime($result->row()->COL_TIME_OFF)).' '.date('H:i',strtotime($result->row()->COL_TIME_OFF));
+			echo json_encode(array('message' => 'Worked at '.$abstimeb4.' ('.$timeb4.' ago) before'));
+		} else {
+			echo json_encode(array('message' => 'OKAY'));
 		}
 		return;
 	}

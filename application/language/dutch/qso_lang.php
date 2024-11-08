@@ -6,7 +6,9 @@ defined('BASEPATH') OR exit('Directe toegang tot scripts is niet toegestaan');
 $lang['qso_title_qso_map'] = 'QSO Kaart';
 $lang['qso_title_suggestions'] = 'Suggesties';
 $lang['qso_title_previous_contacts'] = 'Eerdere verbindingen';
+$lang['qso_title_times_worked_before'] = "times worked before";
 $lang['qso_title_image'] = 'Profile Picture';
+$lang['qso_previous_max_shown'] = "Max. 5 previous contacts are shown";
 
 // Quicklog on Dashboard
 $lang['qso_quicklog_enter_callsign'] = 'QUICKLOG Enter Callsign';
@@ -25,6 +27,11 @@ $lang['qso_dok_helptext'] = 'Bijvoorbeeld: Q03';
 
 $lang['qso_notes_helptext'] = 'Notities worden alleen in Cloudlog gebruikt en worden niet geexporteerd naar andere diensten.';
 $lang['qsl_notes_helptext'] = 'This note content is exported to QSL services like eqsl.cc.';
+
+$lang['qso_eqsl_qslmsg_helptext'] = "Get the default message for eQSL, for this station.";
+
+// error text //
+$lang['qso_error_timeoff_less_timeon'] = "TimeOff is less than TimeOn";
 
 // Button Text on /qso Display
 

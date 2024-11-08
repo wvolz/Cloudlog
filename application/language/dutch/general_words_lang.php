@@ -23,6 +23,10 @@ $lang['general_word_export'] = "Export";
 $lang['general_word_import'] = "Import";
 $lang['general_word_count'] = "Count";
 $lang['general_word_filtering_on'] = "Filtering on";
+$lang['general_word_not_display'] = "Not display";
+$lang['general_word_icon'] = "Icon";
+$lang['general_word_never'] = "Never";
+$lang['general_word_undefined'] = "Undefined";
 
 $lang['general_word_date'] = 'Datum';
 $lang['general_word_startdate'] = "Start Date";
@@ -33,6 +37,7 @@ $lang['general_word_time_off'] = 'Time off';
 $lang['general_word_datetime'] = 'Date/Time';
 $lang['general_word_none'] = 'Geen';
 $lang['general_word_name'] = 'Naam';
+$lang['general_word_flag'] = 'Flag';
 $lang['general_word_location'] = 'Locatie';
 $lang['general_word_comment'] = 'Opmerking';
 $lang['general_word_general'] = 'Algemeen';
@@ -45,6 +50,8 @@ $lang['general_word_city'] = 'By';
 $lang['general_word_total'] = 'Totaal';
 $lang['general_word_year'] = 'Jaar';
 $lang['general_word_month'] = 'Maand';
+$lang['general_word_day'] = "Day";
+$lang['general_word_days'] = "Days";
 
 $lang['general_word_colors'] = "Colors";
 $lang['general_word_light'] = "Light/Laser";
@@ -76,6 +83,10 @@ $lang['general_word_qslcard_manager'] = 'Manager';
 $lang['general_word_qslcard_via'] = 'Via';
 $lang['general_word_eqslcard'] = 'eQSL Card';
 $lang['general_word_eqslcards'] = 'eQSL Cards';
+$lang['general_word_sstv_management'] = 'SSTV Management';
+$lang['general_word_sstvimages'] = 'SSTV Images';
+$lang['general_sstv_upload'] = 'Uploaded SSTV images';
+$lang['general_sstv_upload_button'] = 'Upload SSTV image(s)';
 $lang['general_word_lotw'] = 'Logbook of the World';
 $lang['general_word_lotw_short'] = 'LoTW';
 
@@ -119,6 +130,8 @@ $lang['gen_hamradio_suffix'] = "Suffix";
 $lang['gen_hamradio_de'] = 'De';
 $lang['gen_hamradio_dx'] = 'Dx';
 $lang['gen_hamradio_mode'] = 'Mode';
+$lang['gen_hamradio_ant_az'] = 'Antenna Azimuth';
+$lang['gen_hamradio_ant_el'] = 'Antenna Elevation';
 $lang['gen_hamradio_rst_sent'] = 'Verzonden';
 $lang['gen_hamradio_rst_rcvd'] = 'Ontvangen';
 $lang['gen_hamradio_band'] = 'Band';
@@ -167,6 +180,7 @@ $lang['gen_hamradio_wwff'] = 'WWFF';
 $lang['gen_hamradio_pota'] = 'POTA';
 $lang['gen_hamradio_gridsquare'] = 'Gridsquare';
 $lang['gen_hamradio_get_gridsquare'] = 'Get Gridsquare';
+$lang['gen_hamradio_gridsquare_show'] = "Show Locator";
 $lang['gen_hamradio_latitude'] = "Latitude";
 $lang['gen_hamradio_longitude'] = "Longitude";
 $lang['gen_hamradio_bearing'] = "Bearing";
@@ -214,3 +228,5 @@ $lang['dashboard_locations_warning'] = 'You have no station locations. Go <a hre
 $lang['dashboard_logbooks_warning'] = 'You have no station logbook. Go <a href="'. site_url('logbooks') . '">here</a> to create it!';
 
 $lang['hams_at_no_activations_found'] = 'No upcoming activations found. Please check back later.';
+
+$lang['datatables_language'] = "en-GB";

@@ -31,37 +31,33 @@
 			  </label>
  			  <br>
 			  <p>Upload the Exported ADIF file from eQSL from the <a href="https://eqsl.cc/qslcard/DownloadInBox.cfm" target="_blank">Download Inbox</a> page, to mark QSOs as confirmed on eQSL.</p>
-					<p><span class="label important">Important</span> Log files must have the file type .adi</p>
-					<input type="file" name="userfile" size="20" />
-			  <br/><br/>
 			<p>Choose Station(location) eQSL File belongs to:</p>
-                    <select name="station_profile" class="custom-select mb-2 mr-sm-2" style="width: 20%;">
+                    <select name="station_profile" class="form-select mb-2 me-sm-2" style="width: 20%;">
                     <option value="0">Select Station Location</option>
-                    <?php foreach ($station_profile->result() as $station) { ?>
+                    <?php foreach ($station_profile->result() as $station) {
+                            if($station->eqslqthnickname) { ?>
                     <option value="<?php echo $station->station_id; ?>" <?php if ($station->station_id == $this->stations->find_active()) { echo " selected =\"selected\""; } ?>>Callsign: <?php echo $station->station_callsign; ?> (<?php echo $station->station_profile_name.") eQSL: ".$station->eqslqthnickname; ?></option>
-                    <?php } ?>
+                    <?php } } ?>
                     </select>
+                    <p><span class="label important">Important</span>Log files must have the file type .adi</p>
+                    <input type="file" name="userfile" size="20" />
 			</div>
-
-			<br><br>
-			
+			<hr class="divider">
 			<div class="form-check">
 			  <input class="form-check-input" type="radio" name="eqslimport" id="fetch" value="fetch"  checked="checked"/>
 			  <label class="form-check-label" for="exampleRadios1">Import directly from eQSL</label>
 			  <p>Cloudlog will use the eQSL credentials from your Cloudlog user profile to connect to eQSL and download confirmations.</p>
-				<div class="form-row">
-		        	<div class="form-group col-sm-2">
+				<div class="row">
+		        	<div class="mb-3 col-sm-2">
 			          	<div class="dxatlasdatepicker input-group date" id="eqsl_force_from_date" data-target-input="nearest">
-			            	<input name="eqsl_force_from_date" type="text" placeholder="YYYY/MM/DD" class="form-control datetimepicker-input" data-target="#eqsl_force_from_date" value=""/>
-			              	<div class="input-group-append"  data-target="#eqsl_force_from_date" data-toggle="datetimepicker"><div class="input-group-text"><i class="fa fa-calendar"></i></div></div>
+                        	<input name="eqsl_force_from_date" id="eqsl_force_from_date" type="date" class="form-control w-auto">
 			          	</div>
 		        	</div>
-		         	<div class="form-group col-sm-5" style="vertical-align:middle;"><label class="form-label"><?php echo "(Select a date, only if you want to force an import with an older date)"; //$this->lang->line(''); ?></label></div>
+		         	<div class="mb-3 col-sm-5" style="vertical-align:middle;"><label class="form-label"><?php echo "(Select a date, only if you want to force an import with an older date)"; //$this->lang->line(''); ?></label></div>
 				</div>
 			</div>
-
-			<br>
-			<div class="form-group"><input class="btn btn-primary" type="submit" value="Import eQSL QSO Matches" /></div>
+			<hr class="divider">
+			<div class="mb-3"><input class="btn btn-primary" type="submit" value="Import eQSL QSO Matches" /></div>
 		</form>
   </div>
 </div>

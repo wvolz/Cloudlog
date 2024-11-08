@@ -6,7 +6,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $lang['qso_title_qso_map'] = 'Vasta-aseman sijainti kartalla';
 $lang['qso_title_suggestions'] = 'Kutsumerkkiehdotukset';
 $lang['qso_title_previous_contacts'] = 'Edelliset yhteydet';
+$lang['qso_title_times_worked_before'] = "times worked before";
 $lang['qso_title_image'] = 'Profiilikuva';
+$lang['qso_previous_max_shown'] = "Max. 5 previous contacts are shown";
 
 // Quicklog on Dashboard
 $lang['qso_quicklog_enter_callsign'] = 'QUICKLOG Enter Callsign';
@@ -25,6 +27,11 @@ $lang['qso_dok_helptext'] = 'Esimerkiksi: Q03';
 
 $lang['qso_notes_helptext'] = 'Muistio tallentuu vain logiin, tähän yhteydeen, eikä siirry eteenpäin muihin palveluihin.';
 $lang['qsl_notes_helptext'] = 'Tämä viestisi siirtyy myös QSL-palveluihin, kuten eqsl.cc.';
+
+$lang['qso_eqsl_qslmsg_helptext'] = "Get the default message for eQSL, for this station.";
+
+// error text //
+$lang['qso_error_timeoff_less_timeon'] = "TimeOff is less than TimeOn";
 
 // Button Text on /qso Display
 

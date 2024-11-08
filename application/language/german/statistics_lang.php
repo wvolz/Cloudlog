@@ -25,14 +25,19 @@ $lang['statistics_number_of_qso_worked'] = "# gearbeitete QSOs";
 *
 */
 
+$lang['statistics_distances_bands_all'] = "Alle";
+$lang['statistics_distances_modes_all'] = "Alle";
 $lang['statistics_distances_worked'] = "Gearbeitete Entfernungen";
 $lang['statistics_distances_part1_contacts_were_plotted_furthest'] = "Kontakte wurden dargestellt.<br /> Der weiteste Kontakt war"; // make sure'<br />' stays there
 $lang['statistics_distances_part2_contacts_were_plotted_furthest'] = "im Planquadrat";
 $lang['statistics_distances_part3_contacts_were_plotted_furthest'] = "Die Distanz betrug";
+$lang['statistics_distances_part4_contacts_were_plotted_furthest'] = "Die durchschnittliche Distanz ist";
 $lang['statistics_distances_number_of_qsos'] = "Anzahl der QSOs";
 $lang['statistics_distances_callsigns_worked'] = "Gearbeitete(s) Rufzeichen (max 5 werden gezeigt)";
-$lang['statistics_distances_qsos_with'] = "QSOs mit";
-$lang['statistics_distances_and_band'] = "und Band";
+$lang['statistics_distances_qsos_with'] = "QSOs mit Distanz : ";
+$lang['statistics_distances_and_band'] = ", Band : ";
+$lang['statistics_distances_and_mode'] = ", Mode : ";
+$lang['statistics_distances_and_power'] = ", Sendeleistung : ";
 
 /*
 *
@@ -41,4 +46,20 @@ $lang['statistics_distances_and_band'] = "und Band";
 */
 
 $lang['statistics_timeline'] = "Zeitleiste";
+
+/*
+*
+* Days with QSO
+*
+*/
+
+$lang['statistics_days_with_qso'] = "Anzahl der Tage mit QSOs pro Jahr";
+$lang['statistics_days_with_qso_short'] = "Tage mit QSOs";
+$lang['statistics_dwq_longest_streak_in_log'] = "Längste Serie mit QSOs im Logbuch";
+$lang['statistics_dwq_longest_streak_in_log_hint'] = "Es werden maximal die 10 längsten Serien angezeigt!";
+$lang['statistics_dwq_streak_continuous_days'] = "Serie (fortlaufende Tage mit QSOs)";
+$lang['statistics_dwq_current_streak_in_log'] = "Aktuelle Serie mit QSOs im Logbuch";
+$lang['statistics_dwq_current_streak_continuous_days'] = "Aktuelle Serie (fortlaufende Tage mit QSOs)";
+$lang['statistics_dwq_make_qso_to_extend_streak'] = "Wenn Sie heute ein QSO machen, können Sie Ihre Serie verlängern... Andernfalls wird Ihre aktuelle Serie unterbrochen!";
+$lang['statistics_dwq_no_current_streak'] = "Keine aktuelle Serie gefunden!";
 

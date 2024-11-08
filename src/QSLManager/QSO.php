@@ -31,6 +31,7 @@ class QSO
 	private string $deSigInfo;
 	private string $deIOTAIslandID;
 	private string $deSOTAReference;
+	private string $deWWFFReference;
 	/** Awards */
 	private string $cqzone;
 	private string $state;
@@ -65,6 +66,7 @@ class QSO
 	private string $callsign;
 	private string $lastupload;
 	private string $lotw_hint;
+	private string $operator;
 
 	/**
 	 * @param array $data Does no validation, it's assumed to be a row from the database in array format
@@ -116,6 +118,7 @@ class QSO
 			'COL_STATE',
 			'COL_COUNTRY',
 			'COL_IOTA',
+			'COL_OPERATOR',
 		];
 
 
@@ -161,6 +164,7 @@ class QSO
 		$this->deSigInfo = $data['station_sig_info'] ?? '';
 		$this->deIOTAIslandID = $data['COL_MY_IOTA_ISLAND_ID'] ?? '';
 		$this->deSOTAReference = $data['station_sota'] ?? '';
+		$this->deWWFFReference = $data['station_wwff'] ?? '';
 
 		$this->deVUCCGridsquares = $data['COL_MY_VUCC_GRIDS'] ?? '';
 
@@ -190,7 +194,7 @@ class QSO
 		$this->lotw = $this->getLotwString($data, $custom_date_format);
 		$this->eqsl = $this->getEqslString($data, $custom_date_format);
 
-		$this->cqzone = ($data['COL_CQZ'] === null) ? '' : '<a href="javascript:spawnLookupModal('.$data['COL_CQZ'].',\'cq\');">'.$data['COL_CQZ'].'</a>';
+		$this->cqzone = ($data['COL_CQZ'] === null) ? '' : $this->geCqLink($data['COL_CQZ']);
 		$this->state = ($data['COL_STATE'] === null) ? '' :$data['COL_STATE'];
 		$this->dxcc = (($data['name'] ?? null) === null) ? '- NONE -' : '<a href="javascript:spawnLookupModal('.$data['COL_DXCC'].',\'dxcc\');">'.ucwords(strtolower($data['name']), "- (/").'</a>';
 		$this->iota = ($data['COL_IOTA'] === null) ? '' : $this->getIotaLink($data['COL_IOTA']);
@@ -202,6 +206,19 @@ class QSO
 		$this->callsign = (($data['callsign'] ?? null) === null) ? '' : $data['callsign'];
 		$this->lastupload = (($data['lastupload'] ?? null) === null) ? '' : date($custom_date_format . " H:i", strtotime($data['lastupload'] ?? null));
 		$this->lotw_hint = $this->getLotwHint($data['lastupload'] ?? null);
+		$this->operator = ($data['COL_OPERATOR'] === null) ? '' :$data['COL_OPERATOR'];
+	}
+
+	/**
+	 * @return string
+	 */
+	function geCqLink($cqz): string
+	{
+		$cqz_link = '';
+		if ($cqz <= '40') {
+			return '<a href="javascript:spawnLookupModal('.$cqz.',\'cq\');">'.$cqz.'</a>';
+		}
+		return $cqz;
 	}
 
 	/**
@@ -236,16 +253,16 @@ class QSO
 		if ($data['COL_QSL_SENT'] != "N") {
 			switch ($data['COL_QSL_SENT']) {
 			case "Y":
-				$qslstring .= "class=\"qsl-green\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_sent');
+				$qslstring .= "class=\"qsl-green\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_sent');
 				break;
 			case "Q":
-				$qslstring .= "class=\"qsl-yellow\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_queued');
+				$qslstring .= "class=\"qsl-yellow\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_queued');
 				break;
 			case "R":
-				$qslstring .= "class=\"qsl-yellow\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_requested');
+				$qslstring .= "class=\"qsl-yellow\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_requested');
 				break;
 			case "I":
-				$qslstring .= "class=\"qsl-grey\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_invalid_ignore');
+				$qslstring .= "class=\"qsl-grey\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_invalid_ignore');
 				break;
 			default:
 			$qslstring .= "class=\"qsl-red";
@@ -281,16 +298,16 @@ class QSO
 			if ($data['COL_QSL_RCVD'] != "N") {
 				switch ($data['COL_QSL_RCVD']) {
 					case "Y":
-						$qslstring .= "class=\"qsl-green\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_received');
+						$qslstring .= "class=\"qsl-green\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_received');
 					break;
 					case "Q":
-						$qslstring .= "class=\"qsl-yellow\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_queued');
+						$qslstring .= "class=\"qsl-yellow\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_queued');
 					break;
 					case "R":
-						$qslstring .= "class=\"qsl-yellow\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_requested');
+						$qslstring .= "class=\"qsl-yellow\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_requested');
 					break;
 					case "I":
-						$qslstring .= "class=\"qsl-grey\" data-toggle=\"tooltip\" data-original-title=\"".$CI->lang->line('general_word_invalid_ignore');
+						$qslstring .= "class=\"qsl-grey\" data-bs-toggle=\"tooltip\" title=\"".$CI->lang->line('general_word_invalid_ignore');
 					break;
 					default:
 					$qslstring .= "class=\"qsl-red";
@@ -335,26 +352,26 @@ class QSO
 		$lotwstring = '<span ';
 
 		if ($data['COL_LOTW_QSL_SENT'] == "Y") {
-			$lotwstring .= "data-original-title=\"" . $CI->lang->line('lotw_short')." ".$CI->lang->line('general_word_sent');
+			$lotwstring .= "title=\"" . $CI->lang->line('lotw_short')." ".$CI->lang->line('general_word_sent');
 			if ($data['COL_LOTW_QSLSDATE'] != null) {
 				$timestamp = strtotime($data['COL_LOTW_QSLSDATE']);
 				$lotwstring .= " ". ($timestamp != '' ? date($custom_date_format, $timestamp) : '');
 			}
-			$lotwstring .= "\" data-toggle=\"tooltip\"";
+			$lotwstring .= "\" data-bs-toggle=\"tooltip\"";
 		}
 
 		$lotwstring .= ' class="lotw-' . (($data['COL_LOTW_QSL_SENT']=='Y') ? 'green' : 'red') . '">&#9650;</span>';
 		$lotwstring .= '<span ';
 
 		if ($data['COL_LOTW_QSL_RCVD'] == "Y") {
-			$lotwstring .= "data-original-title=\"". $CI->lang->line('lotw_short') ." ". $CI->lang->line('general_word_received');
+			$lotwstring .= "title=\"". $CI->lang->line('lotw_short') ." ". $CI->lang->line('general_word_received');
 
 			if ($data['COL_LOTW_QSLRDATE'] != null) {
 				$timestamp = strtotime($data['COL_LOTW_QSLRDATE']);
 				$lotwstring .=  " ". ($timestamp != '' ? date($custom_date_format, $timestamp) : '');
 			}
 
-			$lotwstring .= "\" data-toggle=\"tooltip\"";
+			$lotwstring .= "\" data-bs-toggle=\"tooltip\"";
 		}
 
 		$lotwstring .= ' class="lotw-' . (($data['COL_LOTW_QSL_RCVD']=='Y') ? 'green':'red') . '">&#9660;</span>';
@@ -372,26 +389,26 @@ class QSO
 		$eqslstring = '<span ';
 
 		if ($data['COL_EQSL_QSL_SENT'] == "Y") {
-			$eqslstring .= "data-original-title=\"".$CI->lang->line('eqsl_short')." ".$CI->lang->line('general_word_sent');
+			$eqslstring .= "title=\"".$CI->lang->line('eqsl_short')." ".$CI->lang->line('general_word_sent');
 
 			if ($data['COL_EQSL_QSLSDATE'] != null) {
 				$timestamp = strtotime($data['COL_EQSL_QSLSDATE']);
 				$eqslstring .=  " ".($timestamp!=''?date($custom_date_format, $timestamp):'');
 			}
 
-			$eqslstring .= "\" data-toggle=\"tooltip\"";
+			$eqslstring .= "\" data-bs-toggle=\"tooltip\"";
 		}
 
 		$eqslstring .= ' class="eqsl-' . (($data['COL_EQSL_QSL_SENT'] =='Y') ? 'green':'red') . '">&#9650;</span><span ';
 
 		if ($data['COL_EQSL_QSL_RCVD'] == "Y") {
-			$eqslstring .= "data-original-title=\"".$CI->lang->line('eqsl_short')." ".$CI->lang->line('general_word_received');
+			$eqslstring .= "title=\"".$CI->lang->line('eqsl_short')." ".$CI->lang->line('general_word_received');
 
 			if ($data['COL_EQSL_QSLRDATE'] != null) {
 				$timestamp = strtotime($data['COL_EQSL_QSLRDATE']);
 				$eqslstring .= " ".($timestamp!=''?date($custom_date_format, $timestamp):'');
 			}
-			$eqslstring .= "\" data-toggle=\"tooltip\"";
+			$eqslstring .= "\" data-bs-toggle=\"tooltip\"";
 		}
 
 		$eqslstring .= ' class="eqsl-' . (($data['COL_EQSL_QSL_RCVD'] =='Y')?'green':'red') . '">';
@@ -771,6 +788,11 @@ class QSO
 		return '<span id="iota">' . $this->iota . '</span>';
 	}
 
+	public function getOperator(): string
+	{
+		return '<span id="operator">' . $this->operator . '</span>';
+	}
+
 	public function toArray(): array
 	{
 		return [
@@ -792,6 +814,8 @@ class QSO
 			'name' => $this->getName(),
 			'dxcc' => $this->getDXCC(),
 			'state' => $this->getState(),
+			'pota' => $this->dxPOTAReference,
+			'operator' => $this->getOperator(),
 			'cqzone' => $this->getCqzone(),
 			'iota' => $this->getIOTA(),
 			'end' => $this->end === null ? null : $this->end->format("Y-m-d"),
@@ -831,6 +855,7 @@ class QSO
 
 	private function getFormattedDeRefs(): string
 	{
+		$includedInRefs=[];
 		$refs = [];
 		if ($this->deVUCCGridsquares !== '') {
 			$refs[] = $this->deVUCCGridsquares;
@@ -849,14 +874,21 @@ class QSO
 		if ($this->deSOTAReference !== '') {
 			$refs[] = "SOTA:" . $this->deSOTAReference;
 		}
+		if ($this->deWWFFReference !== '') {
+			$includedInRefs[] = "WWFF";
+			$refs[] = "WWFF:" . $this->deWWFFReference;
+		}
 		if ($this->deSig !== '') {
-			$refs[] = $this->deSig . ":" . $this->deSigInfo;
+			if (!in_array($this->deSig, $includedInRefs)) {
+				$refs[] = $this->deSig . ":" . $this->deSigInfo;
+			}
 		}
 		return trim(implode(" ", $refs));
 	}
 
 	private function getFormattedDxRefs(): string
 	{
+		$includedInRefs=[];
 		$refs = [];
 		if ($this->dxVUCCGridsquares !== '') {
 			$refs[] = '<span id="dxgrid">' . $this->dxVUCCGridsquares . '</span> ' .$this->getQrbLink($this->deGridsquare, $this->dxVUCCGridsquares, $this->dxGridsquare);
@@ -870,10 +902,13 @@ class QSO
 			$refs[] = "POTA: " . '<span id="dxpota">' . $this->dxPOTAReference. '</span>';
 		}
 		if ($this->dxWWFFReference !== '') {
+			$includedInRefs[] = "WWFF";
 			$refs[] = "WWFF: " . '<span id="dxwwff">' . $this->dxWWFFReference. '</span>';
 		}
 		if ($this->dxSig !== '') {
-			$refs[] = $this->dxSig . ":" . $this->dxSigInfo;
+			if (!in_array($this->dxSig, $includedInRefs)) {
+				$refs[] = $this->dxSig . ":" . $this->dxSigInfo;
+			}
 		}
 		if ($this->dxDARCDOK !== '') {
 			$refs[] = "DOK:" . $this->dxDARCDOK;

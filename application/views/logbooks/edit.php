@@ -1,4 +1,4 @@
-<div class="container" id="create_station_profile">
+<div class="container mb-4" id="create_station_profile">
 
 <br>
 	<?php if($this->session->flashdata('message')) { ?>
@@ -26,7 +26,7 @@
 					<form method="post" action="<?php echo site_url('logbooks/edit/'); ?><?php echo $station_logbook_details->logbook_id; ?>" name="create_profile">
 						<input type="hidden" name="logbook_id" value="<?php echo $station_logbook_details->logbook_id; ?>">
 
-						<div class="form-group">
+						<div class="mb-3">
 							<label for="stationLogbookNameInput"><?php echo lang('station_logbooks_create_name'); ?></label>
 							<input type="text" class="form-control" name="station_logbook_name" id="stationLogbookNameInput" aria-describedby="stationLogbookNameInputHelp" value="<?php if(set_value('station_logbook_name') != "") { echo set_value('station_logbook_name'); } else { echo $station_logbook_details->logbook_name; } ?>" required>
 							<small id="stationLogbookNameInputHelp" class="form-text text-muted"><?php echo lang('station_logbooks_edit_name_hint'); ?></small>
@@ -50,7 +50,7 @@
 					<form hx-post="<?php echo site_url('logbooks/save_publicslug/'); ?>" hx-target="#publicSlugForm" style="display: inline;">
 					<div id="publicSlugForm">
 					</div>
-					<div class="form-group">
+					<div class="mb-3">
 						<input type="hidden" name="logbook_id" value="<?php echo $station_logbook_details->logbook_id; ?>">
 						<label for="publicSlugInput"><?php echo lang('station_logbooks_public_slug_input'); ?></label>
 						<div hx-target="this" hx-swap="outerHTML">
@@ -74,7 +74,7 @@
 					<input type="hidden" name="logbook_id" value="<?php echo $station_logbook_details->logbook_id; ?>">
 					<p style="margin-top: 15px;"><?php echo lang('station_logbooks_public_search_hint'); ?></p>
 					<label for="public_search"><?php echo lang('station_logbooks_public_search_enabled'); ?></label>
-					<select class="custom-select" id="public_search" name="public_search" hx-post="<?php echo site_url('logbooks/save_publicsearch/'); ?>" hx-target="#publicSearchForm" hx-trigger="change">
+					<select class="form-select" id="public_search" name="public_search" hx-post="<?php echo site_url('logbooks/save_publicsearch/'); ?>" hx-target="#publicSearchForm" hx-trigger="change">
 						<option value="1" <?php if ($station_logbook_details->public_search == 1) { echo " selected =\"selected\""; } ?>><?php echo lang('general_word_yes'); ?></option>
 						<option value="0" <?php if ($station_logbook_details->public_search == 0) { echo " selected =\"selected\""; } ?>><?php echo lang('general_word_no'); ?></option>
 					</select>
@@ -104,9 +104,9 @@
 						}
 					?>
 
-					<div class="form-group">
+					<div class="mb-3">
 						<label for="StationLocationsSelect"><?php echo lang('station_logbooks_select_avail_loc'); ?></label>
-						<select name="SelectedStationLocation" class="form-control" id="StationLocationSelect" aria-describedby="StationLocationSelectHelp">
+						<select name="SelectedStationLocation" class="form-select" id="StationLocationSelect" aria-describedby="StationLocationSelectHelp">
 							<?php foreach ($station_locations_list->result() as $row) {
 								if (!in_array($row->station_id, $linked_stations)) { ?>
 								<option value="<?php echo $row->station_id;?>"><?php echo $row->station_profile_name;?> (<?php echo lang('gen_hamradio_callsign'); ?>: <?php echo $row->station_callsign;?> <?php echo lang('gen_hamradio_dxcc'); ?>: <?php echo $row->station_country; if ($row->dxcc_end != NULL) { echo ' ('.lang('gen_hamradio_deleted_dxcc').')'; } ?>)</option>
@@ -117,7 +117,7 @@
 
 					<input type="hidden" class="form-control" name="station_logbook_id" value="<?php echo $station_logbook_details->logbook_id; ?>" required>	
 
-					<button type="submit" class="btn btn-primary"><i class="fas fa-plus-square"></i> <?php echo lang('station_logbooks_link_loc'); ?></button>
+					<button type="submit" class="btn btn-primary"><i class="fas fa-link"></i> <?php echo lang('station_logbooks_link_loc'); ?></button>
 					</form>
 				</div>
 			</div>
@@ -129,12 +129,14 @@
 			<?php echo lang('station_logbooks_linked_loc'); ?>
 		</div>
 
-	    <div class="table-responsive">
+	    <div class="table-responsive m-4">
 			<table id="station_logbooks_linked_table" class="table table-hover">
 				<thead class="thead-light">
 					<tr>
 						<th scope="col"><?php echo lang('station_location_name'); ?></th>
-						<th scope="col"></th>
+						<th scope="col"><?php echo lang('station_location_callsign'); ?></th>
+						<th scope="col"><?php echo lang('gen_hamradio_dxcc'); ?></th>
+						<th scope="col"><?php echo lang('station_logbooks_unlink_station_location'); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -143,15 +145,20 @@
 							foreach ($station_locations_linked->result() as $row) {
 					?>
 					<tr>
-						<td><?php echo $row->station_profile_name;?> (<?php echo lang('gen_hamradio_callsign'); ?>: <?php echo $row->station_callsign;?> <?php echo lang('gen_hamradio_dxcc'); ?>: <?php echo $row->station_country; if ($row->end != NULL) { echo ' <span class="badge badge-danger">'.lang('gen_hamradio_deleted_dxcc').'</span>'; } ?>)</td>
-						<td><a href="<?php echo site_url('logbooks/delete_relationship/'); ?><?php echo $station_logbook_details->logbook_id; ?>/<?php echo $row->station_id;?>" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a></td>
+						<td style="text-align: center; vertical-align: middle;"><?php echo $row->station_profile_name;?></td>
+						<td style="text-align: center; vertical-align: middle;"><?php echo $row->station_callsign;?></td>
+						<td style="text-align: center; vertical-align: middle;"><?php echo $row->station_country; if ($row->end != NULL) { echo ' <span class="badge text-bg-danger">'.lang('gen_hamradio_deleted_dxcc').'</span>'; } ?></td>
+						<td style="text-align: center; vertical-align: middle;"><a href="<?php echo site_url('logbooks/delete_relationship/'); ?><?php echo $station_logbook_details->logbook_id; ?>/<?php echo $row->station_id;?>" class="btn btn-danger"><i class="fas fa-unlink"></i></a></td>
 					</tr>
 					<?php
 							}
 						} else {
 					?>
 					<tr>
-						<td colspan="2"><?php echo lang('station_logbooks_no_linked_loc'); ?></td>
+						<td style="text-align: center; vertical-align: middle;" colspan="2"><?php echo lang('station_logbooks_no_linked_loc'); ?></td>
+						<td style="text-align: center; vertical-align: middle;"></td>
+						<td style="text-align: center; vertical-align: middle;"></td>
+						<td style="text-align: center; vertical-align: middle;"></td>
 					</tr>
 					<?php } ?>
 				</tbody>

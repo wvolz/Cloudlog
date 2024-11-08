@@ -2,18 +2,18 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$lang['awards_info_button'] = "Award Info";
-$lang['awards_show_worked'] = "Show worked";
-$lang['awards_show_confirmed'] = "Show confirmed";
-$lang['awards_show_not_worked'] = "Show not worked";
-$lang['awards_show_cq_map'] = "Show CQ Zone Map";
-$lang['awards_summary'] = "Summary";
-$lang['awards_total'] = "Total";
-$lang['awards_total_worked'] = "Total worked";
-$lang['awards_total_confirmed'] = "Total confirmed";
+$lang['awards_info_button'] = "Информация о дипломе";
+$lang['awards_show_worked'] = "Показать сработанные";
+$lang['awards_show_confirmed'] = "Показать подтверждённые";
+$lang['awards_show_not_worked'] = "Показать не сработанные";
+$lang['awards_show_cq_map'] = "Показать карту зон CQ";
+$lang['awards_summary'] = "Сводка";
+$lang['awards_total'] = "Всего";
+$lang['awards_total_worked'] = "Всего сработано";
+$lang['awards_total_confirmed'] = "Всего пожтверждено";
 
 
-$lang['awards_cq_page_title'] = "Awards - CQ Magazine WAZ";
+$lang['awards_cq_page_title'] = "Дипломы  - CQ Magazine WAZ";
 
 
 /*
@@ -156,7 +156,7 @@ ________________________________________________________________________________
 
 $lang['awards_vucc_description_ln1'] = "VUCC - VHF/UHF Century Club Award";
 $lang['awards_vucc_description_ln2'] = "The VHF/UHF Century Club Award is given for a minimum number of worked and confirmed gridsquares on a desired band.";
-$lang['awards_vucc_description_ln3'] = "Official information and the rules can be found in this document: <a href='https://www.amsat.org/gridmaster/' target='_blank'>Click here</a>.";
+$lang['awards_vucc_description_ln3'] = "Official information and the rules can be found in this document: <a href='https://www.arrl.org/vucc' target='_blank'>Click here</a>.";
 $lang['awards_vucc_description_ln4'] = "Only VHF/UHF bands are relevant.";
 
 
@@ -182,3 +182,24 @@ $lang['awards_wwff_description_ln1'] = "WWFF - World Wide Flora and Fauna Award"
 $lang['awards_wwff_description_ln2'] = "WWFF, World Wide Flora and Fauna in Amateur Radio, encourages licensed ham radio operators to leave their shacks and operate portable in Protected Flora & Fauna areas (PFF) worldwide.";
 $lang['awards_wwff_description_ln3'] = "More than 26,000 Protected Flora & Fauna (PFF) areas worldwide are already registered in the WWFF Directory. Hunters and Activators can apply for colorful awards, both globally and nationally.";
 $lang['awards_wwff_description_ln4'] = "For more information, please visit: <a href='https://wwff.co/awards/' target='_blank'>https://wwff.co/awards/</a>.";
+
+/*
+___________________________________________________________________________________________
+WAJA -- Use all 4 Lines of Text
+___________________________________________________________________________________________
+*/
+
+$lang['awards_waja_description_ln1'] = "WAJA - Worked All Japan prefectures Award";
+$lang['awards_waja_description_ln2'] = "WAJA, Worked All Japan prefectures in Amateur Radio, encourages licensed ham radio operators to work all the prefectures in Japan.";
+$lang['awards_waja_description_ln3'] = "May be claimed for having contacted (heard) and received a QSL card from an amateur station located in each of the 47 prefectures of Japan. A list of QSL cards should be arranged in order of WAJA (HAJA) reference number, however names of prefectures may be omitted.";
+$lang['awards_waja_description_ln4'] = "For more information, please visit: <a href='https://www.jarl.org/English/4_Library/A-4-2_Awards/Award_Main.htm' target='_blank'>https://www.jarl.org/English/4_Library/A-4-2_Awards/Award_Main.htm</a>.";
+
+    /*
+___________________________________________________________________________________________
+WAB -- Use all 4 Lines of Text
+___________________________________________________________________________________________
+*/
+$lang['awards_wab_description_ln1'] = "WAB - Worked All Britain Award";
+$lang['awards_wab_description_ln2'] = "The Amateur Radio Worked All Britain (WAB) Award is a prestigious recognition program within the amateur radio community that celebrates communication achievements across the United Kingdom. The WAB Award scheme encourages radio operators to establish contact with stations located in different regions of Britain, fostering camaraderie and promoting radio communication skills. To earn the WAB Award, participants must make successful radio contacts with stations located in specific WAB areas, which are defined by Ordnance Survey grid squares. These grid squares cover the entirety of Great Britain, including England, Scotland, Wales, and some offshore islands.";
+$lang['awards_wab_description_ln3'] = "Participants in the WAB Award program exchange information such as their location, signal strength, and WAB square reference during radio contacts. Points are awarded based on the location of the contacted station, with different point values assigned to contacts made within different WAB areas. By accumulating points from successful contacts, radio operators can progress through various award levels, each representing a significant milestone in their amateur radio journey. The WAB Award not only recognizes the dedication and skill of radio operators but also promotes geographic diversity and encourages exploration of the rich tapestry of locations across Britain through the medium of amateur radio.";
+$lang['awards_wab_description_ln4'] = "For more information, please visit: <a href='https://wab.intermip.net/default.php' target='_blank'>https://wab.intermip.net/default.php</a>.";

@@ -24,12 +24,23 @@ class Stations extends CI_Model {
 	}
 
 	function all_of_user($userid = null) {
-		if ($userid == null) { 
+		if ($userid == null) {
 			$userid=$this->session->userdata('user_id'); // Fallback to session-uid, if userid is omitted
 		}
 		$this->db->select('station_profile.*, dxcc_entities.name as station_country, dxcc_entities.end as dxcc_end');
 		$this->db->where('user_id', $userid);
 		$this->db->join('dxcc_entities','station_profile.station_dxcc = dxcc_entities.adif','left outer');
+		$this->db->order_by('station_profile.station_callsign');
+		$this->db->order_by('station_profile.station_profile_name');
+		return $this->db->get('station_profile');
+	}
+
+	function callsigns_of_user($userid = null) {
+		if ($userid == null) {
+			$userid=$this->session->userdata('user_id'); // Fallback to session-uid, if userid is omitted
+		}
+		$this->db->select('distinct(station_profile.station_callsign) as callsign');
+		$this->db->where('user_id', $userid);
 		return $this->db->get('station_profile');
 	}
 
@@ -82,6 +93,7 @@ class Stations extends CI_Model {
 			'station_sota' =>  xss_clean(strtoupper($this->input->post('sota', true))),
 			'station_wwff' =>  xss_clean(strtoupper($this->input->post('wwff', true))),
 			'station_pota' =>  xss_clean(strtoupper($this->input->post('pota', true))),
+			'station_wab' =>  xss_clean(strtoupper($this->input->post('wab', true))),
 			'station_sig' =>  xss_clean(strtoupper($this->input->post('sig', true))),
 			'station_sig_info' =>  xss_clean(strtoupper($this->input->post('sig_info', true))),
 			'station_callsign' =>  xss_clean($this->input->post('station_callsign', true)),
@@ -92,8 +104,10 @@ class Stations extends CI_Model {
 			'station_itu' =>  xss_clean($this->input->post('station_itu', true)),
 			'state' =>  $state,
 			'eqslqthnickname' => xss_clean($this->input->post('eqslnickname', true)),
+			'hrdlog_username' => xss_clean($this->input->post('hrdlog_username', true)),
 			'hrdlog_code' => xss_clean($this->input->post('hrdlog_code', true)),
 			'hrdlogrealtime' => xss_clean($this->input->post('hrdlogrealtime', true)),
+			'clublogrealtime' => xss_clean($this->input->post('clublogrealtime', true)),
 			'qrzapikey' => xss_clean($this->input->post('qrzapikey', true)),
 			'qrzrealtime' => xss_clean($this->input->post('qrzrealtime', true)),
 			'oqrs' => xss_clean($this->input->post('oqrs', true)),
@@ -104,8 +118,13 @@ class Stations extends CI_Model {
 			'webadifrealtime' => xss_clean($this->input->post('webadifrealtime', true)),
 		);
 
-		// Insert Records
-		$this->db->insert('station_profile', $data);
+		// Insert Records & return insert id //
+		if ($this->db->insert('station_profile', $data)===true) {
+			$station_user_list = $this->all_of_user()->result();
+			if ((count($station_user_list)>0) && (isset($station_user_list[intval(count($station_user_list)-1)]->station_id))) {
+				return $station_user_list[intval(count($station_user_list)-1)]->station_id;
+			}
+		}
 	}
 
 	function edit() {
@@ -125,6 +144,7 @@ class Stations extends CI_Model {
 			'station_sota' => xss_clean($this->input->post('sota', true)),
 			'station_wwff' => xss_clean($this->input->post('wwff', true)),
 			'station_pota' => xss_clean($this->input->post('pota', true)),
+			'station_wab' => xss_clean($this->input->post('wab', true)),
 			'station_sig' => xss_clean($this->input->post('sig', true)),
 			'station_sig_info' => xss_clean($this->input->post('sig_info', true)),
 			'station_callsign' => xss_clean($this->input->post('station_callsign', true)),
@@ -135,8 +155,10 @@ class Stations extends CI_Model {
 			'station_itu' => xss_clean($this->input->post('station_itu', true)),
 			'state' => $state,
 			'eqslqthnickname' => xss_clean($this->input->post('eqslnickname', true)),
+			'hrdlog_username' => xss_clean($this->input->post('hrdlog_username', true)),
 			'hrdlog_code' => xss_clean($this->input->post('hrdlog_code', true)),
 			'hrdlogrealtime' => xss_clean($this->input->post('hrdlogrealtime', true)),
+			'clublogrealtime' => xss_clean($this->input->post('clublogrealtime', true)),
 			'qrzapikey' => xss_clean($this->input->post('qrzapikey', true)),
 			'qrzrealtime' => xss_clean($this->input->post('qrzrealtime', true)),
 			'oqrs' => xss_clean($this->input->post('oqrs', true)),
@@ -347,58 +369,58 @@ class Stations extends CI_Model {
     }
 
     function stations_with_hrdlog_code() {
-       $sql = "select station_profile.station_id, station_profile.station_profile_name, station_profile.station_callsign, modc.modcount, notc.notcount, totc.totcount
-                from station_profile
-                left outer join (
-                            select count(*) modcount, station_id
-                    from ". $this->config->item('table_name') .
-                    " where COL_HRDLOG_QSO_UPLOAD_STATUS = 'M'
+       $sql = "SELECT station_profile.station_id, station_profile.station_profile_name, station_profile.station_callsign, modc.modcount, notc.notcount, totc.totcount
+                FROM station_profile
+                LEFT OUTER JOIN (
+                            SELECT count(*) modcount, station_id
+                    FROM ". $this->config->item('table_name') .
+                    " WHERE COL_HRDLOG_QSO_UPLOAD_STATUS = 'M'
                     group by station_id
                 ) as modc on station_profile.station_id = modc.station_id
-                left outer join (
-                            select count(*) notcount, station_id
-                    from " . $this->config->item('table_name') .
-                    " where (coalesce(COL_HRDLOG_QSO_UPLOAD_STATUS, '') = ''
+                LEFT OUTER JOIN (
+                            SELECT count(*) notcount, station_id
+                    FROM " . $this->config->item('table_name') .
+                    " WHERE (coalesce(COL_HRDLOG_QSO_UPLOAD_STATUS, '') = ''
                     or COL_HRDLOG_QSO_UPLOAD_STATUS = 'N')
                     group by station_id
                 ) as notc on station_profile.station_id = notc.station_id
-                left outer join (
-                    select count(*) totcount, station_id
-                    from " . $this->config->item('table_name') .
-                    " where COL_HRDLOG_QSO_UPLOAD_STATUS = 'Y'
+                LEFT OUTER JOIN (
+                    SELECT count(*) totcount, station_id
+                    FROM " . $this->config->item('table_name') .
+                    " WHERE COL_HRDLOG_QSO_UPLOAD_STATUS = 'Y'
                     group by station_id
                 ) as totc on station_profile.station_id = totc.station_id
-                where coalesce(station_profile.hrdlog_code, '') <> ''
-				 and station_profile.user_id = " . $this->session->userdata('user_id');
+                WHERE coalesce(station_profile.hrdlog_code, '') <> '' AND coalesce(station_profile.hrdlog_username, '') <> ''
+				 AND station_profile.user_id = " . $this->session->userdata('user_id');
         $query = $this->db->query($sql);
 
         return $query;
     }
 
     function stations_with_qrz_api_key() {
-       $sql = "select station_profile.station_id, station_profile.station_profile_name, station_profile.station_callsign, modc.modcount, notc.notcount, totc.totcount
-                from station_profile
-                left outer join (
-                            select count(*) modcount, station_id
-                    from ". $this->config->item('table_name') .
-                    " where COL_QRZCOM_QSO_UPLOAD_STATUS = 'M'
+       $sql = "SELECT station_profile.station_id, station_profile.station_profile_name, station_profile.station_callsign, modc.modcount, notc.notcount, totc.totcount
+                FROM station_profile
+                LEFT OUTER JOIN (
+                            SELECT count(*) modcount, station_id
+                    FROM ". $this->config->item('table_name') .
+                    " WHERE COL_QRZCOM_QSO_UPLOAD_STATUS = 'M'
                     group by station_id
                 ) as modc on station_profile.station_id = modc.station_id
-                left outer join (
-                            select count(*) notcount, station_id
-                    from " . $this->config->item('table_name') .
-                    " where (coalesce(COL_QRZCOM_QSO_UPLOAD_STATUS, '') = ''
+                LEFT OUTER JOIN (
+                            SELECT count(*) notcount, station_id
+                    FROM " . $this->config->item('table_name') .
+                    " WHERE (coalesce(COL_QRZCOM_QSO_UPLOAD_STATUS, '') = ''
                     or COL_QRZCOM_QSO_UPLOAD_STATUS = 'N')
                     group by station_id
                 ) as notc on station_profile.station_id = notc.station_id
-                left outer join (
-                    select count(*) totcount, station_id
-                    from " . $this->config->item('table_name') .
-                    " where COL_QRZCOM_QSO_UPLOAD_STATUS = 'Y'
+                LEFT OUTER JOIN (
+                    SELECT count(*) totcount, station_id
+                    FROM " . $this->config->item('table_name') .
+                    " WHERE COL_QRZCOM_QSO_UPLOAD_STATUS = 'Y'
                     group by station_id
                 ) as totc on station_profile.station_id = totc.station_id
-                where coalesce(station_profile.qrzapikey, '') <> ''
-				 and station_profile.user_id = " . $this->session->userdata('user_id');
+                WHERE coalesce(station_profile.qrzapikey, '') <> ''
+				 AND station_profile.user_id = " . $this->session->userdata('user_id');
         $query = $this->db->query($sql);
 
         return $query;
@@ -495,6 +517,24 @@ class Stations extends CI_Model {
 			return true;
 		}
 		return false;
+	}
+
+	// [MAP Custom] get array for json structure (for map) about info's station  //
+	public function get_station_array_for_map() {
+		$_jsonresult = array();
+		list($station_lat, $station_lng) = array(0,0);
+		$station_active = $this->profile($this->find_active())->row();
+
+		$CI = &get_instance();
+		$CI->load->library('DxccFlag');
+		$flag = "";
+		if (!empty($station_active)) { 
+			$flag = strtolower($CI->dxccflag->getISO($station_active->station_dxcc));
+			$flag = '<span class="fi fi-' . $flag .'"></span> ';
+			list($station_lat, $station_lng) = $this->qra->qra2latlong($station_active->station_gridsquare); 
+		}
+		if (($station_lat!=0)&&($station_lng!=0)) { $_jsonresult = array('lat'=>$station_lat,'lng'=>$station_lng,'html'=>$station_active->station_gridsquare,'label'=>$station_active->station_profile_name,'icon'=>'stationIcon','flag'=>$flag); }
+		return (count($_jsonresult)>0)?(array('station'=>$_jsonresult)):array();
 	}
 }
 

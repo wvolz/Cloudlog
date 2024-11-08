@@ -8,6 +8,7 @@ $lang['account_column2_text'] = 'Wähle Spalte 2';
 $lang['account_column3_text'] = 'Wähle Spalte 3';
 $lang['account_column4_text'] = 'Wähle Spalte 4';
 $lang['account_column5_text'] = 'Wähle Spalte 5 (nur für Logbuch)';
+$lang['account_remember_me'] = 'Remember me';
 
 $lang['account_create_user_account'] = 'Benutzerkonto anlegen';
 $lang['account_edit_account'] = 'Benutzerkonto editieren';
@@ -16,7 +17,7 @@ $lang['account_account_information'] = 'Benutzerkonto Informationen';
 $lang['account_user'] = "Benutzer";
 $lang['account_word_edited'] = "bearbeitet";
 $lang['account_username'] = 'Benutzername';
-$lang['account_email_address'] = 'Emailadresse';
+$lang['account_email_address'] = 'E-Mail Adresse';
 $lang['account_password'] = 'Passwort';
 
 $lang['account_roles'] = 'Rollen';
@@ -29,6 +30,8 @@ $lang['account_stylesheet'] = 'Stylesheet';
 $lang['account_personal_information'] = 'Informationen';
 $lang['account_first_name'] = 'Vorname';
 $lang['account_last_name'] = 'Nachname';
+
+$lang['account_hamradio_information'] = "Ham Radio";
 $lang['account_callsign'] = 'Rufzeichen';
 $lang['account_gridsquare'] = 'Planquadrat';
 
@@ -115,3 +118,18 @@ $lang['account_winkeyer'] = 'Winkeyer';
 $lang['account_winkeyer_hint'] = "Die Winkeyer Unterstützung in Cloudlog ist sehr experimentell. Lese zuerst den Wikieintrag auf <a href='https://github.com/magicbug/Cloudlog/wiki/Winkey' target='_blank'>https://github.com/magicbug/Cloudlog/wiki/Winkey</a> bevor du ihn einschaltest.";
 $lang['account_winkeyer_enabled'] = "Winkeyer Features Eingeschaltet";
 
+$lang['account_map_params'] = "Karten Einstellungen";
+$lang['account_map_qso_by_default'] = "QSO (standardmässig)";
+$lang['account_map_qso_confirm'] = "QSO (bestätigte)";
+$lang['account_map_qso_confirm_same_qso'] = "(Falls 'Nein', wird '".$lang['account_map_qso_by_default']."' verwendet)";
+
+$lang['account_general_information'] = "Generelle Informationen";
+$lang['account_qso_logging_options'] = "QSO-Logging Optionen";
+$lang['account_third_party_services'] = "Externe Dienste";
+$lang['account_default_values'] = "Standardwerte / Favoriten";
+$lang['account_miscellaneous'] = "Verschiedenes";
+
+$lang['account_hamsat'] = "Hams.at";
+$lang['account_hamsat_private_feed_key'] = "Private Feed Key";
+$lang['account_hamsat_hint'] = "Siehe dein Profil unter <a href='https://hams.at/users/settings' target='_blank'>https://hams.at/users/settings</a>.";
+$lang['account_hamsat_workable_only'] = "Zeige nur Überflüge an, die gearbeitet werden können";

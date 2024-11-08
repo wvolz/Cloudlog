@@ -36,6 +36,7 @@ $lang['station_logbooks_select_avail_loc'] = "Select Available Station Locations
 $lang['station_logbooks_link_loc'] = "Link Location";
 $lang['station_logbooks_linked_loc'] = "Linked Locations";
 $lang['station_logbooks_no_linked_loc'] = "No Linked Locations";
+$lang['station_logbooks_unlink_station_location'] = "Unlink Station Location";
 
 
 
@@ -94,11 +95,16 @@ $lang['station_location_signature_name_hint'] = "Station Signature (e.g. GMA).."
 $lang['station_location_signature_info'] = "Signature Information";
 $lang['station_location_signature_info_hint'] = "Station Signature Info (e.g. DA/NW-357).";
 $lang['station_location_eqsl_hint'] = 'The QTH Nickname which is configured in your eQSL Profile';
+$lang['station_location_eqsl_defaultqslmsg'] = "Default QSLMSG";
+$lang['station_location_eqsl_defaultqslmsg_hint'] = "Define a default message that will be populated and sent for each QSO for this station location.";
 $lang['station_location_qrz_subscription'] = 'Subscription Required';
 $lang['station_location_qrz_hint'] = "Find your API key on <a href='https://logbook.qrz.com/logbook' target='_blank'>the QRZ.com Logbook settings page";
 $lang['station_location_qrz_realtime_upload'] = 'QRZ.com Logbook Realtime Upload';
+$lang['station_location_hrdlog_username'] = "HRDLog.net Username";
+$lang['station_location_hrdlog_username_hint'] = "The username you are registered with at HRDlog.net (usually your callsign).";
+$lang['station_location_hrdlog_code'] = "HRDLog.net API Key";
 $lang['station_location_hrdlog_realtime_upload'] = "HRDLog.net Logbook Realtime Upload";
-$lang['station_location_hrdlog_hint'] = "Create your API Code on <a href='http://www.hrdlog.net/EditUser.aspx' target='_blank'>HRDLog.net Userprofile page";
+$lang['station_location_hrdlog_code_hint'] = "Create your API Code on <a href='http://www.hrdlog.net/EditUser.aspx' target='_blank'>HRDLog.net Userprofile page";
 $lang['station_location_qo100_hint'] = "Create your API key on <a href='https://qo100dx.club' target='_blank'>your QO-100 Dx Club's profile page";
 $lang['station_location_qo100_realtime_upload'] = "QO-100 Dx Club Realtime Upload";
 $lang['station_location_oqrs_enabled'] = "OQRS Enabled";
@@ -106,5 +112,6 @@ $lang['station_location_oqrs_email_alert'] = "OQRS Email alert";
 $lang['station_location_oqrs_email_hint'] = "Make sure email is set up under admin and global options.";
 $lang['station_location_oqrs_text'] = "OQRS Text";
 $lang['station_location_oqrs_text_hint'] = "Some info you want to add regarding QSL'ing.";
+$lang['station_location_clublog_realtime_upload']='ClubLog Realtime Upload';
 
 

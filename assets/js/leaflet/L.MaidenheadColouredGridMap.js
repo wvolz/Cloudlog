@@ -4,7 +4,6 @@
 
 L.Maidenhead = L.LayerGroup.extend({
 
-
 	options: {
 		// Line and label color
 		color: 'rgba(255, 0, 0, 0.4)',
@@ -39,7 +38,6 @@ L.Maidenhead = L.LayerGroup.extend({
 		var lat_cor = new Array(0, 8, 8, 8, 2.5, 2.2, 6, 8, 8, 8, 1.4, 2.5, 3, 3.5, 4, 4, 3.5, 3.5, 3, 1.8, 1.6); // Used for gridsquare text offset
 		var bounds = map.getBounds();
 		var zoom = map.getZoom();
-		console.log(zoom);
 		var unit = d3[zoom];
 		var lcor = lat_cor[zoom];
 		var w = bounds.getWest();

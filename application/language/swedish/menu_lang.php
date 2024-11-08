@@ -17,6 +17,7 @@ $lang['menu_post_contest_logging'] = 'Post Tävlingsloggning';
 $lang['menu_bandmap'] = 'Bandkarta';
 $lang['menu_view_qsl'] = 'Se QSL';
 $lang['menu_view_eqsl'] = 'Se eQSL';
+$lang['menu_view_sstv'] = 'View SSTV Images';
 
 $lang['menu_notes'] = 'Anteckningar';
 
@@ -36,15 +37,18 @@ $lang['menu_continents'] = 'Kontinenter';
 
 $lang['menu_awards'] = 'Awards';
 $lang['menu_cq'] = 'CQ';
+$lang['menu_dl_gridmaster'] = 'DL Gridmaster';
 $lang['menu_dok'] = 'DOK';
 $lang['menu_dxcc'] = 'DXCC';
 $lang['menu_iota'] = 'IOTA';
+$lang['menu_lx_gridmaster'] = 'LX Gridmaster';
 $lang['menu_pota'] = 'POTA';
 $lang['menu_sig'] = 'SIG';
 $lang['menu_sota'] = 'SOTA';
 $lang['menu_us_counties'] = 'USA:s grevskap';
 $lang['menu_us_gridmaster'] = 'US Gridmaster';
 $lang['menu_vucc'] = 'VUCC';
+$lang['menu_waja'] = 'WAJA';
 $lang['menu_was'] = 'WAS';
 $lang['menu_wwff'] = 'WWFF';
 
@@ -91,3 +95,4 @@ $lang['menu_logout'] = 'Logga ut';
 $lang['menu_ffma'] = "Fred Fish Memorial Award";
 $lang['menu_ja_gridmaster'] = 'JA Gridmaster';
 $lang['menu_maintenance']='Underhåll';
+$lang['menu_uk_gridmaster'] = 'UK Gridmaster';

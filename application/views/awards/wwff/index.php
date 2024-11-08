@@ -4,13 +4,13 @@
         <div id="awardInfoButton">
             <script>
             var lang_awards_info_button = "<?php echo lang('awards_info_button'); ?>";
-            var lang_award_info_ln1 = "<?php echo lang('awards_dok_description_ln1'); ?>";
-            var lang_award_info_ln2 = "<?php echo lang('awards_dok_description_ln2'); ?>";
-            var lang_award_info_ln3 = "<?php echo lang('awards_dok_description_ln3'); ?>";
-            var lang_award_info_ln4 = "<?php echo lang('awards_dok_description_ln4'); ?>";
+            var lang_award_info_ln1 = "<?php echo lang('awards_wwff_description_ln1'); ?>";
+            var lang_award_info_ln2 = "<?php echo lang('awards_wwff_description_ln2'); ?>";
+            var lang_award_info_ln3 = "<?php echo lang('awards_wwff_description_ln3'); ?>";
+            var lang_award_info_ln4 = "<?php echo lang('awards_wwff_description_ln4'); ?>";
             </script>
             <h2><?php echo $page_title; ?></h2>
-            <button type="button" class="btn btn-sm btn-primary mr-1" id="displayAwardInfo"><?php echo lang('awards_info_button'); ?></button>
+            <button type="button" class="btn btn-sm btn-primary me-1" id="displayAwardInfo"><?php echo lang('awards_info_button'); ?></button>
         </div>
         <!-- End of Award Info Box -->
 	<?php
@@ -61,6 +61,6 @@
 	</tbody>
 	</table>
 	<?php } else {
-        echo '<div class="alert alert-danger" role="alert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Nothing found!</div>';
+        echo '<div class="alert alert-danger" role="alert">Nothing found!</div>';
     }?>
 </div>

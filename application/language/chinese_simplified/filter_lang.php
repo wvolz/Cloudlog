@@ -10,7 +10,7 @@ ________________________________________________________________________________
 */
 
 $lang['filter_quickfilters'] = '快速过滤';
-$lang['filter_qsl_filters'] = 'QSL 过滤';
+$lang['filter_qsl_filters'] = '过滤 QSL';
 $lang['filter_filters'] = '过滤器';
 $lang['filter_actions'] = '操作';
 $lang['filter_results'] = '每页结果数';
@@ -27,7 +27,7 @@ ________________________________________________________________________________
 */
 
 $lang['filter_quicksearch_w_sel'] = '用选中行的条件进行快速搜索：';
-$lang['filter_search_callsign'] = '搜索 呼号';
+$lang['filter_search_callsign'] = '搜索呼号';
 $lang['filter_search_dxcc'] = '搜索 DXCC';
 $lang['filter_search_state'] = '搜索 州/省';
 $lang['filter_search_gridsquare'] = '搜索 网格';
@@ -45,15 +45,15 @@ QSL Filters
 ___________________________________________________________________________________________
 */
 
-$lang['filter_qsl_sent'] = 'QSL 发送';
-$lang['filter_qsl_recv'] = 'QSL 接收';
+$lang['filter_qsl_sent'] = 'QSL 发送状态';
+$lang['filter_qsl_recv'] = 'QSL 接收状态';
 $lang['filter_qsl_sent_method'] = 'QSL 发送方式';
 $lang['filter_qsl_recv_method'] = 'QSL 接收方式';
-$lang['filter_lotw_sent'] = 'LoTW 发送';
-$lang['filter_lotw_recv'] = 'LoTW 接收';
-$lang['filter_eqsl_sent'] = 'eQSL 发送';
-$lang['filter_eqsl_recv'] = 'eQSL 接收';
-$lang['filter_qsl_via'] = 'QSL 通过';
+$lang['filter_lotw_sent'] = 'LoTW 发送状态';
+$lang['filter_lotw_recv'] = 'LoTW 接收状态';
+$lang['filter_eqsl_sent'] = 'eQSL 发送状态';
+$lang['filter_eqsl_recv'] = 'eQSL 接收状态';
+$lang['filter_qsl_via'] = '通过（via）……发送QSL';
 $lang['filter_qsl_images'] = 'QSL 图片';
 
 // $lang['general_word_all']                --> application/language/english/general_words_lang.php
@@ -100,10 +100,10 @@ ________________________________________________________________________________
 */
 
 $lang['filter_actions_w_selected'] = '用选中行进行：';
-$lang['filter_actions_update_f_callbook'] = 'Update from Callbook';
-$lang['filter_actions_queue_bureau'] = 'Queue Bureau';
-$lang['filter_actions_queue_direct'] = 'Queue Direct';
-$lang['filter_actions_queue_electronic'] = 'Queue Electronic';
+$lang['filter_actions_update_f_callbook'] = '从 Callbook 更新';
+$lang['filter_actions_queue_bureau'] = '卡片局队列';
+$lang['filter_actions_queue_direct'] = '直邮卡片队列';
+$lang['filter_actions_queue_electronic'] = '电子卡片队列';
 $lang['filter_actions_sent_bureau'] = '已发送 (卡片局)';
 $lang['filter_actions_sent_direct'] = '已发送 (直邮)';
 $lang['filter_actions_sent_electronic'] = '已发送 (电子)';
@@ -130,9 +130,9 @@ Options
 ___________________________________________________________________________________________
 */
 
-$lang['filter_options_title'] = 'Options for the Advanced Logbook';
-$lang['filter_options_column'] = 'Column';
-$lang['filter_options_show'] = 'Show';
+$lang['filter_options_title'] = '高级日志选项';
+$lang['filter_options_column'] = '列';
+$lang['filter_options_show'] = '显示';
 // $lang['general_word_datetime']       --> application/language/english/general_words_lang.php
 // $lang['gen_hamradio_de']             --> application/language/english/general_words_lang.php
 // $lang['gen_hamradio_dx']             --> application/language/english/general_words_lang.php
@@ -156,4 +156,5 @@ $lang['filter_options_show'] = 'Show';
 // $lang['gen_hamradio_wwff']           --> application/language/english/general_words_lang.php
 // $lang['gen_hamradio_pota']           --> application/language/english/general_words_lang.php
 // $lang['options_save']                --> application/language/english/options_lang.php
-$lang['filter_options_close'] = 'Close';
+$lang['filter_search_operator']='搜素操作员';
+$lang['filter_options_close'] = '关闭';

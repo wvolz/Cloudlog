@@ -6,7 +6,9 @@ defined('BASEPATH') OR exit('Не е разрешен директен дост�
 $lang['qso_title_qso_map'] = 'Карта на QSO';
 $lang['qso_title_suggestions'] = 'Предложения';
 $lang['qso_title_previous_contacts'] = 'Предишни контакти';
+$lang['qso_title_times_worked_before'] = "times worked before";
 $lang['qso_title_image'] = 'Profile Picture';
+$lang['qso_previous_max_shown'] = "Max. 5 previous contacts are shown";
 
 // Quicklog on Dashboard
 $lang['qso_quicklog_enter_callsign'] = 'QUICKLOG Enter Callsign';
@@ -25,6 +27,11 @@ $lang['qso_dok_helptext'] = 'Например: Q03';
 
 $lang['qso_notes_helptext'] = 'Съдържанието на бележката се използва само в Cloudlog и не се експортира в други услуги.';
 $lang['qsl_notes_helptext'] = 'This note content is exported to QSL services like eqsl.cc.';
+
+$lang['qso_eqsl_qslmsg_helptext'] = "Get the default message for eQSL, for this station.";
+
+// error text //
+$lang['qso_error_timeoff_less_timeon'] = "TimeOff is less than TimeOn";
 
 // Button Text on /qso Display
 
